@@ -1,0 +1,73 @@
+{
+  "name": "mitienda-pos",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "author": "Enrique Marín Hirales",
+  "license": "MIT",
+  "main": "packages/main.cjs",
+ "scripts": {
+    "vite:dev": "vite --host --mode dev",
+    "dev:local": "vite  --host",
+    "dev": "npm run electron:dev",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "electron": "wait-on tcp:8080 && cross-env electron .",
+    "electron:pack": "electron-builder --dir",
+    "electron:dev": "concurrently -k \"cross-env BROWSER=none npm run vite:dev\" \"npm run electron\"",
+    "electron:builder": "electron-builder",
+    "build:for:electron": "vue-tsc --noEmit && cross-env ELECTRON=true vite build",
+    "app:build": "npm run prepare:dir && npm run build:for:electron && npm run electron:builder",
+    "prepare:dir": "node ./scripts/prepare-dir.js",
+    "migrate:latest": "knex migrate:latest",
+    "migrate:make": "knex migrate:make"
+  },
+  "dependencies": {
+    "@vueuse/core": "^12.3.0",
+    "@vueuse/integrations": "^12.3.0",
+    "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
+    "jwt-decode": "^4.0.0",
+    "knex": "^3.1.0",
+    "pinia": "^2.3.0",
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.0.3",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "vue3-toastify": "^0.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@typescript-eslint/parser": "^7.14.1",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "babel-eslint": "^10.1.0",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^31.1.0",
+    "electron-builder": "^24.13.3",
+    "electron-devtools-installer": "^3.2.0",
+    "eslint": "^8.36.0",
+    "eslint-plugin-vue": "^9.26.0",
+    "sass": "^1.77.6",
+    "sass-loader": "^14.2.1",
+    "typescript": "^5.7.2",
+    "vite": "^5.3.1",
+    "vite-plugin-vue-devtools": "^7.3.4",
+    "vue-tsc": "^2.0.21",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.mitiendapos.app",
+    "productName": "MiTiendaPos",
+    "directories": {
+      "output": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "packages/**/*"
+    ],
+    "win": {
+      "icon": "./public/icon.png"
+    }
+  }
+}
