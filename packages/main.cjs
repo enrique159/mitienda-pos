@@ -10,8 +10,8 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    minWidth: 940,
-    minHeight: 620,
+    minWidth: 1200,
+    minHeight: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       nodeIntegration: true,

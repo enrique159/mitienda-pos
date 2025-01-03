@@ -23,6 +23,7 @@
     "migrate:make": "knex migrate:make"
   },
   "dependencies": {
+    "@tabler/icons-vue": "^3.26.0",
     "@vueuse/core": "^12.3.0",
     "@vueuse/integrations": "^12.3.0",
     "axios": "^1.7.9",

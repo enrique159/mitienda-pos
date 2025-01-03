@@ -1,10 +1,12 @@
-<script setup lang="ts">
-</script>
-
 <template>
-  hello
+  <main id="app" class="bg-white-1">
+    <router-view />
+  </main>
 </template>
 
-<style scoped>
-
+<style>
+#app {
+  width: 100vw;
+  height: 100vh;
+}
 </style>

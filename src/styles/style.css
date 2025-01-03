@@ -1,3 +1,52 @@
+@import 'fonts.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* COLORS */
+  --bittersweet-orange: #ff7270;
+  --mandy-pink: #e15b73;
+  --soft-blue: #6a81fb;
+  --oil-black: #1d1d1d;
+  --fantasy-pink: #fff4ed;
+  --success: #5EE3A5;
+  --warning: #F1CF58;
+  --info: #8D6BFB;
+  --white-1: #F8F6F4;
+  --white-2: #EEECEA;
+  --white-3: #E3DEDA;
+  --black-1: #3D3C3C;
+  --black-2: #5A5A5A;
+  --black-3: #8E8E8E;
+  /* FONTS AND TEXT */
+  --font-family: 'Aeonik', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 16px;
+  background-color: var(--white-1);
+  overflow-x: hidden;
+  color: var(--oil-black);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  color: var(--oil-black);
+  margin: 0;
+}

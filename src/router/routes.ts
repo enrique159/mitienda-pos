@@ -1,6 +1,7 @@
 import { RouteRecordRaw } from "vue-router"
 // import NotFoundView from "@/views/NotFoundView.vue"
 import HomeView from "@/views/HomeView.vue"
+import { AuthRoutes } from "@/views/auth/routes"
 // import CreateDocumentView from "@/views/documents/CreateDocumentView.vue"
 // import AreasView from "@/views/areas/AreasView.vue"
 // import CalendarView from "@/views/calendar/CalendarView.vue"
@@ -13,9 +14,15 @@ import HomeView from "@/views/HomeView.vue"
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    component: HomeView
+    redirect: "/auth/signin-as-user",
+  },
+  {
+    path: "/home",
+    name: "Home",
+    component: HomeView,
     // redirect: "/auth/signin",
   },
+  ...AuthRoutes,
   // {
   //   path: "/main",
   //   name: "Main",
@@ -28,42 +35,7 @@ const routes: RouteRecordRaw[] = [
   //       name: "Home",
   //       component: HomeView,
   //     },
-  //     {
-  //       path: "create-document",
-  //       name: "CreateDocument",
-  //       component: CreateDocumentView,
-  //     },
-  //     {
-  //       path: "areas",
-  //       name: "Areas",
-  //       component: AreasView,
-  //     },
-  //     {
-  //       path: "calendar",
-  //       name: "Calendar",
-  //       component: CalendarView,
-  //     },
-  //     {
-  //       path: "actors",
-  //       name: "Actors",
-  //       component: ActorsView,
-  //     },
-  //     {
-  //       path: "settings",
-  //       name: "Settings",
-  //       component: SettingsView,
-  //     }
   //   ],
-  // },
-  // {
-  //   path: "/auth/signin",
-  //   name: "SignIn",
-  //   component: SignInView,
-  // },
-  // {
-  //   path: "/setup",
-  //   name: "Setup",
-  //   component: SetupView,
   // },
   // // 404
   // {
