@@ -75,15 +75,13 @@ import { IconUserCircle } from '@tabler/icons-vue'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
 import { toast } from 'vue3-toastify'
 import { useRouter } from 'vue-router'
+import { getUsers, startSession } from '@/api/electron'
+import type { User, Response, StartSessionParams } from '@/api/interfaces'
 import { ref } from 'vue'
-import router from '@/router'
+
 useTitle('Ingresa a Mi Tienda')
 
-interface User {
-  id: string
-  name: string
-  pin: string
-}
+const router = useRouter()
 
 // Input PIN
 const pinInputRef = ref<HTMLInputElement | null>(null)
@@ -98,36 +96,32 @@ const deletePin = () => {
 }
 
 const validatePin = () => {
-  if (userSelected.value) {
-    if (pin.value === userSelected.value.pin) {
-      router.push('/home')
-    } else {
-      toast.warning('PIN incorrecto')
+  if (userSelected.value && userSelected.value.id) {
+    const params: StartSessionParams = {
+      id: userSelected.value.id,
+      pin: pin.value,
     }
+    startSession(params, (response: Response<Partial<User>>) => {
+      if (response.success) {
+        router.push('/admin')
+      } else {
+        toast.error('El PIN ingresado es incorrecto')
+        pin.value = ''
+        pinInputRef.value?.focus()
+      }
+    })
   }
 }
 
 // Users
-const userSelected = ref<User | null>(null)
-const users = ref<Array<User>>([
-  {
-    id: '1',
-    name: 'Admin',
-    pin: '1234',
-  },
-  {
-    id: '2',
-    name: 'Vendedor',
-    pin: '4321',
-  },
-  {
-    id: '3',
-    name: 'Almacenero',
-    pin: '5678',
-  },
-])
+const userSelected = ref<Partial<User> | null>(null)
+const users = ref<Array<Partial<User>>>([])
 
-const selectUser = (user: User) => {
+getUsers((response: Response<Partial<User>[]>) => {
+  users.value = response.response
+})
+
+const selectUser = (user: Partial<User>) => {
   userSelected.value = user
   pin.value = ''
   pinInputRef.value?.focus()

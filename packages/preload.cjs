@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron')
+const { startSession, getUsers } = require('./app/modules/users/usersListeners.cjs')
 // const { signIn, signUp, changePassword } = require('./app/modules/auth/authListeners.cjs')
 // const { getAreas, createArea, updateArea, deleteArea } = require('./app/modules/areas/areasListeners.cjs')
 // const { getActivities, createActivity, deleteActivity } = require('./app/modules/activities/activitiesListeners.cjs')
@@ -17,7 +18,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 })
 
-// contextBridge.exposeInMainWorld('electron', {
+contextBridge.exposeInMainWorld('electron', {
+  // Users
+  getUsers,
+  startSession,
 //   // Configuration
 //   getConfiguration,
 //   updateConfiguration,
@@ -49,6 +53,6 @@ window.addEventListener('DOMContentLoaded', () => {
 //   createActivity,
 //   deleteActivity,
 //   // Extras
-//   closeApp: () => ipcRenderer.send('close_app'),
-//   restartApp: () => ipcRenderer.send('restart_app'),
-// })
+  closeApp: () => ipcRenderer.send('close_app'),
+  restartApp: () => ipcRenderer.send('restart_app'),
+})

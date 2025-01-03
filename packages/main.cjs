@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const env = require('./env.json')
-// const initDB = require('./app/database/index.cjs')
+const initDB = require('./app/database/index.cjs')
 const dev = env.NODE_ENV === 'development'
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
@@ -20,14 +20,11 @@ function createWindow() {
     },
   })
 
-  // and load the index.html of the app.
-  // win.loadFile("index.html");
   mainWindow.loadURL(
     dev
       ? 'http://localhost:8080'
       : `file://${path.join(__dirname, '../dist/index.html')}`
   )
-  // Open the DevTools.
   if (dev) {
     console.log('[electron]: Opening DevTools')
     mainWindow.webContents.openDevTools()
@@ -45,10 +42,9 @@ function createWindow() {
 // }
 
 app.whenReady().then(() => {
-  // initDB().then(() => {
-  //   createWindow()
-  // })
-  createWindow()
+  initDB().then(() => {
+    createWindow()
+  })
 
   app.on('activate', function() {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -74,6 +70,7 @@ ipcMain.on('get_version', (event) => {
   event.reply('get_version', app.getVersion())
 })
 
+require('./app/modules/users/usersApplication.cjs')
 // require('./app/modules/auth/authApplication.cjs')
 // require('./app/modules/areas/areasApplication.cjs')
 // require('./app/modules/actors/actorsApplication.cjs')

@@ -1,0 +1,33 @@
+const fs = require('fs')
+const path = require('path')
+const os = require('os')
+const knex = require('knex')(require('./knexfile.cjs'))
+const seeds = require('./seeds/init_seed.cjs')
+// Importing schemas
+const configuration = require('./schemas/configuration.cjs')
+const users = require('./schemas/users.cjs')
+
+const initDB = async() => {
+  const destinationPath = path.join(os.homedir(), '.db')
+  const dbPath = path.join(destinationPath, 'mitienda.sqlite')
+
+  if (!fs.existsSync(dbPath)) {
+    console.log('Database not found, creating a new one...')
+    if (!fs.existsSync(destinationPath)) {
+      fs.mkdirSync(destinationPath)
+    }
+    fs.writeFileSync(dbPath, '')
+
+    await configuration.createTable(knex)
+    await users.createTable(knex)
+
+    console.log('Database created and initialized with tables.')
+
+    /* INSERT DEFAULT USER */
+    await seeds.seed(knex)
+  } else {
+    console.log('Database already exists.')
+  }
+}
+
+module.exports = initDB
