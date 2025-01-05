@@ -34,6 +34,10 @@
             <div class="flex items-center gap-4">
               <icon-user-circle class="w-8 h-8 text-brand-blue" />
               <p class="text-lg font-bold">{{ user.name }}</p>
+
+              <span class="text-brand-blue text-sm font-bold ml-auto">
+                Seleccionar
+              </span>
             </div>
           </button>
         </div>
@@ -70,18 +74,17 @@
 <script setup lang="ts">
 import PinInput from '@/components/inputs/PinInput.vue'
 import DeleteButton from '@/components/buttons/DeleteButton.vue'
-import { useTitle } from '@vueuse/core'
 import { IconUserCircle } from '@tabler/icons-vue'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
 import { toast } from 'vue3-toastify'
 import { useRouter } from 'vue-router'
-import { getUsers, startSession } from '@/api/electron'
+import { getSellers, startSession } from '@/api/electron'
+import { useUser } from '@/composables/useUser'
 import type { User, Response, StartSessionParams } from '@/api/interfaces'
 import { ref } from 'vue'
 
-useTitle('Ingresa a Mi Tienda')
-
 const router = useRouter()
+const { setUser } = useUser()
 
 // Input PIN
 const pinInputRef = ref<HTMLInputElement | null>(null)
@@ -103,7 +106,8 @@ const validatePin = () => {
     }
     startSession(params, (response: Response<Partial<User>>) => {
       if (response.success) {
-        router.push('/admin')
+        setUser(response.response)
+        router.push('/main')
       } else {
         toast.error('El PIN ingresado es incorrecto')
         pin.value = ''
@@ -117,7 +121,7 @@ const validatePin = () => {
 const userSelected = ref<Partial<User> | null>(null)
 const users = ref<Array<Partial<User>>>([])
 
-getUsers((response: Response<Partial<User>[]>) => {
+getSellers((response: Response<Partial<User>[]>) => {
   users.value = response.response
 })
 

@@ -1,7 +1,17 @@
 import { RouteRecordRaw } from "vue-router"
-// import NotFoundView from "@/views/NotFoundView.vue"
-import HomeView from "@/views/HomeView.vue"
 import { AuthRoutes } from "@/views/auth/routes"
+import { SettingsRoutes } from "@/views/settings/routes"
+import { CashRegisterRoutes } from "@/views/cashregister/routes"
+import { ClientsRoutes } from "@/views/clients/routes"
+import { InventoryRoutes } from "@/views/inventory/routes"
+import { ListSalesRoutes } from "@/views/listsales/routes"
+import { ProductsRoutes } from "@/views/products/routes"
+import { ReportsRoutes } from "@/views/reports/routes"
+
+// import NotFoundView from "@/views/NotFoundView.vue"
+import MainModule from "@/views/MainModule.vue"
+import HomeView from "@/views/HomeView.vue"
+import SalesView from "@/views/sales/SalesView.vue"
 // import CreateDocumentView from "@/views/documents/CreateDocumentView.vue"
 // import AreasView from "@/views/areas/AreasView.vue"
 // import CalendarView from "@/views/calendar/CalendarView.vue"
@@ -17,26 +27,34 @@ const routes: RouteRecordRaw[] = [
     redirect: "/auth/signin-as-user",
   },
   {
-    path: "/home",
-    name: "Home",
-    component: HomeView,
-    // redirect: "/auth/signin",
+    path: "/main",
+    name: "MainModule",
+    redirect: "/main/sales",
+    component: MainModule,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '/main/home',
+        name: "Home",
+        component: HomeView,
+      },
+      {
+        path: '/main/sales',
+        name: "Sales",
+        component: SalesView,
+      },
+      ...SettingsRoutes,
+      ...CashRegisterRoutes,
+      ...ClientsRoutes,
+      ...InventoryRoutes,
+      ...ListSalesRoutes,
+      ...ProductsRoutes,
+      ...ReportsRoutes,
+    ]
   },
   ...AuthRoutes,
-  // {
-  //   path: "/main",
-  //   name: "Main",
-  //   redirect: "/main/home",
-  //   component: MainView,
-  //   meta: { requiresAuth: true },
-  //   children: [
-  //     {
-  //       path: "home",
-  //       name: "Home",
-  //       component: HomeView,
-  //     },
-  //   ],
-  // },
+
+
   // // 404
   // {
   //   path: '/:pathMatch(.*)*',

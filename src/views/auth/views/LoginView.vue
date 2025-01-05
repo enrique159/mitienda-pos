@@ -35,9 +35,6 @@
 
 <script setup lang="ts">
 import { IconLifebuoy } from '@tabler/icons-vue'
-import { useTitle } from '@vueuse/core';
-
-useTitle('Bienvenido a Mi Tienda');
 </script>
 
 <style scoped>

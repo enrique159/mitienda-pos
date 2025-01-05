@@ -70,7 +70,7 @@ ipcMain.on('get_version', (event) => {
   event.reply('get_version', app.getVersion())
 })
 
-require('./app/modules/users/usersApplication.cjs')
+require('./app/modules/sellers/sellersApplication.cjs')
 // require('./app/modules/auth/authApplication.cjs')
 // require('./app/modules/areas/areasApplication.cjs')
 // require('./app/modules/actors/actorsApplication.cjs')

@@ -6,6 +6,10 @@ const seeds = require('./seeds/init_seed.cjs')
 // Importing schemas
 const configuration = require('./schemas/configuration.cjs')
 const users = require('./schemas/users.cjs')
+const company = require('./schemas/company.cjs')
+const branch = require('./schemas/branchs.cjs')
+const sellers = require('./schemas/sellers.cjs')
+const branchs_sellers = require('./schemas/branchs_sellers.cjs')
 
 const initDB = async() => {
   const destinationPath = path.join(os.homedir(), '.db')
@@ -20,6 +24,10 @@ const initDB = async() => {
 
     await configuration.createTable(knex)
     await users.createTable(knex)
+    await company.createTable(knex)
+    await branch.createTable(knex)
+    await sellers.createTable(knex)
+    await branchs_sellers.createTable(knex)
 
     console.log('Database created and initialized with tables.')
 

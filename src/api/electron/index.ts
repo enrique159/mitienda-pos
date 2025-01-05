@@ -2,8 +2,8 @@ import { Area, AuthParams, Configuration, Documento, ChangePasswordParams, Actor
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 
-/* Users */
-export const getUsers = async (callback: any) => window.electron.getUsers(callback)
+/* Sellers */
+export const getSellers = async (callback: any) => window.electron.getSellers(callback)
 export const startSession = async (params: StartSessionParams, callback: any) => window.electron.startSession(params, callback)
 
 /* Configuration */

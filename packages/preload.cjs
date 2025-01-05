@@ -1,11 +1,11 @@
 const { contextBridge, ipcRenderer } = require('electron')
-const { startSession, getUsers } = require('./app/modules/users/usersListeners.cjs')
+const { startSession, getSellers } = require('./app/modules/sellers/sellersListeners.cjs')
+const { getConfiguration, updateConfiguration, createConfiguration, exportDatabase, importDatabase, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
 // const { signIn, signUp, changePassword } = require('./app/modules/auth/authListeners.cjs')
 // const { getAreas, createArea, updateArea, deleteArea } = require('./app/modules/areas/areasListeners.cjs')
 // const { getActivities, createActivity, deleteActivity } = require('./app/modules/activities/activitiesListeners.cjs')
 // const { getActors, getActorByNombre, createActor, deleteActor } = require('./app/modules/actors/actorsListeners.cjs')
 // const { createDocument, getDocuments, openDocument, deleteDocument } = require('./app/modules/documents/documentsListeners.cjs')
-// const { getConfiguration, updateConfiguration, createConfiguration, exportDatabase, importDatabase, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
 
 window.addEventListener('DOMContentLoaded', () => {
   const replaceText = (selector, text) => {
@@ -20,15 +20,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
 contextBridge.exposeInMainWorld('electron', {
   // Users
-  getUsers,
+  getSellers,
   startSession,
-//   // Configuration
-//   getConfiguration,
-//   updateConfiguration,
-//   createConfiguration,
-//   exportDatabase,
-//   importDatabase,
-//   getVersion,
+  // Configuration
+  // getConfiguration,
+  // updateConfiguration,
+  // createConfiguration,
+  // exportDatabase,
+  // importDatabase,
+  getVersion,
 //   // Auth
 //   signIn,
 //   signUp,

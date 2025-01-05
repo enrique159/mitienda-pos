@@ -5,18 +5,18 @@ const { logger } = require('../../helpers/index.cjs')
  * @returns { Promise<void> }
  */
 exports.createTable = async function(knex) {
-  await knex.schema.createTable('users', (table) => {
+  await knex.schema.createTable('sellers', (table) => {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary()
+    table.uuid('id_company').references('companies.id').notNullable()
     table.string('name')
-    table.string('email')
-    table.string('password')
-    table.enu('account_type', ['offline', 'business']).defaultTo('offline')
+    table.string('pin')
+    table.bigInteger('permissions')
     table.enu('status', ['active', 'inactive']).defaultTo('active')
     table.dateTime('created_at').defaultTo(knex.fn.now())
     table.dateTime('updated_at').defaultTo(knex.fn.now())
     table.dateTime('synced_at')
   }).then(() => {
-    console.log("Table 'users' created.")
+    console.log("Table 'sellers' created.")
   }).catch((err) => {
     logger.error({ type: 'DB', error: err })
     console.error(err)
