@@ -3,6 +3,7 @@ const { response, logger } = require('../../helpers/index.cjs')
 
 const mapDataToSeller = (data) => ({
   id: data.id,
+  companyId: data.id_company,
   name: data.name,
   permissions: data.permissions,
   status: data.status,

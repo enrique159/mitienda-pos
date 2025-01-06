@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
+const { products } = require('./products_seed.cjs')
 
 /**
  * @param { import("knex").Knex } knex
@@ -73,4 +74,8 @@ exports.seed = async function(knex) {
     id_branch: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120004', // ID de la sucursal relacionada
     id_seller: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120005', // ID del vendedor relacionado
   })
+
+  // Products
+  await knex('products').del()
+  await knex('products').insert(products)
 }

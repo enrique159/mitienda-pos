@@ -25,7 +25,7 @@ module.exports = {
     "arrow-parens": ["error", "always"],
     "linebreak-style": ["error", "unix"],
     semi: [2, "never"],
-    "no-console": "off",
+    "no-console": "error",
     "no-debugger": "warn",
     "vue/no-unused-vars": "warn",
     "no-var": "error",

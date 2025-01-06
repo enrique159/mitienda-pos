@@ -61,68 +61,34 @@ import {
 } from '@tabler/icons-vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import { useProduct } from '@/composables/useProduct'
+import { getProducts } from '@/api/electron'
+import { Product, Response } from '@/api/interfaces'
+import { toast } from 'vue3-toastify'
 
+const { setProducts } = useProduct()
 const route = useRoute()
 
 // El numero 2 es porque todas las rutas del main empiezan por /main/...
 const currentRoute = computed(() => route.path.split('/')[2])
 
 const menuOptions = [
-  {
-    id: 1,
-    icon: IconShoppingBag,
-    label: 'Vender',
-    route: '/main/sales',
-    value: 'sales',
-  },
-  {
-    id: 2,
-    icon: IconUsersGroup,
-    label: 'Clientes',
-    route: '/main/clients',
-    value: 'clients',
-  },
-  {
-    id: 3,
-    icon: IconPackage,
-    label: 'Artículos',
-    route: '/main/products',
-    value: 'products',
-  },
-  {
-    id: 4,
-    icon: IconCheckupList,
-    label: 'Inventario',
-    route: '/main/inventory',
-    value: 'inventory',
-  },
-  {
-    id: 5,
-    icon: IconReceipt,
-    label: 'Ventas',
-    route: '/main/listsales',
-    value: 'listsales',
-  },
-  {
-    id: 6,
-    icon: IconCashRegister,
-    label: 'Caja',
-    route: '/main/cashregister',
-    value: 'cashregister',
-  },
-  {
-    id: 7,
-    icon: IconChartBar,
-    label: 'Reportes',
-    route: '/main/reports',
-    value: 'reports',
-  },
-  {
-    id: 8,
-    icon: IconSettings,
-    label: 'Ajustes',
-    route: '/main/settings',
-    value: 'settings',
-  },
+  { id: 1, icon: IconShoppingBag, label: 'Vender', route: '/main/sales', value: 'sales', },
+  { id: 2, icon: IconUsersGroup, label: 'Clientes', route: '/main/clients', value: 'clients', },
+  { id: 3, icon: IconPackage, label: 'Artículos', route: '/main/products', value: 'products', },
+  { id: 4, icon: IconCheckupList, label: 'Inventario', route: '/main/inventory', value: 'inventory', },
+  { id: 5, icon: IconReceipt, label: 'Ventas', route: '/main/listsales', value: 'listsales', },
+  { id: 6, icon: IconCashRegister, label: 'Caja', route: '/main/cashregister', value: 'cashregister', },
+  { id: 7, icon: IconChartBar, label: 'Reportes', route: '/main/reports', value: 'reports', },
+  { id: 8, icon: IconSettings, label: 'Ajustes', route: '/main/settings', value: 'settings', },
 ]
+
+getProducts((response: Response<Product[]>) => {
+  if (!response.success) {
+    console.log(response.message)
+    toast.error('Error al obtener los productos')
+    return
+  }
+  setProducts(response.response)
+})
 </script>

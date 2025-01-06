@@ -1,9 +1,7 @@
-import { AuthParams, ChangePasswordParams, StartSessionParams } from './auth'
-import { Area } from './areas'
-import { Documento, Activity } from './documents'
+import { StartSessionParams } from './auth'
 import { Configuration } from './configuration'
-import { Actor } from './actors'
-import { User } from './users'
+import { User, Seller } from './users'
+import { Product, ProductCart } from './products'
 
 interface Response<T> {
   success: boolean
@@ -13,13 +11,10 @@ interface Response<T> {
 
 export type {
   User,
-  Area, 
-  Actor, 
+  Seller,
+  Product,
   Response,
-  Activity,
-  Documento,
-  AuthParams,
+  ProductCart,
   Configuration, 
   StartSessionParams,
-  ChangePasswordParams,
 }

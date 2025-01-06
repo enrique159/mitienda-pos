@@ -12,9 +12,9 @@ exports.createTable = async function(knex) {
     table.string('password')
     table.enu('account_type', ['offline', 'business']).defaultTo('offline')
     table.enu('status', ['active', 'inactive']).defaultTo('active')
-    table.dateTime('created_at').defaultTo(knex.fn.now())
-    table.dateTime('updated_at').defaultTo(knex.fn.now())
-    table.dateTime('synced_at')
+    table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable(); // Fecha de creación
+    table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable(); // Fecha de edición
+    table.timestamp('synced_at')
   }).then(() => {
     console.log("Table 'users' created.")
   }).catch((err) => {

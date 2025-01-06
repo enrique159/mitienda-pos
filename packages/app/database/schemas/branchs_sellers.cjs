@@ -8,7 +8,7 @@ exports.createTable = async function(knex) {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary()
     table.uuid('id_branch').references('branchs.id').notNullable()
     table.uuid('id_seller').references('sellers.id').notNullable()
-    table.dateTime('created_at').defaultTo(knex.fn.now()).notNullable()
+    table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable()
   }).then(() => {
     console.log("Table 'branchs_sellers' created.")
   }).catch((err) => {

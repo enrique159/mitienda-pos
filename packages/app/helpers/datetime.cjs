@@ -6,5 +6,5 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 exports.getDatetime = function () {
-  return dayjs().tz('America/Mazatlan').format('YYYY-MM-DD HH:mm:ss')
+  return dayjs().format('YYYY-MM-DD HH:mm:ss')
 }

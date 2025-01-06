@@ -10,6 +10,7 @@ exports.createTable = async function(knex) {
       table.boolean('configured').defaultTo(false)
       table.enu('mode', ['offline', 'business']).defaultTo('offline')
       table.boolean('enable_sync').defaultTo(false)
+      table.timestamp('last_sync')
     }).then(() => {
       console.log("Table 'configuration' created.")
     }).catch((err) => {

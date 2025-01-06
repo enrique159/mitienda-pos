@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron')
 const { startSession, getSellers } = require('./app/modules/sellers/sellersListeners.cjs')
+const { getActiveProducts } = require('./app/modules/products/productsListeners.cjs')
 const { getConfiguration, updateConfiguration, createConfiguration, exportDatabase, importDatabase, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
 // const { signIn, signUp, changePassword } = require('./app/modules/auth/authListeners.cjs')
 // const { getAreas, createArea, updateArea, deleteArea } = require('./app/modules/areas/areasListeners.cjs')
@@ -19,9 +20,11 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 contextBridge.exposeInMainWorld('electron', {
-  // Users
+  // Sellers
   getSellers,
   startSession,
+  // Products
+  getActiveProducts,
   // Configuration
   // getConfiguration,
   // updateConfiguration,

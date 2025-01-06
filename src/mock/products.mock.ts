@@ -1,0 +1,40 @@
+import { Product } from "@/api/interfaces";
+
+export const mockProducts: Product[] = [
+  {
+    id: '1',
+    branchId: '1',
+    barcode: '123456789',
+    name: 'Product 1',
+    description: 'Description 1',
+    price: 10,
+    status: 'active',
+    stock: 10,
+    createdAt: '2021-10-01',
+    updatedAt: '2021-10-01',
+  },
+  {
+    id: '2',
+    branchId: '1',
+    barcode: '987654321',
+    name: 'Product 2',
+    description: 'Description 2',
+    price: 20,
+    status: 'active',
+    stock: 20,
+    createdAt: '2021-10-01',
+    updatedAt: '2021-10-01',
+  },
+  {
+    id: '3',
+    branchId: '1',
+    barcode: '123789456',
+    name: 'Product 3',
+    description: 'Description 3',
+    price: 995,
+    status: 'active',
+    stock: 30,
+    createdAt: '2021-10-01',
+    updatedAt: '2021-10-01',
+  },
+]
