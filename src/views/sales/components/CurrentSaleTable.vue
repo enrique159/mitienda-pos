@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-x-auto overflow-y-visible">
+  <div class="overflow-x-auto overflow-y-visible" @click.self="clearSelectedProduct">
     <table class="table bg-white rounded-none">
       <!-- head -->
       <thead>
@@ -26,7 +26,24 @@
           <td>{{ item.name }}</td>
           <td>{{ item.description }}</td>
           <td>{{ formatCurrency(item.selling_price) }}</td>
-          <td>{{ item.quantity }}</td>
+          <td>
+            <div class="dropdown">
+              <div tabindex="0" role="button" class="btn btn-xs pl-3 rounded-badge" @click.stop="() => {}">
+                {{ item.quantity }}
+                <icon-dots-vertical class="w-4 h-4" />
+              </div>
+              <ul tabindex="0" class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow">
+                <li @click.stop="editProductQuantity(item)"><a>
+                  <icon-edit class="w-4 h-4" />
+                  Cambiar cantidad
+                </a></li>
+                <li @click.stop="emits('remove-product-from-cart', item.id)"><a class="text-brand-pink">
+                  <icon-trash class="w-4 h-4" />
+                  Remover
+                </a></li>
+              </ul>
+            </div>
+          </td>
           <td class="font-semibold">{{ formatCurrency(getTotalIncomeFromProduct(item.selling_price, item.quantity)) }}</td>
           <td>{{ item.stock }}</td>
         </tr>
@@ -36,12 +53,13 @@
 </template>
 
 <script setup lang="ts">
+import { IconDotsVertical, IconEdit, IconTrash } from '@tabler/icons-vue';
 import { useProduct } from '@/composables/useProduct';
 import { useCurrency } from '@/composables/useCurrency';
 import { ProductCart } from '@/api/interfaces';
 import { ref } from 'vue';
 
-const emits = defineEmits(['on:select-product']);
+const emits = defineEmits(['on:select-product', 'remove-product-from-cart', 'show-edit-quantity-modal']);
 
 const { formatCurrency, formatWithoutSymbol } = useCurrency();
 const { currentCart, removeProductFromCart } = useProduct();
@@ -59,6 +77,16 @@ const selectProduct = (product: ProductCart) => {
 
 const unselectProduct = () => {
   selectedProduct.value = null;
+};
+
+const clearSelectedProduct = () => {
+  selectedProduct.value = null;
+  emits('on:select-product', null);
+};
+
+const editProductQuantity = (product: ProductCart) => {
+  selectProduct(product);
+  emits('show-edit-quantity-modal');
 };
 
 defineExpose({

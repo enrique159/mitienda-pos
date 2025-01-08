@@ -22,6 +22,7 @@
         <div class="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto">
           <button
             v-for="user in users"
+            id="user-card"
             :key="`user-card-${user.id}`"
             class="bg-white-1 border-4 shadow-card rounded-2xl p-4 w-full h-18 active:scale-[0.99] active:shadow-md transition-all"
             :class="[
@@ -82,6 +83,7 @@ import { getSellers, startSession } from '@/api/electron'
 import { useUser } from '@/composables/useUser'
 import type { User, Response, StartSessionParams } from '@/api/interfaces'
 import { ref } from 'vue'
+import { onMounted } from 'vue'
 
 const router = useRouter()
 const { setUser } = useUser()
@@ -123,6 +125,10 @@ const users = ref<Array<Partial<User>>>([])
 
 getSellers((response: Response<Partial<User>[]>) => {
   users.value = response.response
+  if (users.value.length === 1) {
+    userSelected.value = users.value[0]
+    pinInputRef.value?.focus()
+  }
 })
 
 const selectUser = (user: Partial<User>) => {

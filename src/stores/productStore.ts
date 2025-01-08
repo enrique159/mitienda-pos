@@ -1,4 +1,4 @@
-import { Product, ProductCart } from "@/api/interfaces";
+import { Category, Product, ProductCart } from "@/api/interfaces";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { mockProducts } from "@/mock/products.mock";
@@ -40,6 +40,14 @@ export const useProductStore = defineStore('product', () => {
     })
   }
 
+
+  // CATEGORIES
+  const categories = ref<Category[]>([]);
+
+  const setCategories = (newCategories: Category[]) => {
+    categories.value = newCategories;
+  }
+
   return {
     // Products
     products,
@@ -50,5 +58,9 @@ export const useProductStore = defineStore('product', () => {
     addCart,
     removeCart,
     editQuantityCart,
+  
+    // Categories
+    categories,
+    setCategories,
   }
 })

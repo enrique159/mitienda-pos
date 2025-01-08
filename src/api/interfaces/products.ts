@@ -36,3 +36,7 @@ export enum UnitMeasurement {
 export interface ProductCart extends Product {
   quantity: number
 }
+
+export interface Category {
+  category: string;
+}

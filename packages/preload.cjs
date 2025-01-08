@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron')
 const { startSession, getSellers } = require('./app/modules/sellers/sellersListeners.cjs')
-const { getActiveProducts } = require('./app/modules/products/productsListeners.cjs')
+const { getActiveProducts, getProductCategories, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
 const { getConfiguration, updateConfiguration, createConfiguration, exportDatabase, importDatabase, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
 // const { signIn, signUp, changePassword } = require('./app/modules/auth/authListeners.cjs')
 // const { getAreas, createArea, updateArea, deleteArea } = require('./app/modules/areas/areasListeners.cjs')
@@ -25,6 +25,8 @@ contextBridge.exposeInMainWorld('electron', {
   startSession,
   // Products
   getActiveProducts,
+  getProductCategories,
+  getProductsByCategory,
   // Configuration
   // getConfiguration,
   // updateConfiguration,
@@ -32,30 +34,6 @@ contextBridge.exposeInMainWorld('electron', {
   // exportDatabase,
   // importDatabase,
   getVersion,
-//   // Auth
-//   signIn,
-//   signUp,
-//   changePassword,
-//   // Areas
-//   getAreas,
-//   createArea,
-//   updateArea,
-//   deleteArea,
-//   // Actors
-//   getActors,
-//   getActorByNombre,
-//   createActor,
-//   deleteActor,
-//   // Documents
-//   getDocuments,
-//   createDocument,
-//   openDocument,
-//   deleteDocument,
-//   // Activities
-//   getActivities,
-//   createActivity,
-//   deleteActivity,
-//   // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),
 })

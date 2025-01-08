@@ -62,11 +62,11 @@ import {
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { useProduct } from '@/composables/useProduct'
-import { getProducts } from '@/api/electron'
-import { Product, Response } from '@/api/interfaces'
+import { getProducts, getProductCategories } from '@/api/electron'
+import { Category, Product, Response } from '@/api/interfaces'
 import { toast } from 'vue3-toastify'
 
-const { setProducts } = useProduct()
+const { setProducts, setCategories } = useProduct()
 const route = useRoute()
 
 // El numero 2 es porque todas las rutas del main empiezan por /main/...
@@ -90,5 +90,16 @@ getProducts((response: Response<Product[]>) => {
     return
   }
   setProducts(response.response)
+})
+
+getProductCategories((response: Response<Category[]>) => {
+  if (!response.success) {
+    console.log(response.message)
+    toast.error('Error al obtener las categorías de los productos')
+    return
+  }
+  // Add Todos category
+  response.response.unshift({ category: 'Todos' })
+  setCategories(response.response)
 })
 </script>

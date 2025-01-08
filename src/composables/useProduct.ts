@@ -1,15 +1,19 @@
 import { useProductStore } from "@/stores/productStore";
-import { Product } from "@/api/interfaces";
+import { Category, Product } from "@/api/interfaces";
 import { storeToRefs } from "pinia";
 
 export const useProduct = () => {
   const productStore = useProductStore();
 
-  const { products, currentCart } = storeToRefs(productStore);
+  const { products, currentCart, categories } = storeToRefs(productStore);
 
   // Functions
   const setProducts = (products: Product[]) => {
     productStore.setProducts(products);
+  }
+
+  const setCategories = (categories: Category[]) => {
+    productStore.setCategories(categories);
   }
 
   const getProductById = (id: string): Product | undefined => {
@@ -54,5 +58,8 @@ export const useProduct = () => {
     addProductToCart,
     removeProductFromCart,
     editProductQuantityInCart,
+
+    categories,
+    setCategories,
   }
 }

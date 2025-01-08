@@ -8,6 +8,8 @@ export const startSession = async (params: StartSessionParams, callback: any) =>
 
 /* Products */
 export const getProducts = async (callback: any) => window.electron.getActiveProducts(callback)
+export const getProductCategories = async (callback: any) => window.electron.getProductCategories(callback)
+export const getProductsByCategory = async (category: string, callback: any) => window.electron.getProductsByCategory(category, callback)
 
 /* Configuration */
 export const getConfiguration = async (callback: any) => window.electron.getConfiguration(callback)

@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-3 gap-2">
+  <div class="grid grid-cols-3 gap-2 max-w-[260px]">
     <button
       v-for="(digit, index) in digits"
       :key="`pin-button-${index}`"
