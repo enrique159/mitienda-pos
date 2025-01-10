@@ -33,6 +33,8 @@ export enum UnitMeasurement {
   OTHER = 'other',
 }
 
+export type Unit = 'u' | 'kg' | 'g' | 'L' | 'ml' | 'caja' | 'otro';
+
 export interface ProductCart extends Product {
   quantity: number
 }

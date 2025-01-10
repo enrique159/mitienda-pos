@@ -3,12 +3,12 @@ const { response, logger } = require('../../helpers/index.cjs')
 
 const mapDataToSeller = (data) => ({
   id: data.id,
-  companyId: data.id_company,
+  id_company: data.id_company,
   name: data.name,
   permissions: data.permissions,
   status: data.status,
-  createdAt: data.created_at,
-  updatedAt: data.updated_at,
+  created_at: data.created_at,
+  created_at: data.updated_at,
 })
 
 const mapDataToSellerSimple = (data) => ({

@@ -1,7 +1,9 @@
 import { StartSessionParams } from './auth'
 import { Configuration } from './configuration'
 import { User, Seller } from './users'
-import { Product, ProductCart, UnitMeasurement, Category } from './products'
+import { Product, ProductCart, UnitMeasurement, Unit, Category } from './products'
+import { Branch } from './branchs'
+import { CashRegister } from './cashRegisters'
 
 interface Response<T> {
   success: boolean
@@ -11,12 +13,18 @@ interface Response<T> {
 
 export type {
   User,
+  Unit,
   Seller,
+  Branch,
   Product,
   Response,
   Category,
   ProductCart,
+  CashRegister,
   Configuration, 
-  UnitMeasurement,
   StartSessionParams,
+}
+
+export {
+  UnitMeasurement,
 }

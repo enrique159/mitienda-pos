@@ -29,7 +29,7 @@
           <td>
             <div class="dropdown">
               <div tabindex="0" role="button" class="btn btn-xs pl-3 rounded-badge" @click.stop="() => {}">
-                {{ item.quantity }}
+                {{ item.quantity }} {{ getAbbreviationUnitMeasurement(item.unit_measurement) }}
                 <icon-dots-vertical class="w-4 h-4" />
               </div>
               <ul tabindex="0" class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow">
@@ -57,6 +57,7 @@ import { IconDotsVertical, IconEdit, IconTrash } from '@tabler/icons-vue';
 import { useProduct } from '@/composables/useProduct';
 import { useCurrency } from '@/composables/useCurrency';
 import { ProductCart } from '@/api/interfaces';
+import { getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
 import { ref } from 'vue';
 
 const emits = defineEmits(['on:select-product', 'remove-product-from-cart', 'show-edit-quantity-modal']);

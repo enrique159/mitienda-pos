@@ -4,17 +4,17 @@ export interface User {
   pin: string
   permissions: number
   status: number
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 export interface Seller {
   id: string
-  companyId: string
+  id_company: string
   name: string
   pin: string
   permissions: number
   status: number
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }

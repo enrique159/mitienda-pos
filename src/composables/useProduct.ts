@@ -1,11 +1,16 @@
 import { useProductStore } from "@/stores/productStore";
 import { Category, Product } from "@/api/interfaces";
 import { storeToRefs } from "pinia";
+import { computed } from "vue";
 
 export const useProduct = () => {
   const productStore = useProductStore();
 
   const { products, currentCart, categories } = storeToRefs(productStore);
+
+  const currentCartTotal = computed(() => {
+    return currentCart.value.reduce((acc, product) => acc + product.selling_price * product.quantity, 0);
+  })
 
   // Functions
   const setProducts = (products: Product[]) => {
@@ -56,6 +61,7 @@ export const useProduct = () => {
 
     currentCart,
     addProductToCart,
+    currentCartTotal,
     removeProductFromCart,
     editProductQuantityInCart,
 

@@ -38,12 +38,21 @@
       </div>
 
       <div class="ml-auto flex items-center gap-2">
+        <div class="flex flex-col justify-center items-end">
+          <span class="text-sm font-bold">{{ branch.branch_alias }}</span>
+          <span class="text-xs">{{ getCurrentDate() }}</span>
+        </div>
         <AvatarContextMenu />
       </div>
     </header>
 
     <!-- MODULES VIEW -->
     <slot></slot>
+
+    <div class="w-full bg-white h-8 border-t border-gray-200">
+
+
+    </div>
   </div>
 </template>
 
@@ -62,12 +71,17 @@ import {
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { useProduct } from '@/composables/useProduct'
-import { getProducts, getProductCategories } from '@/api/electron'
-import { Category, Product, Response } from '@/api/interfaces'
+import { useBranch } from '@/composables/useBranch'
+import { getProducts, getProductCategories, getBranchInfo, getCashRegisterActive } from '@/api/electron'
+import { Category, Product, Response, Branch } from '@/api/interfaces'
+import { useDate } from '@/composables/useDate'
 import { toast } from 'vue3-toastify'
+import router from '@/router'
 
 const { setProducts, setCategories } = useProduct()
+const { setBranch, branch } = useBranch()
 const route = useRoute()
+const { getCurrentDate } = useDate()
 
 // El numero 2 es porque todas las rutas del main empiezan por /main/...
 const currentRoute = computed(() => route.path.split('/')[2])
@@ -102,4 +116,27 @@ getProductCategories((response: Response<Category[]>) => {
   response.response.unshift({ category: 'Todos' })
   setCategories(response.response)
 })
+
+getBranchInfo((response: Response<Branch>) => {
+  if (!response.success) {
+    console.log(response.message)
+    toast.error('Error al obtener la información de la sucursal')
+    return
+  }
+  setBranch(response.response)
+})
+
+const getCashRegisterOpened = async () => {
+  const response = await getCashRegisterActive()
+  if (!response.success) {
+    toast.error('Error al obtener la información de la caja')
+    return
+  }
+  if (!response.response) {
+    router.push('/main/open-cash-register')
+  }
+  // TODO: Add cash register to store
+}
+
+getCashRegisterOpened()
 </script>

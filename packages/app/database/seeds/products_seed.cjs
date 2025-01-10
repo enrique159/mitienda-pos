@@ -9,7 +9,7 @@ exports.products = [
     barcode: '7501234567891',
     description: 'Bolsa de arroz blanco de 1 kg.',
     category: 'Alimentos',
-    unit_measurement: 'kg',
+    unit_measurement: 'piece',
     stock: 100,
     stock_minimum: 10,
     purchase_price: 1800, // $18.00 MXN
@@ -29,7 +29,7 @@ exports.products = [
     barcode: '7501234567892',
     description: 'Bolsa de frijol negro de 1 kg.',
     category: 'Alimentos',
-    unit_measurement: 'kg',
+    unit_measurement: 'piece',
     stock: 80,
     stock_minimum: 10,
     purchase_price: 2300, // $23.00 MXN
@@ -49,7 +49,7 @@ exports.products = [
     barcode: '7501234567893',
     description: 'Botella de aceite vegetal de 1 litro.',
     category: 'Aceites',
-    unit_measurement: 'liter',
+    unit_measurement: 'piece',
     stock: 50,
     stock_minimum: 5,
     purchase_price: 2800, // $28.00 MXN
@@ -69,7 +69,7 @@ exports.products = [
     barcode: '7501234567894',
     description: 'Leche entera pasteurizada de 1 litro.',
     category: 'Bebidas',
-    unit_measurement: 'liter',
+    unit_measurement: 'piece',
     stock: 60,
     stock_minimum: 10,
     purchase_price: 1600, // $16.00 MXN
@@ -89,7 +89,7 @@ exports.products = [
     barcode: '7501234567895',
     description: 'Refresco Coca-Cola de 600 ml.',
     category: 'Bebidas',
-    unit_measurement: 'ml',
+    unit_measurement: 'piece',
     stock: 120,
     stock_minimum: 20,
     purchase_price: 1000, // $10.00 MXN
@@ -149,7 +149,7 @@ exports.products = [
     barcode: '7501234567898',
     description: 'Detergente en polvo multiusos de 1 kg.',
     category: 'Limpieza',
-    unit_measurement: 'kg',
+    unit_measurement: 'piece',
     stock: 25,
     stock_minimum: 5,
     purchase_price: 4000, // $40.00 MXN
@@ -169,7 +169,7 @@ exports.products = [
     barcode: '7501234567899',
     description: 'Frasco de café soluble (200 g).',
     category: 'Bebidas',
-    unit_measurement: 'g',
+    unit_measurement: 'piece',
     stock: 15,
     stock_minimum: 3,
     purchase_price: 8500, // $85.00 MXN
@@ -189,7 +189,7 @@ exports.products = [
     barcode: '7501234567890',
     description: 'Lata de atún en agua (140 g).',
     category: 'Enlatados',
-    unit_measurement: 'g',
+    unit_measurement: 'piece',
     stock: 50,
     stock_minimum: 10,
     purchase_price: 1800, // $18.00 MXN

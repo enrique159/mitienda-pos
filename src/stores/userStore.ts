@@ -1,13 +1,13 @@
-import { User } from "@/api/interfaces";
+import { Seller } from "@/api/interfaces";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 export const checkPermision = (permission: number, mask: number) => (permission & mask) > 0
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref<User>({} as User);
+  const user = ref<Seller>({} as Seller);
 
-  const setUser = (newUser: User) => {
+  const setUser = (newUser: Seller) => {
     user.value = newUser;
   }
 

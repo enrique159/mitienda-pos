@@ -191,7 +191,7 @@ import DeleteButton from '@/components/buttons/DeleteButton.vue';
 import CustomKbd from '@/components/CustomKbd.vue';
 import CurrentSaleTable from './components/CurrentSaleTable.vue';
 import CurrentSalePayment from './components/CurrentSalePayment.vue';
-import { IconTrash, IconSearch } from '@tabler/icons-vue';
+import { IconTrash, IconSearch, IconCancel } from '@tabler/icons-vue';
 import { useProduct } from '@/composables/useProduct';
 import { toast } from 'vue3-toastify';
 import { ref, watch } from 'vue';
