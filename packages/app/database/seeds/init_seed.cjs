@@ -39,8 +39,8 @@ exports.seed = async function(knex) {
   })
 
   // Branch
-  await knex('branchs').del()
-  await knex('branchs').insert({
+  await knex('branches').del()
+  await knex('branches').insert({
     id: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120004', // UUID generado
     id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002', // ID de la empresa relacionada
     branch_name: 'Sucursal Principal', // Nombre de la sucursal
@@ -67,9 +67,9 @@ exports.seed = async function(knex) {
     status: 'active', // Estatus
   })
 
-  // Branchs Sellers
-  await knex('branchs_sellers').del()
-  await knex('branchs_sellers').insert({
+  // Branches Sellers
+  await knex('branches_sellers').del()
+  await knex('branches_sellers').insert({
     id: uuidv4(), // UUID generado
     id_branch: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120004', // ID de la sucursal relacionada
     id_seller: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120005', // ID del vendedor relacionado

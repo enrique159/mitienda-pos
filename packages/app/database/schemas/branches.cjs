@@ -5,7 +5,7 @@ const { logger } = require('../../helpers/index.cjs')
  * @returns { Promise<void> }
  */
 exports.createTable = async function(knex) {
-  await knex.schema.createTable('branchs', (table) => {
+  await knex.schema.createTable('branches', (table) => {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary()
     table.uuid('id_company').references('company.id').notNullable()
     table.string('branch_name').notNullable()
@@ -20,7 +20,7 @@ exports.createTable = async function(knex) {
     table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable(); // Fecha de edición
     table.timestamp('synced_at')
   }).then(() => {
-    console.log("Table 'branchs' created.")
+    console.log("Table 'branches' created.")
   }).catch((err) => {
     logger.error({ type: 'DB', error: err })
     console.error(err)

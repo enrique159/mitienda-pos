@@ -11,7 +11,7 @@ export const getProducts = async (callback: any) => window.electron.getActivePro
 export const getProductCategories = async (callback: any) => window.electron.getProductCategories(callback)
 export const getProductsByCategory = async (category: string, callback: any) => window.electron.getProductsByCategory(category, callback)
 
-/* Branchs */
+/* Branches */
 export const getBranchInfo = async (callback: any) => window.electron.getBranchInfo(callback)
 
 /* Cash Register */

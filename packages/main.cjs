@@ -72,7 +72,7 @@ ipcMain.on('get_version', (event) => {
 
 require('./app/modules/sellers/sellersApplication.cjs')
 require('./app/modules/products/productsApplication.cjs')
-require('./app/modules/branchs/branchsApplication.cjs')
+require('./app/modules/branches/branchesApplication.cjs')
 require('./app/modules/cash_registers/cashRegistersApplication.cjs')
 // require('./app/modules/auth/authApplication.cjs')
 // require('./app/modules/areas/areasApplication.cjs')
