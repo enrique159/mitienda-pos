@@ -32,11 +32,15 @@ import { openCashRegister } from '@/api/electron';
 import { CashRegister, Response } from '@/api/interfaces';
 import { useUser } from '@/composables/useUser';
 import { useBranch } from '@/composables/useBranch';
+import { useCashRegister } from '@/composables/useCashRegister';
 import { toast } from 'vue3-toastify'
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const { user } = useUser();
 const { branch } = useBranch();
+const { setCashRegister } = useCashRegister();
+const router = useRouter();
 
 const startAmount = ref<string>('');
 
@@ -60,9 +64,10 @@ const saveNewQuantity = () => {
   openCashRegister(params, (response: Response<CashRegister>) => {
     if (!response.success) {
       toast.error(response.message)
-    } else {
-      toast.success('Caja abierta correctamente')
+      return
     }
+    setCashRegister(response.response)
+    router.push({ name: 'Sales' })
   });
 };
 

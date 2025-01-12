@@ -9,7 +9,7 @@ const users = require('./schemas/users.cjs')
 const company = require('./schemas/company.cjs')
 const branch = require('./schemas/branches.cjs')
 const sellers = require('./schemas/sellers.cjs')
-const branchs_sellers = require('./schemas/branches_sellers.cjs')
+const branches_sellers = require('./schemas/branches_sellers.cjs')
 const products = require('./schemas/products.cjs')
 const cashRegisters = require('./schemas/cash_registers.cjs')
 

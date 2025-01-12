@@ -6,7 +6,7 @@ const { logger } = require('../../helpers/index.cjs')
 exports.createTable = async function(knex) {
   await knex.schema.createTable('branches_sellers', (table) => {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary()
-    table.uuid('id_branch').references('branchs.id').notNullable()
+    table.uuid('id_branch').references('branches.id').notNullable()
     table.uuid('id_seller').references('sellers.id').notNullable()
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable()
   }).then(() => {

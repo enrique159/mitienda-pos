@@ -2,10 +2,10 @@ const knex = require('knex')(require('../../database/knexfile.cjs'))
 const { response, logger } = require('../../helpers/index.cjs')
 
 exports.createCashRegister = async function (data) {
-  return await knex('cash_registers').insert(data)
+  return await knex('cash_registers').insert(data).returning('*')
     .then((cashRegister) => {
-      console.log("Caja registradora creada.", cashRegister)
-      return response(true, 'Caja registradora creada', null)
+      const cashRegisterData = Array.isArray(cashRegister) ? cashRegister[0] : cashRegister
+      return response(true, 'Caja registradora creada', cashRegisterData)
     })
     .catch((err) => {
       logger.error({ type: 'CREATE CASH REGISTER ERROR', message: `${err}`, data: err })
@@ -25,7 +25,7 @@ exports.getCashRegisterActive = async function () {
       if(Array.isArray(cashRegister) && cashRegister.length === 0) {
         return response(true, 'No se encontró caja registradora abierta', null)
       }
-      return response(true, 'Caja registradora activa encontrada', cashRegister)
+      return response(true, 'Caja registradora activa encontrada', Array.isArray(cashRegister) ? cashRegister[0] : cashRegister)
     })
     .catch((err) => {
       logger.error({ type: 'GET ACTIVE CASH REGISTER ERROR', message: `${err}`, data: err })

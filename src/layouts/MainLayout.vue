@@ -72,6 +72,7 @@ import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { useProduct } from '@/composables/useProduct'
 import { useBranch } from '@/composables/useBranch'
+import { useCashRegister } from '@/composables/useCashRegister'
 import { getProducts, getProductCategories, getBranchInfo, getCashRegisterActive } from '@/api/electron'
 import { Category, Product, Response, Branch } from '@/api/interfaces'
 import { useDate } from '@/composables/useDate'
@@ -80,6 +81,7 @@ import router from '@/router'
 
 const { setProducts, setCategories } = useProduct()
 const { setBranch, branch } = useBranch()
+const { setCashRegister } = useCashRegister()
 const route = useRoute()
 const { getCurrentDate } = useDate()
 
@@ -135,7 +137,7 @@ const getCashRegisterOpened = async () => {
   if (!response.response) {
     router.push('/main/open-cash-register')
   }
-  // TODO: Add cash register to store
+  setCashRegister(response.response)
 }
 
 getCashRegisterOpened()
