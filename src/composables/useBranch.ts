@@ -4,7 +4,7 @@ import { storeToRefs } from "pinia";
 
 export const useBranch = () => {
   const branchStore = useBranchStore()
-  const { branch } = storeToRefs(branchStore)
+  const { branch, timezone } = storeToRefs(branchStore)
 
   // Functions
   const setBranch = (newBranch: Branch) => branchStore.setBranch(newBranch)
@@ -12,6 +12,7 @@ export const useBranch = () => {
 
   return {
     branch,
+    timezone,
     setBranch,
     updateBranch,
   }

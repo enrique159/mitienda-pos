@@ -40,7 +40,7 @@
       <div class="ml-auto flex items-center gap-2">
         <div class="flex flex-col justify-center items-end">
           <span class="text-sm font-bold">{{ branch.branch_alias }}</span>
-          <span class="text-xs">{{ getCurrentDate() }}</span>
+          <span class="text-xs">{{ showHour }}</span>
         </div>
         <AvatarContextMenu />
       </div>
@@ -49,9 +49,10 @@
     <!-- MODULES VIEW -->
     <slot></slot>
 
-    <div class="w-full bg-white h-8 border-t border-gray-200">
-
-
+    <div class="w-full bg-white h-8 border-t border-gray-200 px-2">
+      <span class="text-xs text-black-2">
+        {{ isCashRegisterOpen ? `Caja abierta: ${formatDatetime(cashRegister?.opening_date)}` : 'Caja cerrada' }}
+      </span>
     </div>
   </div>
 </template>
@@ -78,12 +79,14 @@ import { Category, Product, Response, Branch } from '@/api/interfaces'
 import { useDate } from '@/composables/useDate'
 import { toast } from 'vue3-toastify'
 import router from '@/router'
+import { onBeforeUnmount } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 const { setProducts, setCategories } = useProduct()
 const { setBranch, branch } = useBranch()
-const { setCashRegister } = useCashRegister()
+const { setCashRegister, cashRegister, isCashRegisterOpen } = useCashRegister()
+const { getCurrentDate, formatDatetime } = useDate()
 const route = useRoute()
-const { getCurrentDate } = useDate()
 
 // El numero 2 es porque todas las rutas del main empiezan por /main/...
 const currentRoute = computed(() => route.path.split('/')[2])
@@ -141,4 +144,20 @@ const getCashRegisterOpened = async () => {
 }
 
 getCashRegisterOpened()
+
+// Get real time hour
+const time = ref(getCurrentDate())
+
+watchEffect(() => {
+  const interval = setInterval(() => {
+    time.value = getCurrentDate()
+  }, 1000)
+
+  onBeforeUnmount(() => {
+    clearInterval(interval)
+  })
+})
+
+const showHour = computed(() => time.value)
+
 </script>
