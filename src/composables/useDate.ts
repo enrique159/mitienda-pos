@@ -21,6 +21,11 @@ export const useDate = () => {
     return dayjs.utc(date).tz(tz.value).locale("es").format("dddd, D [de] MMMM [de] YYYY hh:mm:ss a");
   }
 
+  const formatDatetimeShort = (date: string | undefined) => {
+    if (!date) return "";
+    return dayjs.utc(date).tz(tz.value).locale("es").format("dd/MM/YYYY hh:mm a");
+  }
+
   return {
     getCurrentDate,
     formatDatetime

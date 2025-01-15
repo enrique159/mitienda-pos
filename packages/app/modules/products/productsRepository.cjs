@@ -1,5 +1,14 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
+const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
+
+function normalizeProduct(product) {
+  return {
+    ...product,
+    is_active: parseBoolean(product.is_active),
+    has_expiration_date: parseBoolean(product.has_expiration_date),
+    is_composite: parseBoolean(product.is_composite),
+  }
+}
 
 /**
  * Obtiene todos los productos activos
@@ -11,7 +20,7 @@ exports.getActiveProducts = async function () {
         logger.error({ type: 'GET PRODUCTS', message: 'No se encontraron productos' })
         return response(false, 'Productos no encontrados', [])
       }
-      return response(true, 'Productos encontrados', products)
+      return response(true, 'Productos encontrados', products.map(normalizeProduct))
     })
     .catch((err) => {
       console.log(err)
@@ -44,7 +53,7 @@ exports.getProductsByCategory = async function (category) {
         logger.error({ type: 'GET PRODUCTS BY CATEGORY', message: 'No se encontraron productos' })
         return response(false, 'Productos no encontrados', [])
       }
-      return response(true, 'Productos encontrados', products)
+      return response(true, 'Productos encontrados', products.map(normalizeProduct))
     })
     .catch((err) => {
       console.log(err)

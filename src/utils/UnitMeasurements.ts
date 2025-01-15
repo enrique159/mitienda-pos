@@ -18,3 +18,22 @@ export const getAbbreviationUnitMeasurement = (unit: UnitMeasurement): string =>
       return 'otro';
   }
 }
+
+export const getNameUnitMeasurement = (unit: UnitMeasurement): string => {
+  switch (unit) {
+    case UnitMeasurement.PIECE:
+      return 'Pieza';
+    case UnitMeasurement.KG:
+      return 'Kilogramo';
+    case UnitMeasurement.G:
+      return 'Gramo';
+    case UnitMeasurement.LITER:
+      return 'Litro';
+    case UnitMeasurement.ML:
+      return 'Mililitro';
+    case UnitMeasurement.BOX:
+      return 'Caja';
+    case UnitMeasurement.OTHER:
+      return 'Otro';
+  }
+}

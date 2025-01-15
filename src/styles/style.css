@@ -50,3 +50,11 @@ h1, h2, h3, h4, h5, h6, p {
   color: var(--oil-black);
   margin: 0;
 }
+
+.base-btn {
+  @apply bg-white-2 hover:bg-white-3 h-10 px-4 rounded-md active:scale-95 transition-all text-sm flex items-center gap-2;
+}
+
+.close-btn {
+  @apply bg-transparent hover:bg-white-2 h-8 px-3 rounded-md active:scale-95 transition-all text-sm flex items-center gap-2;
+}

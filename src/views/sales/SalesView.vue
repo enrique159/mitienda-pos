@@ -15,31 +15,26 @@
           @keydown.enter="searchProduct"
         />
         <button
-          class="bg-white-2 hover:bg-white-3 px-4 h-10 rounded-md active:scale-95 transition-all text-sm"
+          class="base-btn"
           @click="searchProduct"
         >
           Agregar artículo
         </button>
-        <button
-          class="bg-white-2 hover:bg-white-3 h-10 px-4 rounded-md active:scale-95 transition-all text-sm flex items-center gap-2"
-          @click="openSearchProductsModal"
-        >
+        <button class="base-btn" @click="openSearchProductsModal">
           Buscar artículo
           <CustomKbd>F2</CustomKbd>
         </button>
       </div>
 
       <div class="flex justify-center items-center gap-2">
-        <button class="bg-white-2 hover:bg-white-3 h-10 px-4 rounded-md active:scale-95 transition-all text-sm flex items-center gap-2">
-          Artículos comunes
+        <button class="base-btn" @click="openVerifyProductModal">
+          Verificar artículo
+          <CustomKbd>F3</CustomKbd>
         </button>
       </div>
 
       <div class="flex justify-center items-center gap-2">
-        <button
-          class="bg-white-2 hover:bg-white-3 h-10 px-4 rounded-md active:scale-95 transition-all text-sm flex items-center gap-2"
-          @click="removeFromCart"
-        >
+        <button class="base-btn" @click="removeFromCart">
           Remover artículo
           <IconTrash class="w-4 h-4 text-brand-pink" />
         </button>
@@ -60,8 +55,19 @@
   <!-- DIALOG FOUND PRODUCTS -->
   <dialog id="dialogFoundProducts" ref="dialogFoundProductsRef" class="modal" @keydown.escape="showFoundProductsModal = false">
     <div class="modal-box">
-      <h3 class="text-lg font-bold mb-4">Productos encontrados</h3>
-      <p class="font-medium mb-2">Seleccione el producto que desea agregar</p>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">Productos encontrados</h3>
+        <div class="modal-action mt-0">
+          <form method="dialog" @submit="showFoundProductsModal = false">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="close-btn">
+              Cerrar
+              <CustomKbd>ESC</CustomKbd>
+            </button>
+          </form>
+        </div>
+      </div>
+      <p class="font-medium text-black-3 mb-2">Seleccione el producto que desea agregar</p>
       <div class="grid grid-cols-1 gap-2 h-fit max-h-[440px] overflow-y-auto">
         <button
           v-for="(product, index) in foundProducts"
@@ -78,15 +84,6 @@
           <p class="text-sm">{{ formatCurrency(product.selling_price) }}</p>
         </button>
       </div>
-      <div class="modal-action">
-        <form method="dialog" @submit="showFoundProductsModal = false">
-          <!-- if there is a button in form, it will close the modal -->
-          <button class="btn btn-ghost btn-sm">
-            cerrar
-            <CustomKbd>ESC</CustomKbd>
-          </button>
-        </form>
-      </div>
     </div>
   </dialog>
 
@@ -99,8 +96,8 @@
         <div class="modal-action mt-0">
           <form method="dialog" @submit="showSearchProductsModal = false">
             <!-- if there is a button in form, it will close the modal -->
-            <button class="btn btn-ghost btn-sm">
-              cerrar
+            <button class="close-btn">
+              Cerrar
               <CustomKbd>ESC</CustomKbd>
             </button>
           </form>
@@ -155,9 +152,8 @@
         <h3 class="text-lg font-bold">Cambiar cantidad</h3>
         <div class="modal-action mt-0">
           <form method="dialog" @submit="showEditQuantityModal = false">
-            <!-- if there is a button in form, it will close the modal -->
-            <button class="btn btn-ghost btn-sm">
-              cerrar
+            <button class="close-btn">
+              Cerrar
               <CustomKbd>ESC</CustomKbd>
             </button>
           </form>
@@ -180,7 +176,50 @@
         </div>
         <pin-input @input="editQuantity" @enter="saveNewQuantity" />
       </div>
-      
+    </div>
+  </dialog>
+
+  <!-- DIALOG VERIFY PRODUCT -->
+  <dialog id="dialogVerifyProduct" ref="dialogVerifyProductRef" class="modal" @keydown.escape="showVerifyProductModal = false">
+    <div class="modal-box max-w-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">Verificar producto</h3>
+        <div class="modal-action mt-0">
+          <form method="dialog" @submit="showVerifyProductModal = false">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="close-btn">
+              Cerrar
+              <CustomKbd>ESC</CustomKbd>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center gap-4 py-2">
+        <label class="input input-bordered flex items-center gap-2 w-full">
+          <input
+            ref="inputSearchVerifyProductRef"
+            type="text"
+            class="grow"
+            placeholder="Buscar por código de barra o nombre"
+            v-model="searchVerifyProduct"
+            @keydown.enter="searchProductToVerify"
+          />
+          <IconSearch class="w-4 h-4 text-gray-400" />
+        </label>
+
+        <div v-if="verifyProductSuccess" class="border border-white-3 p-4 rounded-lg w-full h-fit min-h-[260px] grid grid-cols-2 gap-x-2 gap-y-8 place-content-start">
+          <div v-for="(info, index) in getVerifyProductArrayInfo" :key="`verify-product-info-${index}`">
+            <p class="text-sm text-black-3">{{ info.title }}</p>
+            <p class="font-bold text-black-2">{{ info.value }}</p>
+          </div>
+        </div>
+        <div v-else class="bg-white-1 p-4 rounded-lg w-full h-[300px] flex flex-col justify-center items-center">
+          <img src="@/assets/verify_product.svg" alt="Verificar producto" class="w-32 mb-4">
+          <h6 class="text-lg font-bold text-black-2">Verifica información de productos</h6>
+          <p class="text-sm text-black-3 text-center">Puedes escanear el código o buscar por nombre algún producto para ver su información completa</p>
+        </div>
+      </div>
     </div>
   </dialog>
 </template>
@@ -191,7 +230,7 @@ import DeleteButton from '@/components/buttons/DeleteButton.vue';
 import CustomKbd from '@/components/CustomKbd.vue';
 import CurrentSaleTable from './components/CurrentSaleTable.vue';
 import CurrentSalePayment from './components/CurrentSalePayment.vue';
-import { IconTrash, IconSearch, IconCancel } from '@tabler/icons-vue';
+import { IconTrash, IconSearch } from '@tabler/icons-vue';
 import { useProduct } from '@/composables/useProduct';
 import { toast } from 'vue3-toastify';
 import { ref, watch } from 'vue';
@@ -200,6 +239,7 @@ import { computed, onMounted, onUnmounted } from 'vue';
 import { useCurrency } from '@/composables/useCurrency';
 import { getProductsByCategory } from '@/api/electron';
 import { validateOnlyNumbers } from '@/utils/InputValidators';
+import { getNameUnitMeasurement } from '@/utils/UnitMeasurements';
 
 // Formats
 const { formatCurrency } = useCurrency();
@@ -242,7 +282,9 @@ const foundProducts = computed(() => {
   return searchProductByCodeOrName(search.value);
 });
 
-// Dialog found products
+/**
+ * *************** Found Products ***************
+ */
 const showFoundProductsModal = ref(false)
 const selectProductButtonsRef = ref()
 const focusedButtonIndex = ref(0)
@@ -264,7 +306,9 @@ const addProductToCartAndCloseFoundModal = (product: Product) => {
 }
 
 
-// Dialog Search Products
+/**
+ * *************** Search Products ***************
+ */
 const showSearchProductsModal = ref(false)
 const dialogSearchProductsRef = ref()
 const categorySelected = ref('Todos')
@@ -317,7 +361,9 @@ const addProductToCartAndCloseSearchModal = (product: Product) => {
   inputSearchRef.value.focus();
 }
 
-// Edit quantity Modal
+/**
+ * *************** Edit Quantity ***************
+ */
 const showEditQuantityModal = ref(false)
 const dialogEditQuantityRef = ref()
 const inputEditQuantityRef = ref()
@@ -349,11 +395,67 @@ const saveNewQuantity = () => {
   }
 }
 
+/*
+* *************** Verify Product ***************
+*/
+const showVerifyProductModal = ref(false)
+const dialogVerifyProductRef = ref()
+const inputSearchVerifyProductRef = ref()
+const verifyProductSuccess = ref<Product | null>(null)
+const searchVerifyProduct = ref('')
+
+const openVerifyProductModal = () => {
+  clearVerifyProduct();
+  showVerifyProductModal.value = true;
+  dialogVerifyProductRef.value.showModal();
+  inputSearchVerifyProductRef.value.focus();
+}
+
+const clearVerifyProduct = () => {
+  verifyProductSuccess.value = null;
+  searchVerifyProduct.value = '';
+}
+
+const getVerifyProductArrayInfo = computed(() => {
+  if (verifyProductSuccess.value) {
+    return [
+      { title: 'Código de barra', value: verifyProductSuccess.value.barcode },
+      { title: 'Nombre', value: verifyProductSuccess.value.name },
+      { title: 'Precio de venta', value: formatCurrency(verifyProductSuccess.value.selling_price) },
+      { title: 'Categoría', value: verifyProductSuccess.value.category },
+      { title: 'Unidad de medida', value: getNameUnitMeasurement(verifyProductSuccess.value.unit_measurement) },
+      { title: 'Stock', value: verifyProductSuccess.value.stock },
+    ]
+  } else {
+    return []
+  }
+})
+
+const searchProductToVerify = (evt: any) => {
+  evt.preventDefault();
+  if (!searchVerifyProduct.value) return;
+  const response = searchProductByCodeOrName(searchVerifyProduct.value);
+  if (Array.isArray(response)) {
+    if (response.length > 1) {
+      toast.warn('Se encontraron varios productos, por favor busque por código de barra');
+    } else {
+      verifyProductSuccess.value = response[0];
+    }
+  } else {
+    toast.warn('No se encontró coincidencias');
+  }
+}
+
+
 // Navigation Listeneres
 const navigateButtons = (event: any) => {
   // add F2 key to open dialog
   if (event.key == "F2" && !showFoundProductsModal.value) {
     openSearchProductsModal();
+  }
+  // add F3 key to open dialog
+  if (event.key == "F3" && !showVerifyProductModal.value) {
+    openVerifyProductModal();
   }
 
   if (showFoundProductsModal.value) {
@@ -401,7 +503,7 @@ onUnmounted(() => {
 .grid-sales {
   overflow-y: hidden;
   display: grid;
-  grid-template-rows: 50px 57px 1fr 200px;  
+  grid-template-rows: 50px 57px 1fr 150px;  
 }
 
 .search-products-grid {

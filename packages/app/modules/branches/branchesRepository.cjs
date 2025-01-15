@@ -1,5 +1,5 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
+const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
 
 exports.getBranchInfo = async function () {
   return await knex('branches').select().first()
@@ -7,6 +7,11 @@ exports.getBranchInfo = async function () {
       if (!branch) {
         logger.error({ type: 'GET BRANCH INFO', message: 'No se encontró la sucursal' })
         return response(false, 'Sucursal no encontrada', null)
+      }
+      branch = {
+        ...branch,
+        is_main: parseBoolean(branch.is_main),
+        pin_enabled: parseBoolean(branch.pin_enabled),
       }
       return response(true, 'Sucursal encontrada', branch)
     })

@@ -49,16 +49,13 @@
     <!-- MODULES VIEW -->
     <slot></slot>
 
-    <div class="w-full bg-white h-8 border-t border-gray-200 px-2">
-      <span class="text-xs text-black-2">
-        {{ isCashRegisterOpen ? `Caja abierta: ${formatDatetime(cashRegister?.opening_date)}` : 'Caja cerrada' }}
-      </span>
-    </div>
+    <MainStatusBar />
   </div>
 </template>
 
 <script setup lang="ts">
 import AvatarContextMenu from '@/components/AvatarContextMenu.vue'
+import MainStatusBar from '@/components/MainStatusBar.vue'
 import {
   IconShoppingBag,
   IconUsersGroup,

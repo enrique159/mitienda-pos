@@ -1,5 +1,12 @@
 export interface Configuration {
   id?: number,
-  configured: boolean | 0 | 1,
-  // TODO: Add more fields
+  configured: boolean,
+  mode: Modes,
+  enabled: boolean,
+  last_sync: Date,
+}
+
+export enum Modes {
+  OFFLINE = 'offline',
+  BUSINESS = 'business',
 }

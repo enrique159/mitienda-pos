@@ -36,6 +36,7 @@ contextBridge.exposeInMainWorld('electron', {
   createCashRegister,
   // Configuration
   getVersion,
+  getConfiguration,
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),
 })
