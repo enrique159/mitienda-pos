@@ -13,6 +13,7 @@ import MainModule from "@/views/MainModule.vue"
 import HomeView from "@/views/HomeView.vue"
 import SalesView from "@/views/sales/SalesView.vue"
 import OpenCashRegisterView from "@/views/cashregister/OpenCashRegisterView.vue"
+import NotFoundView from "@/views/NotFoundView.vue"
 // import CreateDocumentView from "@/views/documents/CreateDocumentView.vue"
 // import AreasView from "@/views/areas/AreasView.vue"
 // import CalendarView from "@/views/calendar/CalendarView.vue"
@@ -62,11 +63,11 @@ const routes: RouteRecordRaw[] = [
 
 
   // // 404
-  // {
-  //   path: '/:pathMatch(.*)*',
-  //   name: "NotFound",
-  //   component: NotFoundView,
-  // },
+  {
+    path: '/:pathMatch(.*)*',
+    name: "NotFound",
+    component: NotFoundView,
+  },
 ]
 
 export default routes
