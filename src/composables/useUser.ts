@@ -1,14 +1,14 @@
-import { User } from "@/api/interfaces";
-import { useUserStore } from "@/stores/userStore";
-import { storeToRefs } from "pinia";
+import { Seller } from "@/api/interfaces"
+import { useUserStore } from "@/stores/userStore"
+import { storeToRefs } from "pinia"
 
 export const useUser = () => {
-  const userStore = useUserStore();
-  const { user } = storeToRefs(userStore);
+  const userStore = useUserStore()
+  const { user } = storeToRefs(userStore)
 
   // Functions
-  function setUser(newUser: Partial<User>) {
-    userStore.setUser(newUser);
+  function setUser(newUser: Seller) {
+    userStore.setUser(newUser)
   }
 
   return {

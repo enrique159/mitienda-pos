@@ -1,10 +1,15 @@
-import { Configuration, Response, StartSessionParams, CashRegister } from '@/api/interfaces'
+import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio } from '@/api/interfaces'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 
 /* Sellers */
 export const getSellers = async (callback: any) => window.electron.getSellers(callback)
 export const startSession = async (params: StartSessionParams, callback: any) => window.electron.startSession(params, callback)
+
+/* Sales */
+export const createSale = async (data: any, callback: any) => window.electron.createSale(data, callback)
+export const getSales = async (callback: any) => window.electron.getSales(callback)
+export const generateSaleFolio = async (): Promise<Response<GeneratedFolio>> => window.electron.generateSaleFolio()
 
 /* Products */
 export const getProducts = async (callback: any) => window.electron.getActiveProducts(callback)

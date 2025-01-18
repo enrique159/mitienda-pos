@@ -26,6 +26,7 @@ function createWindow() {
       : `file://${path.join(__dirname, '../dist/index.html')}`
   )
   if (dev) {
+    // eslint-disable-next-line no-console
     console.log('[electron]: Opening DevTools')
     mainWindow.webContents.openDevTools()
   }
@@ -75,6 +76,7 @@ require('./app/modules/products/productsApplication.cjs')
 require('./app/modules/branches/branchesApplication.cjs')
 require('./app/modules/cash_registers/cashRegistersApplication.cjs')
 require('./app/modules/configuration/configurationApplication.cjs')
+require('./app/modules/sales/salesApplication.cjs')
 // require('./app/modules/auth/authApplication.cjs')
 // require('./app/modules/areas/areasApplication.cjs')
 // require('./app/modules/actors/actorsApplication.cjs')

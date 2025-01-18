@@ -21,18 +21,30 @@
     <div class="col-span-4">
       <div class="h-fit py-1 bg-white-1 rounded-2xl">
         <div class="flex justify-between items-center px-4 py-1">
-          <p class="font-bold text-black-1">Total</p>
-          <p class="font-bold">{{ formatCurrency(currentCartTotal) }}</p>
+          <p class="font-bold text-black-1">
+            Total
+          </p>
+          <p class="font-bold">
+            {{ formatCurrency(currentCartTotal) }}
+          </p>
         </div>
 
         <div class="flex justify-between items-center px-4 py-1 border-b border-gray-200">
-          <p class="font-bold text-black-1">Descuento</p>
-          <p class="font-bold">0.00</p>
+          <p class="font-bold text-black-1">
+            Descuento
+          </p>
+          <p class="font-bold">
+            0.00
+          </p>
         </div>
-      
+
         <div class="flex justify-between items-center px-4 py-3">
-          <p class="font-black text-xl">Total a pagar</p>
-          <p class="font-black text-xl text-green-600">{{ formatCurrency(currentCartTotal) }}</p>
+          <p class="font-black text-xl">
+            Total a pagar
+          </p>
+          <p class="font-black text-xl text-green-600">
+            {{ formatCurrency(currentCartTotal) }}
+          </p>
         </div>
       </div>
     </div>
@@ -40,12 +52,12 @@
 </template>
 
 <script setup lang="ts">
-import { useProduct } from '@/composables/useProduct';
-import { useCurrency } from '@/composables/useCurrency';
+import { useProduct } from '@/composables/useProduct'
+import { useCurrency } from '@/composables/useCurrency'
 import { IconUserPlus, IconReceipt2 } from '@tabler/icons-vue'
-const { formatCurrency } = useCurrency();
+const { formatCurrency } = useCurrency()
 
-const { currentCartTotal } = useProduct();
+const { currentCartTotal } = useProduct()
 </script>
 
 <style scoped>

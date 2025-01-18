@@ -1,6 +1,6 @@
-import { defineStore } from "pinia";
-import { Configuration } from "@/api/interfaces";
-import { ref } from "vue";
+import { defineStore } from "pinia"
+import { Configuration } from "@/api/interfaces"
+import { ref } from "vue"
 
 export const useConfigurationStore = defineStore('configuration', () => {
   const configuration = ref<Configuration>({} as Configuration)
@@ -11,6 +11,6 @@ export const useConfigurationStore = defineStore('configuration', () => {
 
   return {
     configuration,
-    setConfiguration
+    setConfiguration,
   }
 })

@@ -1,5 +1,6 @@
 import SettingsModule from './SettingsModule.vue'
 import GeneralSettingsView from './views/GeneralSettingsView.vue'
+import SalesAndProductsSettingsView from './views/SalesAndProductsSettingsView.vue'
 
 export const SettingsRoutes = [
   {
@@ -11,8 +12,13 @@ export const SettingsRoutes = [
       {
         path: '/main/settings/general',
         name: 'GeneralSettings',
-        component: GeneralSettingsView
-      }
-    ]
-  }
+        component: GeneralSettingsView,
+      },
+      {
+        path: '/main/settings/sales-and-products',
+        name: 'SalesAndProductsSettings',
+        component: SalesAndProductsSettingsView,
+      },
+    ],
+  },
 ]

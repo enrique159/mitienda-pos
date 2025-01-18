@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid')
 
 exports.products = [
   {
@@ -201,4 +201,4 @@ exports.products = [
     expiration_date: '2025-12-31',
     is_composite: false,
   },
-];
+]

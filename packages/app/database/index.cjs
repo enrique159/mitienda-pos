@@ -12,6 +12,9 @@ const sellers = require('./schemas/sellers.cjs')
 const branches_sellers = require('./schemas/branches_sellers.cjs')
 const products = require('./schemas/products.cjs')
 const cashRegisters = require('./schemas/cash_registers.cjs')
+const customers = require('./schemas/customers.cjs')
+const sales = require('./schemas/sales.cjs')
+const saleDetails = require('./schemas/sale_details.cjs')
 
 const initDB = async() => {
   const destinationPath = path.join(os.homedir(), '.db')
@@ -24,14 +27,19 @@ const initDB = async() => {
     }
     fs.writeFileSync(dbPath, '')
 
-    await configuration.createTable(knex)
-    await users.createTable(knex)
-    await company.createTable(knex)
-    await branch.createTable(knex)
-    await sellers.createTable(knex)
-    await branches_sellers.createTable(knex)
-    await products.createTable(knex)
-    await cashRegisters.createTable(knex)
+    await Promise.all([
+      configuration.createTable(knex),
+      users.createTable(knex),
+      company.createTable(knex),
+      branch.createTable(knex),
+      sellers.createTable(knex),
+      branches_sellers.createTable(knex),
+      products.createTable(knex),
+      cashRegisters.createTable(knex),
+      customers.createTable(knex),
+      sales.createTable(knex),
+      saleDetails.createTable(knex),
+    ])
 
     console.log('Database created and initialized with tables.')
 

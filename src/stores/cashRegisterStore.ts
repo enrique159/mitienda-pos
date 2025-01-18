@@ -1,6 +1,6 @@
-import { CashRegister } from "@/api/interfaces";
-import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { CashRegister } from "@/api/interfaces"
+import { defineStore } from "pinia"
+import { computed, ref } from "vue"
 
 export const useCashRegisterStore = defineStore('cashRegister', () => {
   const cashRegister = ref<CashRegister | null>(null)

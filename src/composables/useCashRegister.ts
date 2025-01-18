@@ -1,6 +1,6 @@
-import { CashRegister } from "@/api/interfaces";
-import { useCashRegisterStore } from "@/stores/cashRegisterStore";
-import { storeToRefs } from "pinia";
+import { CashRegister } from "@/api/interfaces"
+import { useCashRegisterStore } from "@/stores/cashRegisterStore"
+import { storeToRefs } from "pinia"
 
 export const useCashRegister = () => {
   const cashRegisterStore = useCashRegisterStore()

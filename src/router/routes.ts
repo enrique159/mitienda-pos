@@ -57,7 +57,7 @@ const routes: RouteRecordRaw[] = [
       ...ListSalesRoutes,
       ...ProductsRoutes,
       ...ReportsRoutes,
-    ]
+    ],
   },
   ...AuthRoutes,
 

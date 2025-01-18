@@ -3,6 +3,7 @@ const { startSession, getSellers } = require('./app/modules/sellers/sellersListe
 const { getActiveProducts, getProductCategories, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
 const { getBranchInfo } = require('./app/modules/branches/branchesListeners.cjs')
 const { getCashRegisterActive, createCashRegister } = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
+const { createSale, getSales, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
 const { getConfiguration, updateConfiguration, createConfiguration, exportDatabase, importDatabase, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
 // const { signIn, signUp, changePassword } = require('./app/modules/auth/authListeners.cjs')
 // const { getAreas, createArea, updateArea, deleteArea } = require('./app/modules/areas/areasListeners.cjs')
@@ -34,6 +35,10 @@ contextBridge.exposeInMainWorld('electron', {
   // Cash Registers
   getCashRegisterActive,
   createCashRegister,
+  // Sales
+  createSale,
+  getSales,
+  generateSaleFolio,
   // Configuration
   getVersion,
   getConfiguration,

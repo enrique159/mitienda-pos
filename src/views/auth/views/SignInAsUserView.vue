@@ -5,7 +5,7 @@
       @click.self="userSelected = null"
     >
       <div class="flex items-center gap-2">
-        <img src="@/assets/logo_fill_orange.png" alt="Logo" class="w-16" />
+        <img src="@/assets/logo_fill_orange.png" alt="Logo" class="w-16">
         <div>
           <h1 class="text-brand-orange font-medium text-[2.5rem] leading-10">
             Mi Tienda
@@ -17,7 +17,9 @@
       </div>
 
       <div class="flex flex-col justify-center gap-2 w-2/3 max-w-[380px]">
-        <p class="text-lg font-bold mb-4 pl-1">Selecciona tu usuario</p>
+        <p class="text-lg font-bold mb-4 pl-1">
+          Selecciona tu usuario
+        </p>
 
         <div class="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto">
           <button
@@ -34,7 +36,9 @@
           >
             <div class="flex items-center gap-4">
               <icon-user-circle class="w-8 h-8 text-brand-blue" />
-              <p class="text-lg font-bold">{{ user.name }}</p>
+              <p class="text-lg font-bold">
+                {{ user.name }}
+              </p>
 
               <span class="text-brand-blue text-sm font-bold ml-auto">
                 Seleccionar
@@ -46,7 +50,9 @@
 
       <div>
         <p class="text-black-3 text-sm text-center">
-          Si tiene problemas para ingresar puede acceder <br>con la <router-link class="text-brand-pink underline" to="/admin/signin-as-admin">cuenta principal</router-link>
+          Si tiene problemas para ingresar puede acceder <br>con la <router-link class="text-brand-pink underline" to="/admin/signin-as-admin">
+            cuenta principal
+          </router-link>
         </p>
       </div>
     </section>
@@ -64,7 +70,7 @@
           v-model="pin"
           @keydown="validateOnlyNumbers"
           @keyup.enter="validatePin"
-        />
+        >
         <delete-button @on:click="deletePin" />
       </div>
       <pin-input dot-disabled @input="editPin" @enter="validatePin" />
@@ -81,15 +87,14 @@ import { toast } from 'vue3-toastify'
 import { useRouter } from 'vue-router'
 import { getSellers, startSession } from '@/api/electron'
 import { useUser } from '@/composables/useUser'
-import type { User, Response, StartSessionParams } from '@/api/interfaces'
+import type { User, Response, StartSessionParams, Seller } from '@/api/interfaces'
 import { ref } from 'vue'
-import { onMounted } from 'vue'
 
 const router = useRouter()
 const { setUser } = useUser()
 
 // Input PIN
-const pinInputRef = ref<HTMLInputElement | null>(null)
+const pinInputRef = ref()
 const pin = ref<string>('')
 const editPin = (value: string) => {
   if (userSelected.value) {
@@ -106,7 +111,7 @@ const validatePin = () => {
       id: userSelected.value.id,
       pin: pin.value,
     }
-    startSession(params, (response: Response<Partial<User>>) => {
+    startSession(params, (response: Response<Seller>) => {
       if (response.success) {
         setUser(response.response)
         router.push('/main')

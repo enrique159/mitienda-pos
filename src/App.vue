@@ -5,20 +5,20 @@
 </template>
 
 <script setup lang="ts">
-import { useTitle } from '@vueuse/core';
-import { getVersion, getConfiguration } from '@/api/electron';
-import { Configuration, Response } from './api/interfaces';
-import { useConfiguration } from './composables/useConfiguration';
+import { useTitle } from '@vueuse/core'
+import { getVersion, getConfiguration } from '@/api/electron'
+import { Configuration, Response } from './api/interfaces'
+import { useConfiguration } from './composables/useConfiguration'
 
-const { setConfiguration } = useConfiguration();
+const { setConfiguration } = useConfiguration()
 
 getVersion((response: string) => {
-  useTitle(`Mi Tienda POS - v${response}`);
+  useTitle(`Mi Tienda POS - v${response}`)
 })
 
 getConfiguration((response: Response<Configuration>) => {
   if (response.success) {
-    setConfiguration(response.response);
+    setConfiguration(response.response)
   }
 })
 </script>

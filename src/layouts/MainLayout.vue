@@ -3,7 +3,7 @@
     <header
       class="bg-white w-full py-2 px-4 flex items-center border-b border-gray-200"
     >
-      <img src="@/assets/logo_fill_orange.png" class="w-6 mr-6" />
+      <img src="@/assets/logo_fill_orange.png" class="w-6 mr-6">
 
       <div class="flex items-center gap-1 relative">
         <router-link
@@ -32,8 +32,7 @@
             :class="[
               currentRoute === option.value ? 'text-white' : 'text-black-1',
             ]"
-            >{{ option.label }}</span
-          >
+          >{{ option.label }}</span>
         </router-link>
       </div>
 
@@ -47,7 +46,7 @@
     </header>
 
     <!-- MODULES VIEW -->
-    <slot></slot>
+    <slot />
 
     <MainStatusBar />
   </div>
@@ -81,27 +80,26 @@ import { ref, watchEffect } from 'vue'
 
 const { setProducts, setCategories } = useProduct()
 const { setBranch, branch } = useBranch()
-const { setCashRegister, cashRegister, isCashRegisterOpen } = useCashRegister()
-const { getCurrentDate, formatDatetime } = useDate()
+const { setCashRegister } = useCashRegister()
+const { getCurrentDate } = useDate()
 const route = useRoute()
 
 // El numero 2 es porque todas las rutas del main empiezan por /main/...
 const currentRoute = computed(() => route.path.split('/')[2])
 
 const menuOptions = [
-  { id: 1, icon: IconShoppingBag, label: 'Vender', route: '/main/sales', value: 'sales', },
-  { id: 2, icon: IconUsersGroup, label: 'Clientes', route: '/main/clients', value: 'clients', },
-  { id: 3, icon: IconPackage, label: 'Artículos', route: '/main/products', value: 'products', },
-  { id: 4, icon: IconCheckupList, label: 'Inventario', route: '/main/inventory', value: 'inventory', },
-  { id: 5, icon: IconReceipt, label: 'Ventas', route: '/main/listsales', value: 'listsales', },
-  { id: 6, icon: IconCashRegister, label: 'Caja', route: '/main/cashregister', value: 'cashregister', },
-  { id: 7, icon: IconChartBar, label: 'Reportes', route: '/main/reports', value: 'reports', },
-  { id: 8, icon: IconSettings, label: 'Ajustes', route: '/main/settings', value: 'settings', },
+  { id: 1, icon: IconShoppingBag, label: 'Vender', route: '/main/sales', value: 'sales' },
+  { id: 2, icon: IconUsersGroup, label: 'Clientes', route: '/main/clients', value: 'clients' },
+  { id: 3, icon: IconPackage, label: 'Artículos', route: '/main/products', value: 'products' },
+  { id: 4, icon: IconCheckupList, label: 'Inventario', route: '/main/inventory', value: 'inventory' },
+  { id: 5, icon: IconReceipt, label: 'Ventas', route: '/main/listsales', value: 'listsales' },
+  { id: 6, icon: IconCashRegister, label: 'Caja', route: '/main/cashregister', value: 'cashregister' },
+  { id: 7, icon: IconChartBar, label: 'Reportes', route: '/main/reports', value: 'reports' },
+  { id: 8, icon: IconSettings, label: 'Ajustes', route: '/main/settings', value: 'settings' },
 ]
 
 getProducts((response: Response<Product[]>) => {
   if (!response.success) {
-    console.log(response.message)
     toast.error('Error al obtener los productos')
     return
   }
@@ -110,7 +108,6 @@ getProducts((response: Response<Product[]>) => {
 
 getProductCategories((response: Response<Category[]>) => {
   if (!response.success) {
-    console.log(response.message)
     toast.error('Error al obtener las categorías de los productos')
     return
   }
@@ -121,7 +118,6 @@ getProductCategories((response: Response<Category[]>) => {
 
 getBranchInfo((response: Response<Branch>) => {
   if (!response.success) {
-    console.log(response.message)
     toast.error('Error al obtener la información de la sucursal')
     return
   }

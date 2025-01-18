@@ -1,6 +1,6 @@
-import AuthModule from './AuthModule.vue';
-import LoginView from './views/LoginView.vue';
-import SignInAsUserView from './views/SignInAsUserView.vue';
+import AuthModule from './AuthModule.vue'
+import LoginView from './views/LoginView.vue'
+import SignInAsUserView from './views/SignInAsUserView.vue'
 
 export const AuthRoutes = [
   {
@@ -17,7 +17,7 @@ export const AuthRoutes = [
         path: 'signin-as-user',
         name: 'SignInAsUser',
         component: SignInAsUserView,
-      }
+      },
     ],
   },
 ]

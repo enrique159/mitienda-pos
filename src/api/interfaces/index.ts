@@ -4,6 +4,7 @@ import { User, Seller } from './users'
 import { Product, ProductCart, UnitMeasurement, Unit, Category } from './products'
 import { Branch } from './branches'
 import { CashRegister } from './cashRegisters'
+import { GeneratedFolio } from './sale'
 
 interface Response<T> {
   success: boolean
@@ -21,10 +22,11 @@ export type {
   Category,
   ProductCart,
   CashRegister,
-  Configuration, 
-  StartSessionParams,
+  Configuration,
+  GeneratedFolio,
+  StartSessionParams
 }
 
 export {
-  UnitMeasurement,
+  UnitMeasurement
 }

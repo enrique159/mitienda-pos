@@ -9,6 +9,8 @@ export interface Branch {
   pin_enabled: boolean; // Indica si el PIN está habilitado
   ticket_config: JSON; // Configuración de tickets (header y footer)
   timezone: string; // Zona horaria de la sucursal
+  pin_cancel_sale_required: boolean; // Indica si se requiere PIN para cancelar ventas
+  pin_cancel_sale: string; // Código PIN para cancelar ventas
   created_at: string; // Fecha de creación (formato ISO 8601)
   updated_at: string; // Fecha de última actualización (formato ISO 8601)
   synced_at: string | null; // Fecha de sincronización o `null` si no se ha sincronizado

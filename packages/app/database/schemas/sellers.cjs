@@ -12,8 +12,8 @@ exports.createTable = async function(knex) {
     table.string('pin')
     table.bigInteger('permissions')
     table.enu('status', ['active', 'inactive']).defaultTo('active')
-    table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable(); // Fecha de creación
-    table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable(); // Fecha de edición
+    table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable() // Fecha de creación
+    table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable() // Fecha de edición
     table.timestamp('synced_at')
   }).then(() => {
     console.log("Table 'sellers' created.")

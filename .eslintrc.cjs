@@ -1,5 +1,5 @@
 // .eslintrc.js
-module.exports = {
+module.exports ={
   root: true,
   extends: [
     "eslint:recommended",
@@ -25,7 +25,7 @@ module.exports = {
     "arrow-parens": ["error", "always"],
     "linebreak-style": ["error", "unix"],
     semi: [2, "never"],
-    "no-console": "error",
+    "no-console": "off",
     "no-debugger": "warn",
     "vue/no-unused-vars": "warn",
     "no-var": "error",
@@ -37,7 +37,7 @@ module.exports = {
     "vue/no-setup-props-destructure": "warn",
     //quotes: [2, "double", { avoidEscape: true, allowTemplateLiterals: true }],
     quotes: "off",
-    "no-unused-vars": "warn",
+    "no-unused-vars": "off",
     // "vue/no-static-inline-styles": [ "error", { allowBinding: true } ],
     "comma-dangle": ["error", {
       objects: "always-multiline",
@@ -62,9 +62,6 @@ module.exports = {
     window: "readonly",
     Window: "readonly",
     document: "readonly",
-  },
-  types: {
-    HTMLFormElement: "readonly",
   },
   // settings: {
   //   "import/resolver": {

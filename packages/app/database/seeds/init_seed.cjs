@@ -44,7 +44,7 @@ exports.seed = async function(knex) {
     id: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120004', // UUID generado
     id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002', // ID de la empresa relacionada
     branch_name: 'Sucursal Principal', // Nombre de la sucursal
-    branch_alias: 'Principal', // Alias de la sucursal
+    branch_alias: 'MITI', // Alias de la sucursal
     is_main: true, // Es la sucursal principal
     pin_enabled: true, // Habilitar PIN
     pin: '1234', // PIN
@@ -54,6 +54,8 @@ exports.seed = async function(knex) {
       header: 'Mi Tiendita',
       footer: 'Gracias por su compra',
     },
+    timezone: 'America/Mazatlan', // Zona horaria
+    pin_cancel_sale_required: true, // Requerir PIN para cancelar venta
   })
 
   // Sellers
@@ -78,4 +80,16 @@ exports.seed = async function(knex) {
   // Products
   await knex('products').del()
   await knex('products').insert(products)
+
+  // Customers
+  await knex('customers').del()
+  await knex('customers').insert({
+    id: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120006', // UUID generado
+    id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002', // ID de la empresa relacionada
+    name: 'Jose Eduardo Ezpinosa', // Nombre
+    rfc: 'EJIE840101123',
+    email: 'jose@mail.com',
+    phone: '555-123-4567',
+    address: 'Calle Principal #123, Centro',
+  })
 }

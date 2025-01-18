@@ -12,6 +12,7 @@ exports.getBranchInfo = async function () {
         ...branch,
         is_main: parseBoolean(branch.is_main),
         pin_enabled: parseBoolean(branch.pin_enabled),
+        pin_cancel_sale_required: parseBoolean(branch.pin_cancel_sale_required),
       }
       return response(true, 'Sucursal encontrada', branch)
     })
