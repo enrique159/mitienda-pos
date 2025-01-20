@@ -9,7 +9,7 @@ import {
   Category
 } from './products'
 import { Branch } from './branches'
-import { CashRegister } from './cashRegisters'
+import { CashRegister, CashRegisterState } from './cashRegisters'
 import {
   GeneratedFolio,
   Sale,
@@ -50,6 +50,7 @@ export type {
   PaymentPayload,
   SaleDetailPayload,
   CreateSalePayload,
+  CashRegisterState,
   StartSessionParams
 }
 

@@ -5,6 +5,7 @@ function normalizeSale(sale) {
   return {
     ...sale,
     on_trust: parseBoolean(sale.on_trust),
+    is_ticket_printed: parseBoolean(sale.is_ticket_printed),
   }
 }
 
@@ -14,6 +15,7 @@ function normalizeSale(sale) {
 exports.createSale = async function (sale) {
   return await knex('sales').insert(sale).returning('id')
     .then((sale) => {
+      logger.info({ type: 'CREATE SALE', message: 'Venta creada', data: Array.isArray(sale) ? sale[0] : sale })
       return response(true, 'Venta creada', Array.isArray(sale) ? sale[0] : sale)
     })
     .catch((err) => {

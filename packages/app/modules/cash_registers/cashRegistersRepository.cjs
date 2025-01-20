@@ -32,3 +32,42 @@ exports.getCashRegisterActive = async function () {
       return response(false, 'Error al traer la caja registradora activa', err)
     })
 }
+
+exports.getCurrentCashRegisterState = async function () {
+  // Quiero traer de la caja registradora activa el total de ventas, separado por tipo de pago, los pagos estan en la tabla sales_payments
+  try {
+    const cashRegister = await this.getCashRegisterActive()
+    if (!cashRegister.success) {
+      return response(false, 'Error al traer el estado actual de la caja registradora', null)
+    }
+    const salesSummary = await knex('sales')
+      .select(
+        knex.raw('COUNT(*) as total_sales'),
+        knex.raw('SUM(total) as total_amount_paid')
+      )
+      .where('id_cash_register', cashRegister.response.id)
+
+    const paymentsSummary = await knex('sale_payments')
+      .select('payment_method', knex.raw('SUM(amount) as total'))
+      .whereIn('id_sale', function() {
+        this.select('id').from('sales').where('id_cash_register', cashRegister.response.id)
+      })
+      .groupBy('payment_method')
+
+    const summary = {
+      opening_amount: cashRegister.response.opening_amount,
+      total_sales: salesSummary[0].total_sales || 0,
+      total_amount_paid: salesSummary[0].total_amount_paid || 0,
+      payments: paymentsSummary.reduce((acc, payment) => {
+        acc[payment.payment_method] = payment.total
+        return acc
+      }, { cash: 0, card: 0, transfer: 0, other: 0 }),
+    }
+
+    return response(true, 'Estado actual de la caja registradora obtenido', summary)
+  } catch(err) {
+    console.log(err)
+    logger.error({ type: 'GET CURRENT CASH REGISTER STATE ERROR', message: `${err}`, data: err })
+    return response(false, 'Error al traer el estado actual de la caja registradora', err)
+  }
+}

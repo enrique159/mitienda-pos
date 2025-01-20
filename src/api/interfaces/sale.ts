@@ -7,6 +7,7 @@ export interface Sale {
   id_company: string
   id_branch: string
   id_seller: string
+  id_cash_register: string
   id_customer?: string
   folio: string
   subtotal: number
@@ -78,6 +79,7 @@ export interface SalePayload {
   id_company: string
   id_branch: string
   id_seller: string
+  id_cash_register: string
   id_customer?: string
   folio: string
   subtotal: number

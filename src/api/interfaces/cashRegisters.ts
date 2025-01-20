@@ -9,3 +9,15 @@ export interface CashRegister {
   closing_date?: string
   synced_at?: string
 }
+
+export interface CashRegisterState {
+  payments: {
+    cash: number
+    card: number
+    transfer: number
+    other: number
+  }
+  opening_amount: number
+  total_amount_paid: number
+  total_sales: number
+}

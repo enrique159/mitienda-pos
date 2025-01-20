@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="h-full w-full">
     lista de ventas
   </div>
 </template>

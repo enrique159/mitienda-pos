@@ -1,34 +1,12 @@
 <template>
   <div class="h-full w-full flex settings-grid">
-    <section class="h-full bg-white border-r border-white-3 p-2">
-      <ul class="list-none">
-        <li
-          v-for="item in settingsMenu"
-          :key="`nav-option-menu-settings-${item.title}`"
-          class="mb-2"
-        >
-          <router-link
-            :to="item.path"
-            class="hover:bg-white-2 rounded-lg pl-4 pr-2 py-2 flex items-center gap-2 transition-all active:scale-95 active:bg-white-3 text-[0.9rem] relative"
-            :class="[
-              currentSettingsPath === item.path
-                ? 'text-brand-orange show-badge'
-                : 'text-black-1',
-            ]"
-          >
-            <component :is="item.icon" size="18" stroke-width="2" />
-            {{ item.title }}
-          </router-link>
-        </li>
-      </ul>
-    </section>
+    <side-menu :items-menu="settingsMenu" />
     <router-view />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import SideMenu from '@/components/menus/SideMenu.vue'
 import {
   IconSettings2,
   IconBuildingStore,
@@ -40,10 +18,6 @@ import {
   IconHelp,
   IconInfoCircle
 } from '@tabler/icons-vue'
-
-const route = useRoute()
-
-const currentSettingsPath = computed(() => route.path)
 
 const settingsMenu = [
   {
@@ -98,17 +72,5 @@ const settingsMenu = [
 .settings-grid {
   display: grid;
   grid-template-columns: 240px auto;
-}
-
-.show-badge::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 4px;
-  width: 5px;
-  border-radius: 5px;
-  height: 24px;
-  transform: translateY(-12px);
-  background-color: #f2994a;
 }
 </style>

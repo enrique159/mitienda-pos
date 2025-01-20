@@ -200,7 +200,7 @@
               ref="inputEditQuantityRef"
               class="w-full"
               placeholder="Cantidad"
-              @keydown="validateOnlyNumbers"
+              @keydown="validateNumbersAndDots"
               @keyup.enter="saveNewQuantity"
               v-model="newQuantity"
             >
@@ -330,7 +330,7 @@ import { Product, ProductCart, Response } from '@/api/interfaces'
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useCurrency } from '@/composables/useCurrency'
 import { getProductsByCategory, generateSaleFolio } from '@/api/electron'
-import { validateOnlyNumbers } from '@/utils/InputValidators'
+import { validateOnlyNumbers, validateNumbersAndDots } from '@/utils/InputValidators'
 import { getNameUnitMeasurement } from '@/utils/UnitMeasurements'
 import { useBranch } from '@/composables/useBranch'
 

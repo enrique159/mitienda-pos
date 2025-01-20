@@ -203,6 +203,7 @@ import { createSale } from '@/api/electron'
 import { ref } from 'vue'
 import { computed } from 'vue'
 import { useBranch } from '@/composables/useBranch'
+import { useCashRegister } from '@/composables/useCashRegister'
 import { useUser } from '@/composables/useUser'
 import { toast } from 'vue3-toastify'
 const { formatCurrency } = useCurrency()
@@ -218,6 +219,7 @@ const {
 
 const { saleFolio, branch, generateFolio } = useBranch()
 const { user } = useUser()
+const { cashRegister } = useCashRegister()
 
 /*
  * *************** Payment Sale ***************
@@ -302,6 +304,7 @@ const saleComments = ref('')
 
 const createCurrentSale = () => {
   if (currentCart.value.length === 0) return
+  if (!cashRegister.value) return
   const details: SaleDetailPayload[] = currentCart.value.map((product) => {
     return {
       id_product: product.id,
@@ -319,6 +322,7 @@ const createCurrentSale = () => {
       id_company: branch.value.id_company,
       id_branch: branch.value.id,
       id_seller: user.value.id,
+      id_cash_register: cashRegister.value.id,
       id_customer: undefined,
       folio: saleFolio.value,
       subtotal: currentCartSubtotal.value,
@@ -336,7 +340,7 @@ const createCurrentSale = () => {
     payments: [
       {
         payment_method: onePaymentMethod.value.payment_method,
-        amount: parseFloat(paymentQuantity.value),
+        amount: parseFloat(paymentQuantity.value) - cashPaymentChange.value,
       },
     ],
   }

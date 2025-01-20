@@ -10,6 +10,7 @@ exports.createTable = async function(knex) {
     table.uuid('id_company').notNullable().references('company.id') // Relación con la empresa
     table.uuid('id_branch').notNullable().references('branches.id') // Relación con la sucursal
     table.uuid('id_seller').notNullable().references('sellers.id') // Relación con el vendedor
+    table.uuid('id_cash_register').notNullable().references('cash_registers.id') // Relación con la caja registradora
     table.uuid('id_customer').references('customers.id') // Relación con el cliente (opcional)
     table.string('folio').unique().notNullable() // Folio de la venta
     table.integer('subtotal').defaultTo(0).notNullable() // Subtotal sin impuestos ni descuentos (en centavos)
@@ -23,6 +24,7 @@ exports.createTable = async function(knex) {
     table.enu('status', ['pending', 'partially_paid', 'paid', 'rejected', 'deleted', 'refunded']).defaultTo('pending').notNullable() // Estado de la venta
     table.string('customer_notes') // Notas del cliente
     table.string('cancellation_reason') // Razón de cancelación o rechazo
+    table.boolean('is_ticket_printed').defaultTo(true) // Indica si el ticket de la venta fue impreso
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable() // Fecha de creación
     table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable() // Fecha de edición
     table.timestamp('synced_at') // Fecha de sincronización con un servidor externo

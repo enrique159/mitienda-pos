@@ -7,3 +7,5 @@ exports.createCashRegister = function (data, callback) {
   ipcRenderer.on('create_cash_register', (_, response) => callback(response))
   ipcRenderer.send('create_cash_register', data)
 }
+
+exports.getCurrentCashRegisterState = () => ipcRenderer.sendSync('get_current_cash_register_state')
