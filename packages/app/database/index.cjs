@@ -15,6 +15,7 @@ const cashRegisters = require('./schemas/cash_registers.cjs')
 const customers = require('./schemas/customers.cjs')
 const sales = require('./schemas/sales.cjs')
 const saleDetails = require('./schemas/sale_details.cjs')
+const salePayments = require('./schemas/sale_payments.cjs')
 
 const initDB = async() => {
   const destinationPath = path.join(os.homedir(), '.db')
@@ -39,6 +40,7 @@ const initDB = async() => {
       customers.createTable(knex),
       sales.createTable(knex),
       saleDetails.createTable(knex),
+      salePayments.createTable(knex),
     ])
 
     console.log('Database created and initialized with tables.')

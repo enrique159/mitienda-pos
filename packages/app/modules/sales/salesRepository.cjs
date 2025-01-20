@@ -8,10 +8,13 @@ function normalizeSale(sale) {
   }
 }
 
+/*
+  ** ******** CREACION DE UNA VENTA ********
+*/
 exports.createSale = async function (sale) {
-  return await knex('sales').insert(sale)
+  return await knex('sales').insert(sale).returning('id')
     .then((sale) => {
-      return response(true, 'Venta creada', sale)
+      return response(true, 'Venta creada', Array.isArray(sale) ? sale[0] : sale)
     })
     .catch((err) => {
       console.log(err)
@@ -32,6 +35,22 @@ exports.createSaleDetail = async function (saleDetail) {
     })
 }
 
+exports.createSalePayment = async function (salePayment) {
+  return await knex('sale_payments').insert(salePayment)
+    .then((salePayment) => {
+      return response(true, 'Pago de venta creado', salePayment)
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'CREATE SALE PAYMENT ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al crear el pago de la venta', err)
+    })
+}
+
+
+/*
+  ** ******** OBTENER VENTAS ********
+*/
 exports.getSales = async function () {
   try {
     const sales = await knex('sales').select()
@@ -56,6 +75,11 @@ exports.getSales = async function () {
   }
 }
 
+
+
+/*
+  ** ******** GENERAR EL SIGUIENTE FOLIO DE VENTA ********
+*/
 exports.generateSaleFolio = async function () {
   try {
     const sales = await knex('sales').where('created_at', '>=', getUTCToday()).select()

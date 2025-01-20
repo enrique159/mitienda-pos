@@ -7,4 +7,5 @@ export interface CashRegister {
   opening_amount: number
   opening_date: string
   closing_date?: string
+  synced_at?: string
 }

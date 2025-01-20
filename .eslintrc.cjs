@@ -62,6 +62,7 @@ module.exports ={
     window: "readonly",
     Window: "readonly",
     document: "readonly",
+    KeyboardEvent: "readonly",
   },
   // settings: {
   //   "import/resolver": {

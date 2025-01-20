@@ -3,7 +3,7 @@
     <button
       v-for="(digit, index) in digits"
       :key="`pin-button-${index}`"
-      class="w-20 h-20 aspect-square rounded-full bg-white-3 transition-all text-lg font-bold"
+      class="w-20 h-20 aspect-square rounded-full bg-white-2 transition-all text-lg font-bold"
       :class="[
         digit === '.' && dotDisabled
           ? 'opacity-50 cursor-not-allowed'

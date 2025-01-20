@@ -1,4 +1,4 @@
-import { Category, Product, ProductCart } from "@/api/interfaces"
+import { Category, Product, ProductCart, Discount } from "@/api/interfaces"
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
@@ -12,6 +12,7 @@ export const useProductStore = defineStore('product', () => {
 
   // Cart
   const currentCart = ref<ProductCart[]>([])
+  const discounts = ref<Discount[]>([])
 
   const addCart = (product: ProductCart) => {
     // check if there is already a product with the same id, if so, increase the quantity
@@ -66,5 +67,8 @@ export const useProductStore = defineStore('product', () => {
     // Categories
     categories,
     setCategories,
+
+    // Discounts
+    discounts,
   }
 })

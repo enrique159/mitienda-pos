@@ -5,14 +5,41 @@ import { computed } from "vue"
 
 export const useProduct = () => {
   const productStore = useProductStore()
+  const today = new Date()
 
-  const { products, currentCart, categories } = storeToRefs(productStore)
+  const { products, currentCart, categories, discounts } = storeToRefs(productStore)
 
-  const currentCartTotal = computed(() => {
+  // Computed
+  const currentCartSubtotal = computed(() => {
     return currentCart.value.reduce((acc, product) => acc + product.selling_price * product.quantity, 0)
   })
 
-  // Computed
+  // TODO: Verificar al implementar descuentos
+  const currentCartDiscount = computed(() => {
+    return currentCart.value.reduce((acc, product) => {
+      const discount = discounts.value.find((d) => d.id_product === product.id)
+      if (!discount) return acc
+      if (discount.start_date && discount.start_date > today) return acc
+      if (discount.end_date && discount.end_date < today) return acc
+      if (discount.condition_quantity > product.quantity) return acc
+      if (discount.id_discount_type === 'percentage') {
+        return acc + (product.selling_price * discount.discount_value) / 100
+      }
+      return acc + discount.discount_value
+    }, 0)
+  })
+
+  const currentCartTax = computed(() => {
+    return currentCart.value.reduce((acc, product) => {
+      const productTax = Math.floor((product.selling_price * product.tax_rate) / 100)
+      return acc + productTax * product.quantity
+    }, 0)
+  })
+
+  const currentCartTotal = computed(() => {
+    return currentCartSubtotal.value - currentCartDiscount.value
+  })
+
   const isCurrentCartEmpty = computed(() => currentCart.value.length === 0)
 
   // Functions
@@ -69,6 +96,9 @@ export const useProduct = () => {
     currentCart,
     addProductToCart,
     currentCartTotal,
+    currentCartSubtotal,
+    currentCartDiscount,
+    currentCartTax,
     removeProductFromCart,
     editProductQuantityInCart,
     isCurrentCartEmpty,
