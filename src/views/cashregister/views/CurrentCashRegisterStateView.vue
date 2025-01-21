@@ -5,30 +5,43 @@
     </h6>
 
     <div class="grid grid-cols-2 gap-4">
-      <!-- TOTAL SALES -->
-      <div class="state-card mb-8">
-        <h6 class="text-lg font-bold mb-4">
-          Total de ventas
-        </h6>
-        <p class="text-sm text-gray-500">
-          Ventas realizadas en el día
-        </p>
-        <p class="text-2xl font-bold">
-          {{ cashRegisterState.total_sales }}
-        </p>
-      </div>
-
-      <!-- TOTAL AMOUNT PAID -->
-      <div class="state-card mb-8">
-        <h6 class="text-lg font-bold mb-4">
-          Total pagado
-        </h6>
-        <p class="text-sm text-gray-500">
-          Total de dinero recibido
-        </p>
-        <p class="text-2xl font-bold">
-          {{ formatCurrency(cashRegisterState.total_amount_paid) }}
-        </p>
+      <div class="col-span-2 grid grid-cols-3 gap-4">
+        <!-- TOTAL SALES -->
+        <div class="state-card mb-8">
+          <h6 class="text-lg font-bold mb-4">
+            Total de ventas
+          </h6>
+          <p class="text-sm text-gray-500">
+            Ventas realizadas en el día
+          </p>
+          <p class="text-xl font-bold">
+            {{ cashRegisterState.total_sales }}
+          </p>
+        </div>
+        <!-- TOTAL AMOUNT PAID -->
+        <div class="state-card mb-8">
+          <h6 class="text-lg font-bold mb-4">
+            Total pagado
+          </h6>
+          <p class="text-sm text-gray-500">
+            Total de dinero recibido
+          </p>
+          <p class="text-xl font-bold">
+            {{ formatCurrency(cashRegisterState.total_amount_paid) }}
+          </p>
+        </div>
+        <!-- TOTAL AMOUNT PAID -->
+        <div class="state-card mb-8">
+          <h6 class="text-lg font-bold mb-4">
+            Total vendido
+          </h6>
+          <p class="text-sm text-gray-500">
+            Total de todas las ventas realizadas
+          </p>
+          <p class="text-xl font-bold">
+            {{ formatCurrency(cashRegisterState.total_sales_amount) }}
+          </p>
+        </div>
       </div>
 
       <!-- TOTAL CASH -->
@@ -42,7 +55,7 @@
         <p class="text-sm text-gray-500">
           Total de dinero en efectivo de ventas
         </p>
-        <p class="text-2xl font-bold">
+        <p class="text-xl font-bold">
           {{ formatCurrency(cashRegisterState.payments.cash) }}
         </p>
       </div>
@@ -58,7 +71,7 @@
         <p class="text-sm text-gray-500">
           Total de ventas con tarjeta
         </p>
-        <p class="text-2xl font-bold">
+        <p class="text-xl font-bold">
           {{ formatCurrency(cashRegisterState.payments.card) }}
         </p>
       </div>
@@ -74,7 +87,7 @@
         <p class="text-sm text-gray-500">
           Total de ventas por transferencia
         </p>
-        <p class="text-2xl font-bold">
+        <p class="text-xl font-bold">
           {{ formatCurrency(cashRegisterState.payments.transfer) }}
         </p>
       </div>
@@ -82,12 +95,12 @@
       <!-- TOTAL OTHER -->
       <div class="state-card">
         <h6 class="text-lg font-bold  mb-4">
-          Ventas con otros medios de pago
+          Ventas de otros medios
         </h6>
         <p class="text-sm text-gray-500">
           Total de ventas con otros medios de pago
         </p>
-        <p class="text-2xl font-bold">
+        <p class="text-xl font-bold">
           {{ formatCurrency(cashRegisterState.payments.other) }}
         </p>
       </div>
@@ -100,7 +113,7 @@
         <p class="text-sm text-gray-500">
           Monto con el que se abrió la caja
         </p>
-        <p class="text-2xl font-bold">
+        <p class="text-xl font-bold">
           {{ formatCurrency(cashRegisterState.opening_amount) }}
         </p>
       </div>
@@ -113,7 +126,7 @@
         <p class="text-sm text-white-3">
           Total de dinero en efectivo en caja
         </p>
-        <p class="text-2xl font-bold text-white">
+        <p class="text-xl font-bold text-white">
           {{ formatCurrency(cashRegisterState.opening_amount + cashRegisterState.payments.cash) }}
         </p>
       </div>
@@ -140,6 +153,7 @@ const cashRegisterState = ref<CashRegisterState>({
   },
   opening_amount: 0,
   total_amount_paid: 0,
+  total_sales_amount: 0,
   total_sales: 0,
 })
 
@@ -148,7 +162,6 @@ const getCashRegisterState = async () => {
   if (!response.success) {
     return toast.error('No se pudo obtener el estado actual de la caja')
   }
-  console.log(response.response)
   cashRegisterState.value = response.response
 }
 
@@ -157,14 +170,14 @@ getCashRegisterState()
 
 <style scoped>
 .state-card {
-  padding: 16px;
+  padding: 8px 16px;
   border-radius: 16px;
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .state-card.blue-card {
-  background-color: #6A81FB;
+  background-image: linear-gradient(90deg, #2B6CB0 0%, #6A81FB 100%);
   color: #fff;
 }
 </style>

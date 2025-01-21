@@ -93,6 +93,7 @@ export interface SalePayload {
   status: SaleStatus
   customer_notes?: string
   cancellation_reason?: string
+  is_ticket_printed: boolean
 }
 
 export interface SaleDetailPayload {

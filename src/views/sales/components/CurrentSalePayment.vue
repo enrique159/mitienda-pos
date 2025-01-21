@@ -181,12 +181,20 @@
               Cambio: <strong> {{ formatCurrency(cashPaymentChange) }} </strong>
             </span>
           </div>
-          <button
-            class="btn btn-lg bg-brand-pink hover:bg-brand-orange text-white w-3/4 mt-4"
-            @click="createCurrentSale"
-          >
-            Pagar
-          </button>
+          <div class="w-full flex flex-col items-center">
+            <div class="form-control mb-2">
+              <label class="label cursor-pointer hover:bg-white-1 px-4 rounded-full transition-all">
+                <span class="label-text mr-2 text-black-2">Imprimir ticket</span>
+                <input type="checkbox" :checked="printTicket" class="checkbox checkbox-accent">
+              </label>
+            </div>
+            <button
+              class="btn btn-lg bg-brand-pink hover:bg-brand-orange text-white w-3/4"
+              @click="createCurrentSale"
+            >
+              Pagar
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -206,6 +214,7 @@ import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
 import { useUser } from '@/composables/useUser'
 import { toast } from 'vue3-toastify'
+import { parse } from 'path'
 const { formatCurrency } = useCurrency()
 
 const {
@@ -241,6 +250,10 @@ const closePaymentModal = () => {
   paymentQuantity.value = ''
   onePaymentMethod.value.payment_method = PaymentMethods.CASH
   onePaymentMethod.value.amount = 0
+  saleComments.value = ''
+  printTicket.value = true
+  multiplePaymentMethods.value = false
+  selectPaymentMethod(PaymentMethods.CASH)
 }
 
 const editPaymentQuantity = (value: string) => {
@@ -327,14 +340,15 @@ const createCurrentSale = () => {
       folio: saleFolio.value,
       subtotal: currentCartSubtotal.value,
       total: currentCartTotal.value,
-      amount_paid: currentCartTotal.value,
-      balance_due: 0,
+      amount_paid: isPaidAmountLowerThanTotal.value ? parseFloat(paymentQuantity.value) : currentCartTotal.value,
+      balance_due: isPaidAmountLowerThanTotal.value ? currentCartTotal.value - parseFloat(paymentQuantity.value) : 0,
       discount: currentCartDiscount.value,
       tax: currentCartTax.value,
-      on_trust: false,
-      due_date: undefined,
-      status: SaleStatus.PAID,
+      on_trust: isPaidAmountLowerThanTotal.value,
+      due_date: isPaidAmountLowerThanTotal.value ? new Date(new Date().setMonth(new Date().getMonth() + 1)) : undefined,
+      status: getStatusSale(),
       customer_notes: saleComments.value.trim(),
+      is_ticket_printed: printTicket.value,
     },
     details,
     payments: [
@@ -356,6 +370,20 @@ const createCurrentSale = () => {
     }
   })
 }
+
+const printTicket = ref(true)
+
+const getStatusSale = () => {
+  return parseFloat(paymentQuantity.value) < currentCartTotal.value
+    ? parseFloat(paymentQuantity.value) === 0
+      ? SaleStatus.PENDING
+      : SaleStatus.PARTIALLY_PAID
+    : SaleStatus.PAID
+}
+
+const isPaidAmountLowerThanTotal = computed(() => {
+  return parseFloat(paymentQuantity.value) < currentCartTotal.value
+})
 </script>
 
 <style scoped></style>

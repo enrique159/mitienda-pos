@@ -19,5 +19,6 @@ export interface CashRegisterState {
   }
   opening_amount: number
   total_amount_paid: number
+  total_sales_amount: number
   total_sales: number
 }

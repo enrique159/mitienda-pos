@@ -43,7 +43,8 @@ exports.getCurrentCashRegisterState = async function () {
     const salesSummary = await knex('sales')
       .select(
         knex.raw('COUNT(*) as total_sales'),
-        knex.raw('SUM(total) as total_amount_paid')
+        knex.raw('SUM(amount_paid) as total_amount_paid'),
+        knex.raw('SUM(total) as total_sales_amount')
       )
       .where('id_cash_register', cashRegister.response.id)
 
@@ -58,6 +59,7 @@ exports.getCurrentCashRegisterState = async function () {
       opening_amount: cashRegister.response.opening_amount,
       total_sales: salesSummary[0].total_sales || 0,
       total_amount_paid: salesSummary[0].total_amount_paid || 0,
+      total_sales_amount: salesSummary[0].total_sales_amount || 0,
       payments: paymentsSummary.reduce((acc, payment) => {
         acc[payment.payment_method] = payment.total
         return acc
