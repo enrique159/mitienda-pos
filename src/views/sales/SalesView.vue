@@ -176,15 +176,15 @@
     </div>
   </dialog>
 
-  <!-- DIALOG EDIT QUANTITY -->
-  <dialog id="dialogEditQuantity" ref="dialogEditQuantityRef" class="modal" @keydown.escape="showEditQuantityModal = false">
-    <div class="modal-box max-w-[380px]">
-      <div class="flex justify-between items-center mb-4">
+  <!-- DIALOG ADD PRODUCT WITH QUANTITY -->
+  <dialog id="dialogAddProductWithQuantity" ref="dialogAddProductWithQuantityRef" class="modal" @keydown.escape="closeAddProductWithQuantityModal">
+    <div class="modal-box max-w-[480px]">
+      <div class="flex justify-between items-center mb-2">
         <h3 class="text-lg font-bold">
-          Cambiar cantidad
+          Ingrese la cantidad
         </h3>
         <div class="modal-action mt-0">
-          <form method="dialog" @submit="showEditQuantityModal = false">
+          <form method="dialog" @submit="closeAddProductWithQuantityModal">
             <button class="close-btn">
               Cerrar
               <CustomKbd>ESC</CustomKbd>
@@ -193,34 +193,180 @@
         </div>
       </div>
 
-      <div class="flex flex-col items-center gap-4 py-8">
-        <div class="flex justify-between items-start gap-2">
-          <label class="input bg-white-1 input-bordered flex items-center max-w-36 gap-2">
-            <input
-              ref="inputEditQuantityRef"
-              class="w-full"
-              placeholder="Cantidad"
-              @keydown="validateNumbersAndDots"
-              @keyup.enter="saveNewQuantity"
-              v-model="newQuantity"
+      <div class="flex flex-col items-center gap-2 pb-8 pt-2">
+        <p class="text-center font-bold text-brand-black">
+          <span class="font-normal text-sm text-black-3">Producto:</span> <br>
+          {{ previewProductToAdd?.name }}
+        </p>
+        <div v-if="previewProductToAdd?.is_bulk" class="grid grid-cols-3 w-full mb-4 place-items-center">
+          <!-- SALE PRICE -->
+          <div class="flex flex-col col-span-1 text-center">
+            <p class="text-sm text-black-3">
+              Precio venta
+            </p>
+            <p class="font-bold text-brand-black">
+              {{ previewProductToAdd && formatCurrency(previewProductToAdd?.selling_price) }}
+            </p>
+          </div>
+          <!-- CHANGE QUANTITY TO IMPORT -->
+          <div class="flex flex-col col-span-1 text-center">
+            <button
+              class="btn btn-sm rounded-full bg-white-1 hover:bg-white-2 text-s font-normal text-brand-black"
+              @click="isImportOption = !isImportOption"
             >
-          </label>
-          <delete-button @on:click="deletePin" />
+              <icon-transfer class="w-4 h-4" />
+              {{ !isImportOption ? 'cantidad' : 'importe' }}
+            </button>
+          </div>
+          <!-- UNIT MEASUREMENT OR TOTAL IMPORT -->
+          <div class="flex flex-col col-span-1 text-center">
+            <p class="text-sm text-black-3">
+              {{ !isImportOption ? 'Total de importe' : 'Cantidad producto' }}
+            </p>
+            <p class="font-bold text-green-600">
+              {{ previewProductToAdd && (isImportOption
+                ? `${productQuantityResultFromImportFormatted}`
+                : formatCurrency(Number(addProductQuantity) * previewProductToAdd?.selling_price))
+              }}
+            </p>
+          </div>
         </div>
-        <pin-input @input="editQuantity" @enter="saveNewQuantity" />
+        <div v-if="isImportOption" class="flex flex-col gap-4 items-center">
+          <div class="flex justify-between items-start gap-2">
+            <currency-input
+              class-name="max-w-[140px]"
+              :value="addProductQuantityImport"
+              @add:value="editAddProductQuantityImport"
+              @backspace="removeAddProductQuantityImport"
+            />
+            <delete-button @on:click="deleteAddProductQuantityImport" />
+          </div>
+          <pin-input dot-disabled @input="editAddProductQuantityImport" @enter="saveAddProductQuantityImport" />
+        </div>
+        <div v-else class="flex flex-col gap-4 items-center">
+          <div class="flex justify-between items-start gap-2">
+            <label class="input bg-white-1 input-bordered flex items-center max-w-36 gap-2">
+              <input
+                ref="inputAddProductQuantityRef"
+                class="w-full"
+                placeholder="Cantidad"
+                @keydown="(event) => {
+                  !previewProductToAdd?.is_bulk
+                    ? validateOnlyNumbers(event)
+                    : validateNumbersAndDots(event, addProductQuantity)
+                }"
+                @keyup.enter="saveAddProductQuantity"
+                v-model="addProductQuantity"
+              >
+            </label>
+            <delete-button @on:click="deleteAddProductQuantity" />
+          </div>
+          <pin-input :dot-disabled="!previewProductToAdd?.is_bulk" @input="editAddProductQuantity" @enter="saveAddProductQuantity" />
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- DIALOG EDIT QUANTITY -->
+  <dialog id="dialogEditQuantity" ref="dialogEditQuantityRef" class="modal" @keydown.escape="closeEditQuantityModal">
+    <div class="modal-box max-w-[480px]">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-lg font-bold">
+          Cambiar cantidad
+        </h3>
+        <div class="modal-action mt-0">
+          <form method="dialog" @submit="closeEditQuantityModal">
+            <button class="close-btn">
+              Cerrar
+              <CustomKbd>ESC</CustomKbd>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center gap-2 pb-8 pt-2">
+        <p class="text-center font-bold text-brand-black">
+          <span class="font-normal text-sm text-black-3">Producto:</span> <br>
+          {{ selectedProduct?.name }}
+        </p>
+        <div v-if="selectedProduct?.is_bulk" class="grid grid-cols-3 w-full mb-4 place-items-center">
+          <!-- SALE PRICE -->
+          <div class="flex flex-col col-span-1 text-center">
+            <p class="text-sm text-black-3">
+              Precio venta
+            </p>
+            <p class="font-bold text-brand-black">
+              {{ selectedProduct && formatCurrency(selectedProduct?.selling_price) }}
+            </p>
+          </div>
+          <!-- CHANGE QUANTITY TO IMPORT -->
+          <div class="flex flex-col col-span-1 text-center">
+            <button
+              class="btn btn-sm rounded-full bg-white-1 hover:bg-white-2 text-s font-normal text-brand-black"
+              @click="isImportOption = !isImportOption"
+            >
+              <icon-transfer class="w-4 h-4" />
+              {{ !isImportOption ? 'cantidad' : 'importe' }}
+            </button>
+          </div>
+          <!-- UNIT MEASUREMENT OR TOTAL IMPORT -->
+          <div class="flex flex-col col-span-1 text-center">
+            <p class="text-sm text-black-3">
+              {{ !isImportOption ? 'Total de importe' : 'Cantidad producto' }}
+            </p>
+            <p class="font-bold text-green-600">
+              {{ selectedProduct && (isImportOption
+                ? `${productEditQuantityResultFromImportFormatted}`
+                : productEditImport)
+              }}
+            </p>
+          </div>
+        </div>
+        <div v-if="isImportOption" class="flex flex-col gap-4 items-center">
+          <div class="flex justify-between items-start gap-2">
+            <currency-input
+              class-name="max-w-[140px]"
+              :value="selectedProductImport"
+              @add:value="editSelectedProductImport"
+              @backspace="removeSelectedProductImport"
+            />
+            <delete-button @on:click="deleteSelectedProductImport" />
+          </div>
+          <pin-input @input="editSelectedProductImport" @enter="saveSelectedProductImport" />
+        </div>
+        <div v-else class="flex flex-col gap-4 items-center">
+          <div class="flex justify-between items-start gap-2">
+            <label class="input bg-white-1 input-bordered flex items-center max-w-36 gap-2">
+              <input
+                ref="inputEditQuantityRef"
+                class="w-full"
+                placeholder="Cantidad"
+                @keydown="(event) => {
+                  !selectedProduct?.is_bulk
+                    ? validateOnlyNumbers(event)
+                    : validateNumbersAndDots(event, newQuantity)
+                }"
+                @keyup.enter="saveNewQuantity"
+                v-model="newQuantity"
+              >
+            </label>
+            <delete-button @on:click="deleteQuantity" />
+          </div>
+          <pin-input @input="editQuantity" @enter="saveNewQuantity" />
+        </div>
       </div>
     </div>
   </dialog>
 
   <!-- DIALOG VERIFY PRODUCT -->
-  <dialog id="dialogVerifyProduct" ref="dialogVerifyProductRef" class="modal" @keydown.escape="showVerifyProductModal = false">
+  <dialog id="dialogVerifyProduct" ref="dialogVerifyProductRef" class="modal" @keydown.escape="closeVerifyProductModal">
     <div class="modal-box max-w-lg">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-bold">
           Verificar producto
         </h3>
         <div class="modal-action mt-0">
-          <form method="dialog" @submit="showVerifyProductModal = false">
+          <form method="dialog" @submit="closeVerifyProductModal">
             <!-- if there is a button in form, it will close the modal -->
             <button class="close-btn">
               Cerrar
@@ -322,7 +468,7 @@ import DeleteButton from '@/components/buttons/DeleteButton.vue'
 import CustomKbd from '@/components/CustomKbd.vue'
 import CurrentSaleTable from './components/CurrentSaleTable.vue'
 import CurrentSalePayment from './components/CurrentSalePayment.vue'
-import { IconTrash, IconSearch, IconCancel } from '@tabler/icons-vue'
+import { IconTrash, IconSearch, IconCancel, IconTransfer } from '@tabler/icons-vue'
 import { useProduct } from '@/composables/useProduct'
 import { toast } from 'vue3-toastify'
 import { ref, watch } from 'vue'
@@ -331,7 +477,7 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import { useCurrency } from '@/composables/useCurrency'
 import { getProductsByCategory, generateSaleFolio } from '@/api/electron'
 import { validateOnlyNumbers, validateNumbersAndDots } from '@/utils/InputValidators'
-import { getNameUnitMeasurement } from '@/utils/UnitMeasurements'
+import { getNameUnitMeasurement, getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
 import { useBranch } from '@/composables/useBranch'
 
 // Formats
@@ -354,6 +500,94 @@ const {
 } = useProduct()
 const { saleFolio, generateFolio, isPinCancelSaleRequired, comparePinCancelSale } = useBranch()
 
+/**
+ * *************** Add Product With Quantity ***************
+ */
+const showAddProductWithQuantityModal = ref(false)
+const dialogAddProductWithQuantityRef = ref()
+const inputAddProductQuantityRef = ref()
+const addProductQuantity = ref('')
+const addProductQuantityImport = ref('')
+const previewProductToAdd = ref<Product | null>(null)
+const isImportOption = ref(false)
+
+const openAddProductWithQuantityModal = () => {
+  showAddProductWithQuantityModal.value = true
+  dialogAddProductWithQuantityRef.value.showModal()
+  inputAddProductQuantityRef.value.focus()
+}
+
+const closeAddProductWithQuantityModal = () => {
+  showAddProductWithQuantityModal.value = false
+  dialogAddProductWithQuantityRef.value.close()
+  addProductQuantity.value = ''
+  addProductQuantityImport.value = ''
+  previewProductToAdd.value = null
+  isImportOption.value = false
+}
+
+// Product Quantity (Cuando la cantidad es por peso o piezas)
+const editAddProductQuantity = (value: string) => {
+  if (value === '.' && addProductQuantity.value.includes('.')) return
+  addProductQuantity.value += value
+}
+const deleteAddProductQuantity = () => addProductQuantity.value = ''
+
+const saveAddProductQuantity = () => {
+  if (!addProductQuantity.value) {
+    return
+  }
+  if (previewProductToAdd.value) {
+    addProductToCart(previewProductToAdd.value, Number(addProductQuantity.value))
+    closeAddProductWithQuantityModal()
+  } else {
+    toast.warn('Seleccione un producto para agregar')
+  }
+}
+
+// Product Quantity Import (Cuando la cantidad es por importe)
+const editAddProductQuantityImport = (value: string) => addProductQuantityImport.value += value
+const removeAddProductQuantityImport = () => addProductQuantityImport.value = addProductQuantityImport.value.slice(0, -1)
+const deleteAddProductQuantityImport = () => addProductQuantityImport.value = ''
+
+const productQuantityResultFromImport = computed(() => {
+  if (!addProductQuantityImport.value || !previewProductToAdd.value) return 0
+  return Number(addProductQuantityImport.value) / previewProductToAdd.value?.selling_price
+})
+
+const productQuantityResultFromImportFormatted = computed(() => {
+  if (!productQuantityResultFromImport.value || !previewProductToAdd.value) return '0'
+  const quantity = Number.isInteger(productQuantityResultFromImport.value)
+    ? productQuantityResultFromImport.value
+    : productQuantityResultFromImport.value.toFixed(2)
+  return `${quantity} ${getAbbreviationUnitMeasurement(previewProductToAdd.value?.unit_measurement)}`
+})
+
+const saveAddProductQuantityImport = () => {
+  if (!addProductQuantityImport.value) {
+    return
+  }
+  if (previewProductToAdd.value) {
+    addProductToCart(previewProductToAdd.value, productQuantityResultFromImport.value)
+    closeAddProductWithQuantityModal()
+  } else {
+    toast.warn('Seleccione un producto para agregar')
+  }
+}
+
+const handleAddProductToCart = (product: Product) => {
+  previewProductToAdd.value = null
+  if (product.requires_quantity) {
+    previewProductToAdd.value = product
+    openAddProductWithQuantityModal()
+  } else {
+    addProductToCart(product)
+  }
+}
+
+/*
+* *************** Search Product ***************
+*/
 const search = ref('')
 
 const searchProduct = (evt: any) => {
@@ -366,7 +600,7 @@ const searchProduct = (evt: any) => {
       dialogFoundProductsRef.value.showModal()
       focusFirstButton()
     } else {
-      addProductToCart(response[0])
+      handleAddProductToCart(response[0])
       search.value = ''
     }
   } else {
@@ -394,7 +628,7 @@ watch(foundProducts, () => {
 })
 
 const addProductToCartAndCloseFoundModal = (product: Product) => {
-  addProductToCart(product)
+  handleAddProductToCart(product)
   showFoundProductsModal.value = false
   dialogFoundProductsRef.value.close()
   search.value = ''
@@ -450,7 +684,7 @@ const handleChangeCategory = (category: string) => {
 }
 
 const addProductToCartAndCloseSearchModal = (product: Product) => {
-  addProductToCart(product)
+  handleAddProductToCart(product)
   showSearchProductsModal.value = false
   dialogSearchProductsRef.value.close()
   search.value = ''
@@ -464,6 +698,7 @@ const showEditQuantityModal = ref(false)
 const dialogEditQuantityRef = ref()
 const inputEditQuantityRef = ref()
 const newQuantity = ref('')
+const selectedProductImport = ref('')
 
 const openEditQuantityModal = () => {
   showEditQuantityModal.value = true
@@ -471,8 +706,38 @@ const openEditQuantityModal = () => {
   inputEditQuantityRef.value.focus()
 }
 
-const editQuantity = (value: string) => newQuantity.value += value
-const deletePin = () => newQuantity.value = ''
+const closeEditQuantityModal = () => {
+  showEditQuantityModal.value = false
+  dialogEditQuantityRef.value.close()
+  newQuantity.value = '0'
+  selectedProductImport.value = ''
+  selectedProduct.value = null
+  isImportOption.value = false
+}
+
+const productEditQuantityResultFromImport = computed(() => {
+  if (!selectedProductImport.value || !selectedProduct.value) return 0
+  return Number(selectedProductImport.value) / selectedProduct.value?.selling_price
+})
+
+const productEditQuantityResultFromImportFormatted = computed(() => {
+  if (!productEditQuantityResultFromImport.value || !selectedProduct.value) return '0'
+  const quantity = Number.isInteger(productEditQuantityResultFromImport.value)
+    ? productEditQuantityResultFromImport.value
+    : productEditQuantityResultFromImport.value.toFixed(2)
+  return `${quantity} ${getAbbreviationUnitMeasurement(selectedProduct.value?.unit_measurement)}`
+})
+
+const productEditImport = computed(() => {
+  if (!selectedProduct.value || !newQuantity.value) return formatCurrency(0)
+  return formatCurrency(Number(newQuantity.value) * selectedProduct.value?.selling_price)
+})
+
+const editQuantity = (value: string) => {
+  if (value === '.' && newQuantity.value.includes('.')) return
+  newQuantity.value += value
+}
+const deleteQuantity = () => newQuantity.value = ''
 
 const saveNewQuantity = () => {
   if (!newQuantity.value) {
@@ -481,11 +746,27 @@ const saveNewQuantity = () => {
   }
   if (selectedProduct.value && newQuantity.value) {
     editProductQuantityInCart(selectedProduct.value.id, Number(newQuantity.value))
-    showEditQuantityModal.value = false
-    dialogEditQuantityRef.value.close()
-    selectedProduct.value = null
     currentSaleTableRef.value.unselectProduct()
-    newQuantity.value = ''
+    closeEditQuantityModal()
+  } else {
+    toast.warn('Seleccione un producto para cambiar la cantidad')
+  }
+}
+
+// Selected Product Import
+const editSelectedProductImport = (value: string) => selectedProductImport.value += value
+const removeSelectedProductImport = () => selectedProductImport.value = selectedProductImport.value.slice(0, -1)
+const deleteSelectedProductImport = () => selectedProductImport.value = ''
+
+const saveSelectedProductImport = () => {
+  if (!selectedProductImport.value) {
+    toast.warn('Ingrese un importe válido')
+    return
+  }
+  if (selectedProduct.value && selectedProductImport.value) {
+    editProductQuantityInCart(selectedProduct.value.id, productEditQuantityResultFromImport.value)
+    currentSaleTableRef.value.unselectProduct()
+    closeEditQuantityModal()
   } else {
     toast.warn('Seleccione un producto para cambiar la cantidad')
   }
@@ -505,6 +786,12 @@ const openVerifyProductModal = () => {
   showVerifyProductModal.value = true
   dialogVerifyProductRef.value.showModal()
   inputSearchVerifyProductRef.value.focus()
+}
+
+const closeVerifyProductModal = () => {
+  showVerifyProductModal.value = false
+  dialogVerifyProductRef.value.close()
+  searchVerifyProduct.value = ''
 }
 
 const clearVerifyProduct = () => {

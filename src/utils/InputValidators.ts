@@ -12,11 +12,16 @@ export const validateOnlyNumbers = (event: any) => {
   }
 }
 
-export const validateNumbersAndDots = (event: any) => {
+export const validateNumbersAndDots = (event: any, value = '') => {
   const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete'] // Teclas permitidas
   const key = event.key
 
   if (allowedKeys.includes(key)) {
+    return
+  }
+
+  if (value.includes('.') && key === '.') {
+    event.preventDefault()
     return
   }
 

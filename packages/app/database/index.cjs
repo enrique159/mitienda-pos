@@ -3,6 +3,7 @@ const path = require('path')
 const os = require('os')
 const knex = require('knex')(require('./knexfile.cjs'))
 const seeds = require('./seeds/init_seed.cjs')
+const { logger } = require('../helpers/index.cjs')
 // Importing schemas
 const configuration = require('./schemas/configuration.cjs')
 const users = require('./schemas/users.cjs')
@@ -28,20 +29,27 @@ const initDB = async() => {
     }
     fs.writeFileSync(dbPath, '')
 
-    await Promise.all([
-      configuration.createTable(knex),
-      users.createTable(knex),
-      company.createTable(knex),
-      branch.createTable(knex),
-      sellers.createTable(knex),
-      branches_sellers.createTable(knex),
-      products.createTable(knex),
-      cashRegisters.createTable(knex),
-      customers.createTable(knex),
-      sales.createTable(knex),
-      saleDetails.createTable(knex),
-      salePayments.createTable(knex),
-    ])
+    try {
+      await Promise.all([
+        configuration.createTable(knex),
+        users.createTable(knex),
+        company.createTable(knex),
+        branch.createTable(knex),
+        sellers.createTable(knex),
+        branches_sellers.createTable(knex),
+        products.createTable(knex),
+        cashRegisters.createTable(knex),
+        customers.createTable(knex),
+        sales.createTable(knex),
+        saleDetails.createTable(knex),
+        salePayments.createTable(knex),
+      ])
+    } catch (error) {
+      logger.error({ type: 'DB', message: `${error}`, error })
+      console.error('Error creating tables:', error)
+      return
+    }
+
 
     console.log('Database created and initialized with tables.')
 

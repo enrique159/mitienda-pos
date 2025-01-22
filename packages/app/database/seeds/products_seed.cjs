@@ -201,4 +201,26 @@ exports.products = [
     expiration_date: '2025-12-31',
     is_composite: false,
   },
+  {
+    id: uuidv4(),
+    id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002',
+    name: 'Frijol',
+    sku: 'FRIJO002',
+    barcode: '7501234548596',
+    description: 'Frijol a granel (1 kg).',
+    category: 'Alimentos',
+    unit_measurement: 'kg',
+    is_bulk: true,
+    stock: 100,
+    stock_minimum: 10,
+    purchase_price: 2300, // $23.00 MXN
+    selling_price: 3000, // $30.00 MXN
+    tax_rate: 16,
+    discount_rate: 0,
+    is_active: true,
+    has_expiration_date: false,
+    expiration_date: null,
+    requires_quantity: true,
+    is_composite: false,
+  },
 ]

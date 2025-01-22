@@ -4,8 +4,10 @@ const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
 function normalizeProduct(product) {
   return {
     ...product,
+    is_bulk: parseBoolean(product.is_bulk),
     is_active: parseBoolean(product.is_active),
     has_expiration_date: parseBoolean(product.has_expiration_date),
+    requires_quantity: parseBoolean(product.requires_quantity),
     is_composite: parseBoolean(product.is_composite),
   }
 }

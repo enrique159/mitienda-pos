@@ -1,4 +1,4 @@
-import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleStatus, PaymentMethods, SalePayload, PaymentPayload, SaleDetailPayload } from './sale'
+import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleStatus, PaymentMethods, SalePayload, PaymentPayload, SaleDetailPayload, PaymentMethod } from './sale'
 import { Product, ProductCart, UnitMeasurement, Unit, Category } from './products'
 import { CashRegister, CashRegisterState } from './cashRegisters'
 import { Configuration } from './configuration'
@@ -30,6 +30,7 @@ export type {
   ProductCart,
   SalePayload,
   CashRegister,
+  PaymentMethod,
   Configuration,
   GeneratedFolio,
   PaymentPayload,

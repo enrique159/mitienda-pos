@@ -92,7 +92,7 @@
 
       <div class="grid grid-cols-12 gap-4 h-full">
         <!-- SUMMARY PAYMENT -->
-        <div class="col-span-7 pb-6">
+        <div class="col-span-7">
           <div class="bg-white-1 rounded-2xl p-4 pt-2 h-fit mb-4">
             <p class="border-b border-white-3 pb-2 text-lg text-black-1 mb-2">
               Resumen de compra
@@ -141,12 +141,13 @@
                 type="checkbox"
                 class="toggle toggle-sm"
                 :checked="multiplePaymentMethods"
+                @change="multiplePaymentMethods = !multiplePaymentMethods"
               >
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-4 mb-6">
+          <div v-if="!multiplePaymentMethods" class="grid grid-cols-2 gap-4 mb-6">
             <button
-              v-for="method in paymentMethods"
+              v-for="method in paymentMethodsOptions"
               :key="method.id"
               class="px-4 h-12 rounded-md active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
               :class="[ onePaymentMethod.payment_method === method.id ? 'bg-brand-black text-white' : 'text-black-1 bg-white-2 hover:bg-white-3' ]"
@@ -155,6 +156,48 @@
               <component v-if="method.icon" :is="method.icon" :size="21" />
               {{ method.name }}
             </button>
+          </div>
+
+          <div v-else class="flex flex-wrap gap-4 mb-6 items-center">
+            <div
+              v-for="method in paymentMethods"
+              :key="`payment-method-card-${method.payment_method}`"
+              class="bg-white min-w-[128px] rounded-lg py-1 px-3 relative border-4 transition-all cursor-pointer"
+              :class="[
+                selectedPaymentMethodEdit && selectedPaymentMethodEdit.payment_method === method.payment_method
+                  ? 'border-brand-blue shadow-lg' : 'border-white shadow-md'
+              ]"
+              @click="selectPaymentMethodEdit(method)"
+            >
+              <p class="text-sm font-medium text-black-1">
+                {{ getPaymentMethodName(method.payment_method) }}
+              </p>
+              <span class="font-bold text-lg">{{ formatCurrency(method.amount) }}</span>
+              <button class="btn bg-black-3 text-black-1 hover:text-white hover:bg-red-500 hover:border-red-400 btn-circle btn-xs absolute -top-2 -right-2" @click="() => paymentMethods.splice(paymentMethods.indexOf(method), 1)">
+                <IconX size="18" class="text-white" />
+              </button>
+            </div>
+
+            <div class="dropdown">
+              <div tabindex="0" role="button" class="btn btn-ghost h-10 min-w-10 aspect-square bg-white-1 hover:bg-white-2 rounded-full grid place-items-center" @click.stop="() => {}">
+                <IconPlus size="24" />
+              </div>
+              <ul tabindex="0" class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow">
+                <li
+                  v-for="method in availablePaymentMethods"
+                  :key="method.id"
+                  @click.stop="() => {
+                    paymentMethods.push({ payment_method: method.id, amount: 0 });
+                    selectPaymentMethodEdit(paymentMethods[paymentMethods.length - 1])
+                    currencyInputRef.focus()
+                  }"
+                >
+                  <a>
+                    {{ method.name }}
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <!-- DIVIDER -->
@@ -262,8 +305,9 @@
 import CurrencyInput from '@/components/inputs/CurrencyInput.vue'
 import { useProduct } from '@/composables/useProduct'
 import { useCurrency } from '@/composables/useCurrency'
-import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical, IconSearch, IconUser, IconX } from '@tabler/icons-vue'
+import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical, IconSearch, IconUser, IconX, IconPlus } from '@tabler/icons-vue'
 import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response } from '@/api/interfaces'
+import { getPaymentMethodName } from '@/utils/Payments'
 import { createSale } from '@/api/electron'
 import { ref } from 'vue'
 import { computed } from 'vue'
@@ -272,6 +316,7 @@ import { useCashRegister } from '@/composables/useCashRegister'
 import { useCustomer } from '@/composables/useCustomer'
 import { useUser } from '@/composables/useUser'
 import { toast } from 'vue3-toastify'
+import { watch } from 'vue'
 
 const { formatCurrency } = useCurrency()
 
@@ -330,6 +375,7 @@ const closePaymentModal = () => {
   printTicket.value = true
   multiplePaymentMethods.value = false
   selectPaymentMethod(PaymentMethods.CASH)
+  resetPaymentMethods()
 }
 
 const editPaymentQuantity = (value: string) => {
@@ -342,7 +388,7 @@ const removePaymentQuantity = () => {
 }
 
 const multiplePaymentMethods = ref(false)
-const paymentMethods = [
+const paymentMethodsOptions = [
   { id: PaymentMethods.CASH, name: 'Efectivo', icon: IconCash },
   { id: PaymentMethods.CARD, name: 'Tarjeta', icon: IconCreditCard },
   { id: PaymentMethods.TRANSFER, name: 'Transferencia', icon: IconTransferVertical },
@@ -353,6 +399,50 @@ const onePaymentMethod = ref<PaymentPayload>({
   payment_method: PaymentMethods.CASH,
   amount: 0,
 })
+
+const paymentMethods = ref<PaymentPayload[]>([
+  {
+    payment_method: PaymentMethods.CASH,
+    amount: 0,
+  },
+])
+
+watch(multiplePaymentMethods, () => {
+  if (multiplePaymentMethods.value) {
+    if (paymentMethods.value.length === 0) {
+      paymentMethods.value.push({
+        payment_method: PaymentMethods.CASH,
+        amount: 0,
+      })
+    } else if (paymentMethods.value.length === 1) {
+      selectPaymentMethodEdit(paymentMethods.value[0])
+    } else {
+      selectedPaymentMethodEdit.value = null
+    }
+  }
+})
+
+const availablePaymentMethods = computed(() => {
+  return paymentMethodsOptions.filter((method) => {
+    return !paymentMethods.value.some((payment) => payment.payment_method === method.id)
+  })
+})
+
+const selectedPaymentMethodEdit = ref<PaymentPayload | null>(null)
+
+const selectPaymentMethodEdit = (method: PaymentPayload) => {
+  selectedPaymentMethodEdit.value = method
+  currencyInputRef.value.focus()
+}
+
+const resetPaymentMethods = () => {
+  paymentMethods.value = [
+    {
+      payment_method: PaymentMethods.CASH,
+      amount: 0,
+    },
+  ]
+}
 
 const selectPaymentMethod = (method: PaymentMethods) => {
   switch (method) {

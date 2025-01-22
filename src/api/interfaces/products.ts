@@ -7,6 +7,7 @@ export interface Product {
   description?: string;
   category: string;
   unit_measurement: UnitMeasurement;
+  is_bulk: boolean;
   stock: number;
   stock_minimum: number;
   purchase_price: number;
@@ -16,6 +17,7 @@ export interface Product {
   is_active: boolean;
   has_expiration_date: boolean;
   expiration_date?: Date;
+  requires_quantity?: boolean;
   is_composite: boolean;
   status: 'active' | 'inactive';
   created_at: Date;

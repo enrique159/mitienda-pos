@@ -29,7 +29,7 @@
           <td>
             <div class="dropdown">
               <div tabindex="0" role="button" class="btn btn-xs pl-3 rounded-badge" @click.stop="() => {}">
-                {{ item.quantity }} {{ getAbbreviationUnitMeasurement(item.unit_measurement) }}
+                {{ getShortQuantity(item.quantity) }} {{ getAbbreviationUnitMeasurement(item.unit_measurement) }}
                 <icon-dots-vertical class="w-4 h-4" />
               </div>
               <ul tabindex="0" class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow">
@@ -74,6 +74,8 @@ const { currentCart } = useProduct()
 const getTotalIncomeFromProduct = (price: number, quantity: number) => {
   return price * quantity
 }
+
+const getShortQuantity = (quantity: number) => Number.isInteger(quantity) ? quantity : quantity.toFixed(2)
 
 const selectedProduct = ref<ProductCart | null>(null)
 

@@ -14,6 +14,7 @@ exports.createTable = async function(knex) {
     table.string('description') // Descripción breve
     table.string('category').notNullable() // Categoría del producto
     table.enu('unit_measurement', ['piece', 'kg', 'g', 'liter', 'ml', 'box', 'other']).notNullable() // Unidad de medida
+    table.boolean('is_bulk').defaultTo(false) // Si es a granel
     table.integer('stock').defaultTo(null) // Cantidad disponible
     table.integer('stock_minimum').defaultTo(null) // Nivel mínimo
     table.integer('purchase_price').defaultTo(null) // Precio de compra (en centavos)
@@ -24,6 +25,7 @@ exports.createTable = async function(knex) {
     table.boolean('is_active').defaultTo(true).notNullable() // Disponible para venta
     table.boolean('has_expiration_date').defaultTo(false).notNullable() // Si tiene fecha de caducidad
     table.date('expiration_date') // Fecha de caducidad
+    table.boolean('requires_quantity').defaultTo(false) // Si requiere solicitar cantidad al momento de agregar a la venta
     table.boolean('is_composite').defaultTo(false).notNullable() // Si es un producto compuesto
     table.enu('status', ['active', 'inactive']).defaultTo('active').notNullable() // Estado del producto
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable() // Fecha de creación
@@ -32,7 +34,7 @@ exports.createTable = async function(knex) {
   }).then(() => {
     console.log("Table 'sellers' created.")
   }).catch((err) => {
-    logger.error({ type: 'DB', error: err })
+    logger.error({ type: 'DB', message: `${err}`, error: err })
     console.error(err)
   })
 }

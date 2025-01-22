@@ -66,6 +66,8 @@ export enum PaymentMethods {
   OTHER = 'other'
 }
 
+export type PaymentMethod = typeof PaymentMethods[keyof typeof PaymentMethods]
+
 
 // PAYLOADS
 
