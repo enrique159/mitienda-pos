@@ -58,3 +58,8 @@ h1, h2, h3, h4, h5, h6, p {
 .close-btn {
   @apply bg-transparent hover:bg-white-2 h-8 px-3 rounded-md active:scale-95 transition-all text-sm flex items-center gap-2;
 }
+
+.side-menu-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+}

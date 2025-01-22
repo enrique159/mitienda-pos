@@ -4,8 +4,16 @@
   >
     <div class="col-span-8 flex justify-between items-start pl-4 pr-8">
       <div class="flex items-center gap-2">
-        <base-button class="flex items-center gap-1">
-          Agregar cliente
+        <div v-if="customerCurrentSale" class="border border-white-3 rounded-lg px-3 pr-1 h-10 text-sm max-w-48 overflow-x-hidden flex items-center gap-2">
+          <p class="truncate">
+            {{ customerCurrentSale?.name }}
+          </p>
+          <button @click="clearCustomerCurrentSale" class="btn btn-ghost btn-circle btn-xs">
+            <IconX size="18" />
+          </button>
+        </div>
+        <base-button v-else class="flex items-center gap-1" @click="openSelectClientModal">
+          Asignar cliente
           <IconUserPlus class="text-brand-black" size="18" />
         </base-button>
 
@@ -152,6 +160,12 @@
           <!-- DIVIDER -->
           <div class="border-b border-gray-200 mb-4" />
 
+          <div v-if="customerCurrentSale" class="w-full border border-white-3 rounded-lg p-4 mb-4">
+            <p class="text-black-1 font-normal">
+              Cliente: <span class="font-bold">{{ customerCurrentSale.name }}</span>
+            </p>
+          </div>
+
           <!-- SALE COMMENTS -->
           <div class="flex flex-col w-full">
             <textarea
@@ -199,22 +213,66 @@
       </div>
     </div>
   </dialog>
+
+
+  <!-- DIALOG SELECT CLIENT -->
+  <dialog id="dialogSelectClient" ref="dialogSelectClientRef" class="modal" @keydown.escape="closeSelectClientModal">
+    <div class="modal-box">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">
+          Seleccionar cliente
+        </h3>
+        <div class="modal-action mt-0">
+          <form method="dialog" @submit="closeSelectClientModal">
+            <button class="close-btn">
+              Cerrar
+              <CustomKbd>ESC</CustomKbd>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-4 py-2">
+        <label class="input bg-white-1 input-bordered flex items-center gap-2 w-full">
+          <input
+            type="text"
+            class="grow"
+            placeholder="Buscar cliente"
+            v-model="searchClient"
+          >
+          <IconSearch class="w-4 h-4 text-gray-400" />
+        </label>
+
+        <div class="grid grid-cols-1 gap-2 w-full h-fit max-h-[300px] overflow-y-auto">
+          <button
+            v-for="client in customers"
+            :key="client.id"
+            class="btn btn-ghost bg-white-1 hover:bg-white-2 flex items-center gap-2"
+            @click="() => { setCustomerCurrentSale(client); closeSelectClientModal() }"
+          >
+            <IconUser class="w-4 h-4 text-gray-400" />
+            {{ client.name }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
 import CurrencyInput from '@/components/inputs/CurrencyInput.vue'
 import { useProduct } from '@/composables/useProduct'
 import { useCurrency } from '@/composables/useCurrency'
-import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical } from '@tabler/icons-vue'
+import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical, IconSearch, IconUser, IconX } from '@tabler/icons-vue'
 import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response } from '@/api/interfaces'
 import { createSale } from '@/api/electron'
 import { ref } from 'vue'
 import { computed } from 'vue'
 import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
+import { useCustomer } from '@/composables/useCustomer'
 import { useUser } from '@/composables/useUser'
 import { toast } from 'vue3-toastify'
-import { parse } from 'path'
+
 const { formatCurrency } = useCurrency()
 
 const {
@@ -229,6 +287,24 @@ const {
 const { saleFolio, branch, generateFolio } = useBranch()
 const { user } = useUser()
 const { cashRegister } = useCashRegister()
+const { customers, customerCurrentSale, setCustomerCurrentSale, clearCustomerCurrentSale } = useCustomer()
+
+/**
+ * *************** Select client ***************
+ */
+const showSelectClientModal = ref(false)
+const dialogSelectClientRef = ref()
+const searchClient = ref('')
+
+const openSelectClientModal = () => {
+  showSelectClientModal.value = true
+  dialogSelectClientRef.value.showModal()
+}
+
+const closeSelectClientModal = () => {
+  showSelectClientModal.value = false
+  dialogSelectClientRef.value.close()
+}
 
 /*
  * *************** Payment Sale ***************
@@ -318,6 +394,10 @@ const saleComments = ref('')
 const createCurrentSale = () => {
   if (currentCart.value.length === 0) return
   if (!cashRegister.value) return
+  if (isPaidAmountLowerThanTotal.value && !customerCurrentSale.value) {
+    toast.warn('Debes asignar un cliente para realizar una venta a crédito')
+    return
+  }
   const details: SaleDetailPayload[] = currentCart.value.map((product) => {
     return {
       id_product: product.id,
@@ -336,7 +416,7 @@ const createCurrentSale = () => {
       id_branch: branch.value.id,
       id_seller: user.value.id,
       id_cash_register: cashRegister.value.id,
-      id_customer: undefined,
+      id_customer: customerCurrentSale.value?.id,
       folio: saleFolio.value,
       subtotal: currentCartSubtotal.value,
       total: currentCartTotal.value,
@@ -365,6 +445,7 @@ const createCurrentSale = () => {
       closePaymentModal()
       generateFolio()
       clearCurrentCart()
+      clearCustomerCurrentSale()
     } else {
       toast.error('Ha ocurrido un error al realizar la venta')
     }

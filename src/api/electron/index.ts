@@ -1,4 +1,4 @@
-import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState } from '@/api/interfaces'
+import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer } from '@/api/interfaces'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 
@@ -30,3 +30,6 @@ export const updateConfiguration = async (configuration: Configuration, callback
 export const createConfiguration = async (configuration: Configuration, callback: any) => window.electron.createConfiguration(configuration, callback)
 export const exportDatabase = async (callback: any) => window.electron.exportDatabase(callback)
 export const importDatabase = async (data: any, callback: any) => window.electron.importDatabase(data, callback)
+
+/* Customers */
+export const getCustomers = async (): Promise<Response<Customer[]>> => window.electron.getCustomers()

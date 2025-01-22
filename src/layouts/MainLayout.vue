@@ -70,9 +70,10 @@ import { computed } from 'vue'
 import { useProduct } from '@/composables/useProduct'
 import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
-import { getProducts, getProductCategories, getBranchInfo, getCashRegisterActive } from '@/api/electron'
+import { getProducts, getProductCategories, getBranchInfo, getCashRegisterActive, getCustomers } from '@/api/electron'
 import { Category, Product, Response, Branch } from '@/api/interfaces'
 import { useDate } from '@/composables/useDate'
+import { useCustomer } from '@/composables/useCustomer'
 import { toast } from 'vue3-toastify'
 import router from '@/router'
 import { onBeforeUnmount } from 'vue'
@@ -82,6 +83,7 @@ const { setProducts, setCategories } = useProduct()
 const { setBranch, branch } = useBranch()
 const { setCashRegister } = useCashRegister()
 const { getCurrentDate } = useDate()
+const { setCustomers } = useCustomer()
 const route = useRoute()
 
 // El numero 2 es porque todas las rutas del main empiezan por /main/...
@@ -137,6 +139,17 @@ const getCashRegisterOpened = async () => {
 }
 
 getCashRegisterOpened()
+
+const getAllCustomers = async () => {
+  const response = await getCustomers()
+  if (!response.success) {
+    toast.error('Error al obtener los clientes')
+    return
+  }
+  setCustomers(response.response)
+}
+
+getAllCustomers()
 
 // Get real time hour
 const time = ref(getCurrentDate())

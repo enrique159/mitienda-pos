@@ -1,28 +1,12 @@
-import { StartSessionParams } from './auth'
-import { Configuration } from './configuration'
-import { User, Seller } from './users'
-import {
-  Product,
-  ProductCart,
-  UnitMeasurement,
-  Unit,
-  Category
-} from './products'
-import { Branch } from './branches'
+import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleStatus, PaymentMethods, SalePayload, PaymentPayload, SaleDetailPayload } from './sale'
+import { Product, ProductCart, UnitMeasurement, Unit, Category } from './products'
 import { CashRegister, CashRegisterState } from './cashRegisters'
-import {
-  GeneratedFolio,
-  Sale,
-  SaleDetail,
-  SalePayment,
-  CreateSalePayload,
-  SaleStatus,
-  PaymentMethods,
-  SalePayload,
-  PaymentPayload,
-  SaleDetailPayload
-} from './sale'
+import { Configuration } from './configuration'
+import { StartSessionParams } from './auth'
+import { User, Seller } from './users'
 import { Discount } from './discount'
+import { Customer } from './customer'
+import { Branch } from './branches'
 
 interface Response<T> {
   success: boolean
@@ -40,6 +24,7 @@ export type {
   Response,
   Category,
   Discount,
+  Customer,
   SaleDetail,
   SalePayment,
   ProductCart,

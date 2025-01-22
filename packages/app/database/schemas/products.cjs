@@ -14,11 +14,12 @@ exports.createTable = async function(knex) {
     table.string('description') // Descripción breve
     table.string('category').notNullable() // Categoría del producto
     table.enu('unit_measurement', ['piece', 'kg', 'g', 'liter', 'ml', 'box', 'other']).notNullable() // Unidad de medida
-    table.integer('stock').defaultTo(0).notNullable() // Cantidad disponible
-    table.integer('stock_minimum').defaultTo(0).notNullable() // Nivel mínimo
-    table.integer('purchase_price').defaultTo(0).notNullable() // Precio de compra (en centavos)
+    table.integer('stock').defaultTo(null) // Cantidad disponible
+    table.integer('stock_minimum').defaultTo(null) // Nivel mínimo
+    table.integer('purchase_price').defaultTo(null) // Precio de compra (en centavos)
     table.integer('selling_price').defaultTo(0).notNullable() // Precio de venta (en centavos)
     table.integer('tax_rate').defaultTo(16).notNullable() // Impuesto aplicado
+    // table.json('taxes').defaultTo([]) // Impuestos aplicados: [{ code: '002', type: 'TASA', percent: 16, fixed: 0 }]
     table.integer('discount_rate').defaultTo(0).notNullable() // Descuento aplicado
     table.boolean('is_active').defaultTo(true).notNullable() // Disponible para venta
     table.boolean('has_expiration_date').defaultTo(false).notNullable() // Si tiene fecha de caducidad

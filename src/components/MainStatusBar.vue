@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { useCashRegister } from '@/composables/useCashRegister'
-import { useConfiguration } from '@/composables/useConfiguration';
-import { useDate } from '@/composables/useDate';
+import { useConfiguration } from '@/composables/useConfiguration'
+import { useDate } from '@/composables/useDate'
 
 const { cashRegister, isCashRegisterOpen } = useCashRegister()
 const { configuration } = useConfiguration()

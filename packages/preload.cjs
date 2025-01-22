@@ -5,6 +5,7 @@ const { getBranchInfo } = require('./app/modules/branches/branchesListeners.cjs'
 const { getCashRegisterActive, createCashRegister, getCurrentCashRegisterState } = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
 const { createSale, getSales, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
 const { getConfiguration, updateConfiguration, createConfiguration, exportDatabase, importDatabase, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
+const { getCustomers } = require('./app/modules/customers/customersListeners.cjs')
 // const { signIn, signUp, changePassword } = require('./app/modules/auth/authListeners.cjs')
 // const { getAreas, createArea, updateArea, deleteArea } = require('./app/modules/areas/areasListeners.cjs')
 // const { getActivities, createActivity, deleteActivity } = require('./app/modules/activities/activitiesListeners.cjs')
@@ -43,6 +44,8 @@ contextBridge.exposeInMainWorld('electron', {
   // Configuration
   getVersion,
   getConfiguration,
+  // Customers
+  getCustomers,
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),
 })
