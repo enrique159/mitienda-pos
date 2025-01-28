@@ -40,7 +40,3 @@ export type Unit = 'u' | 'kg' | 'g' | 'L' | 'ml' | 'caja' | 'otro';
 export interface ProductCart extends Product {
   quantity: number
 }
-
-export interface Category {
-  category: string;
-}

@@ -12,7 +12,7 @@ ipcMain.on('get_product_categories', async (event) => {
   event.reply('get_product_categories', response)
 })
 
-ipcMain.on('get_products_by_category', async (event, category) => {
-  const response = await productsRepository.getProductsByCategory(category)
+ipcMain.on('get_products_by_category', async (event, categoryId) => {
+  const response = await productsRepository.getProductsByCategory(categoryId)
   event.reply('get_products_by_category', response)
 })

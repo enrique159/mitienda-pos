@@ -131,13 +131,20 @@
       </p>
       <div class="flex flex-wrap justify-center gap-2 mb-4">
         <button
-          v-for="category in categories"
-          :key="`category-button-${category.category}`"
           class="px-4 py-2 border rounded-md active:scale-95 transition-all text-sm"
-          :class="[ category.category === categorySelected ? 'bg-brand-pink text-white border-brand-pink' : 'border-white-2' ]"
-          @click="handleChangeCategory(category.category)"
+          :class="[ !categorySelected ? 'bg-brand-pink text-white border-brand-pink' : 'border-white-2' ]"
+          @click="handleChangeCategory(null)"
         >
-          {{ category.category }}
+          Todos
+        </button>
+        <button
+          v-for="category in categories"
+          :key="`category-button-${category.id}`"
+          class="px-4 py-2 border rounded-md active:scale-95 transition-all text-sm"
+          :class="[ category.id === categorySelected?.id ? 'bg-brand-pink text-white border-brand-pink' : 'border-white-2' ]"
+          @click="handleChangeCategory(category)"
+        >
+          {{ category.name }}
         </button>
       </div>
 
@@ -285,7 +292,7 @@
       </div>
 
       <div class="flex flex-col items-center gap-2 pb-8 pt-2">
-        <p class="text-center font-bold text-brand-black">
+        <p class="text-center font-bold text-brand-black mb-2">
           <span class="font-normal text-sm text-black-3">Producto:</span> <br>
           {{ selectedProduct?.name }}
         </p>
@@ -352,7 +359,7 @@
             </label>
             <delete-button @on:click="deleteQuantity" />
           </div>
-          <pin-input @input="editQuantity" @enter="saveNewQuantity" />
+          <pin-input :dot-disabled="!selectedProduct?.is_bulk" @input="editQuantity" @enter="saveNewQuantity" />
         </div>
       </div>
     </div>
@@ -472,13 +479,22 @@ import { IconTrash, IconSearch, IconCancel, IconTransfer } from '@tabler/icons-v
 import { useProduct } from '@/composables/useProduct'
 import { toast } from 'vue3-toastify'
 import { ref, watch } from 'vue'
-import { Product, ProductCart, Response } from '@/api/interfaces'
+import { Category, Product, ProductCart, Response } from '@/api/interfaces'
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useCurrency } from '@/composables/useCurrency'
-import { getProductsByCategory, generateSaleFolio } from '@/api/electron'
+import { getProductsByCategory, getProducts } from '@/api/electron'
 import { validateOnlyNumbers, validateNumbersAndDots } from '@/utils/InputValidators'
 import { getNameUnitMeasurement, getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
 import { useBranch } from '@/composables/useBranch'
+
+// SET PRODUCTS
+getProducts((response: Response<Product[]>) => {
+  if (!response.success) {
+    toast.error('Error al obtener los productos')
+    return
+  }
+  setProducts(response.response)
+})
 
 // Formats
 const { formatCurrency } = useCurrency()
@@ -491,6 +507,7 @@ const dialogFoundProductsRef = ref()
 const {
   products,
   categories,
+  setProducts,
   addProductToCart,
   clearCurrentCart,
   isCurrentCartEmpty,
@@ -641,7 +658,7 @@ const addProductToCartAndCloseFoundModal = (product: Product) => {
  */
 const showSearchProductsModal = ref(false)
 const dialogSearchProductsRef = ref()
-const categorySelected = ref('Todos')
+const categorySelected = ref<Category | null>(null)
 const productsByCategory = ref<Product[]>([])
 const searchInProductsCategory = ref('')
 const inputSearchInProductsCategoryRef = ref()
@@ -655,11 +672,11 @@ const openSearchProductsModal = () => {
   dialogSearchProductsRef.value.showModal()
   inputSearchInProductsCategoryRef.value.focus()
   searchInProductsCategory.value = ''
-  if (categorySelected.value === 'Todos') {
+  if (!categorySelected.value) {
     productsByCategory.value = products.value
     return
   }
-  getProductsByCategory(categorySelected.value, (response: Response<Product[]>) => {
+  getProductsByCategory(categorySelected.value.id, (response: Response<Product[]>) => {
     if (response.success) {
       productsByCategory.value = response.response
     } else {
@@ -668,13 +685,14 @@ const openSearchProductsModal = () => {
   })
 }
 
-const handleChangeCategory = (category: string) => {
-  categorySelected.value = category
-  if (category === 'Todos') {
+const handleChangeCategory = (category: Category | null) => {
+  if (!category) {
     productsByCategory.value = products.value
+    categorySelected.value = null
     return
   }
-  getProductsByCategory(category, (response: Response<Product[]>) => {
+  categorySelected.value = category
+  getProductsByCategory(category.id, (response: Response<Product[]>) => {
     if (response.success) {
       productsByCategory.value = response.response
     } else {
@@ -709,7 +727,7 @@ const openEditQuantityModal = () => {
 const closeEditQuantityModal = () => {
   showEditQuantityModal.value = false
   dialogEditQuantityRef.value.close()
-  newQuantity.value = '0'
+  newQuantity.value = ''
   selectedProductImport.value = ''
   selectedProduct.value = null
   isImportOption.value = false

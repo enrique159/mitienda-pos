@@ -31,6 +31,7 @@ exports.getActiveProducts = async function () {
     })
 }
 
+// DEPRECATED
 exports.getProductCategories = async function () {
   // return all the categories that are in the products rows in the category column grouped by category
   return await knex('products').select('category').groupBy('category')
@@ -48,8 +49,8 @@ exports.getProductCategories = async function () {
     })
 }
 
-exports.getProductsByCategory = async function (category) {
-  return await knex('products').select().where('category', category)
+exports.getProductsByCategory = async function (categoryId) {
+  return await knex('products').select().where('id_category', categoryId)
     .then((products) => {
       if (!products.length) {
         logger.error({ type: 'GET PRODUCTS BY CATEGORY', message: 'No se encontraron productos' })

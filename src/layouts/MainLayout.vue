@@ -70,7 +70,7 @@ import { computed } from 'vue'
 import { useProduct } from '@/composables/useProduct'
 import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
-import { getProducts, getProductCategories, getBranchInfo, getCashRegisterActive, getCustomers } from '@/api/electron'
+import { getProducts, getCategories, getBranchInfo, getCashRegisterActive, getCustomers } from '@/api/electron'
 import { Category, Product, Response, Branch } from '@/api/interfaces'
 import { useDate } from '@/composables/useDate'
 import { useCustomer } from '@/composables/useCustomer'
@@ -108,13 +108,12 @@ getProducts((response: Response<Product[]>) => {
   setProducts(response.response)
 })
 
-getProductCategories((response: Response<Category[]>) => {
+getCategories((response: Response<Category[]>) => {
   if (!response.success) {
     toast.error('Error al obtener las categorías de los productos')
     return
   }
   // Add Todos category
-  response.response.unshift({ category: 'Todos' })
   setCategories(response.response)
 })
 

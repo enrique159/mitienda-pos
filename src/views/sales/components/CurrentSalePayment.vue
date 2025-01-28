@@ -255,6 +255,11 @@
         </div>
       </div>
     </div>
+    <SnackBar
+      v-model="snackbarPayment.show"
+      :message="snackbarPayment.message"
+      :type="snackbarPayment.type"
+    />
   </dialog>
 
 
@@ -303,20 +308,20 @@
 
 <script setup lang="ts">
 import CurrencyInput from '@/components/inputs/CurrencyInput.vue'
+import SnackBar from '@/components/SnackBar.vue'
 import { useProduct } from '@/composables/useProduct'
 import { useCurrency } from '@/composables/useCurrency'
 import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical, IconSearch, IconUser, IconX, IconPlus } from '@tabler/icons-vue'
 import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response } from '@/api/interfaces'
 import { getPaymentMethodName } from '@/utils/Payments'
 import { createSale } from '@/api/electron'
-import { ref } from 'vue'
-import { computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
 import { useCustomer } from '@/composables/useCustomer'
 import { useUser } from '@/composables/useUser'
 import { toast } from 'vue3-toastify'
-import { watch } from 'vue'
+import { Snackbar } from '@/types/Snackbar'
 
 const { formatCurrency } = useCurrency()
 
@@ -358,6 +363,11 @@ const paymentQuantity = ref('')
 const showPaymentModal = ref(false)
 const dialogPaymentSaleRef = ref()
 const currencyInputRef = ref()
+const snackbarPayment = reactive<Snackbar>({
+  show: false,
+  message: '',
+  type: 'warning',
+})
 
 const openPaymentModal = () => {
   showPaymentModal.value = true
@@ -477,6 +487,12 @@ const cashPaymentChange = computed(() => {
 
 const saleComments = ref('')
 
+// Show Dialog Payment Error Snackbar
+const showSnackbarPaymentError = (message: string) => {
+  snackbarPayment.message = message
+  snackbarPayment.show = true
+}
+
 /*
   * *************** Create Sale ***************
 */
@@ -485,7 +501,7 @@ const createCurrentSale = () => {
   if (currentCart.value.length === 0) return
   if (!cashRegister.value) return
   if (isPaidAmountLowerThanTotal.value && !customerCurrentSale.value) {
-    toast.warn('Debes asignar un cliente para realizar una venta a crédito')
+    showSnackbarPaymentError('Debes asignar un cliente para realizar una venta a crédito')
     return
   }
   const details: SaleDetailPayload[] = currentCart.value.map((product) => {
@@ -553,7 +569,7 @@ const getStatusSale = () => {
 }
 
 const isPaidAmountLowerThanTotal = computed(() => {
-  return parseFloat(paymentQuantity.value) < currentCartTotal.value
+  return !paymentQuantity.value || parseFloat(paymentQuantity.value) < currentCartTotal.value
 })
 </script>
 

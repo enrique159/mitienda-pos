@@ -12,6 +12,7 @@ const branch = require('./schemas/branches.cjs')
 const sellers = require('./schemas/sellers.cjs')
 const branches_sellers = require('./schemas/branches_sellers.cjs')
 const products = require('./schemas/products.cjs')
+const categories = require('./schemas/categories.cjs')
 const cashRegisters = require('./schemas/cash_registers.cjs')
 const customers = require('./schemas/customers.cjs')
 const sales = require('./schemas/sales.cjs')
@@ -37,6 +38,7 @@ const initDB = async() => {
         branch.createTable(knex),
         sellers.createTable(knex),
         branches_sellers.createTable(knex),
+        categories.createTable(knex),
         products.createTable(knex),
         cashRegisters.createTable(knex),
         customers.createTable(knex),

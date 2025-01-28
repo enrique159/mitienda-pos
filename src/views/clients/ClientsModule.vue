@@ -16,7 +16,7 @@ const clientsMenu = [
   },
   {
     title: 'Nuevo cliente',
-    path: '/main/clients/new',
+    path: '/main/clients/create',
     icon: IconUser,
   },
 ]

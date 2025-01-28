@@ -11,10 +11,13 @@ export const createSale = async (data: any, callback: any) => window.electron.cr
 export const getSales = async (callback: any) => window.electron.getSales(callback)
 export const generateSaleFolio = async (): Promise<Response<GeneratedFolio>> => window.electron.generateSaleFolio()
 
+/* Categories */
+export const getCategories = async (callback: any) => window.electron.getCategories(callback)
+
 /* Products */
 export const getProducts = async (callback: any) => window.electron.getActiveProducts(callback)
 export const getProductCategories = async (callback: any) => window.electron.getProductCategories(callback)
-export const getProductsByCategory = async (category: string, callback: any) => window.electron.getProductsByCategory(category, callback)
+export const getProductsByCategory = async (categoryId: string , callback: any) => window.electron.getProductsByCategory(categoryId, callback)
 
 /* Branches */
 export const getBranchInfo = async (callback: any) => window.electron.getBranchInfo(callback)
