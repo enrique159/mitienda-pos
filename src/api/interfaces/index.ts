@@ -1,12 +1,12 @@
 import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleStatus, PaymentMethods, SalePayload, PaymentPayload, SaleDetailPayload, PaymentMethod } from './sale'
-import { Product, ProductCart, UnitMeasurement, Unit } from './products'
+import { Product, ProductCart, UnitMeasurement, Unit, CreateProduct } from './products'
 import { CashRegister, CashRegisterState } from './cashRegisters'
+import { Customer, CreateCustomer } from './customer'
 import { Configuration } from './configuration'
 import { StartSessionParams } from './auth'
 import { Category } from './categories'
 import { User, Seller } from './users'
 import { Discount } from './discount'
-import { Customer } from './customer'
 import { Branch } from './branches'
 
 interface Response<T> {
@@ -32,9 +32,11 @@ export type {
   SalePayload,
   CashRegister,
   PaymentMethod,
+  CreateProduct,
   Configuration,
   GeneratedFolio,
   PaymentPayload,
+  CreateCustomer,
   SaleDetailPayload,
   CreateSalePayload,
   CashRegisterState,

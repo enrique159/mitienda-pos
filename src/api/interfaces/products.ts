@@ -1,6 +1,7 @@
 export interface Product {
   id: string;
   id_company: string;
+  id_category: string;
   name: string;
   sku: string;
   barcode?: string;
@@ -8,12 +9,12 @@ export interface Product {
   category: string;
   unit_measurement: UnitMeasurement;
   is_bulk: boolean;
+  unlimited_stock: boolean;
   stock: number;
   stock_minimum: number;
   purchase_price: number;
   selling_price: number;
-  tax_rate: number;
-  discount_rate: number;
+  taxes: Tax[];
   is_active: boolean;
   has_expiration_date: boolean;
   expiration_date?: Date;
@@ -23,6 +24,13 @@ export interface Product {
   created_at: Date;
   updated_at: Date;
   synced_at?: Date;
+}
+
+export interface Tax {
+  code: string;
+  type: string;
+  percent: number;
+  fixed: number;
 }
 
 export enum UnitMeasurement {
@@ -39,4 +47,26 @@ export type Unit = 'u' | 'kg' | 'g' | 'L' | 'ml' | 'caja' | 'otro';
 
 export interface ProductCart extends Product {
   quantity: number
+}
+
+export interface CreateProduct {
+  id_company: string;
+  id_category: string;
+  name: string;
+  sku: string;
+  barcode?: string;
+  description?: string;
+  unit_measurement: UnitMeasurement;
+  is_bulk: boolean;
+  unlimited_stock: boolean;
+  stock: number | null;
+  stock_minimum: number | null;
+  purchase_price: number;
+  selling_price: number;
+  taxes: Tax[];
+  is_active: boolean;
+  has_expiration_date: boolean;
+  expiration_date?: Date;
+  requires_quantity?: boolean;
+  is_composite: boolean;
 }

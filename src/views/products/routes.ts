@@ -1,5 +1,6 @@
 import ProductsModule from './ProductsModule.vue'
 import ProductsView from './views/ProductsView.vue'
+import CreateProductView from './views/CreateProductView.vue'
 
 export const ProductsRoutes = [
   {
@@ -12,6 +13,11 @@ export const ProductsRoutes = [
         path: '',
         name: 'ProductsView',
         component: ProductsView,
+      },
+      {
+        path: 'create',
+        name: 'CreateProductView',
+        component: CreateProductView,
       },
     ],
   },

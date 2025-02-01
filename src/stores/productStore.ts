@@ -12,7 +12,6 @@ export const useProductStore = defineStore('product', () => {
 
   // Cart
   const currentCart = ref<ProductCart[]>([])
-  const discounts = ref<Discount[]>([])
 
   const addCart = (product: ProductCart) => {
     // check if there is already a product with the same id, if so, increase the quantity
@@ -51,6 +50,9 @@ export const useProductStore = defineStore('product', () => {
   const setCategories = (newCategories: Category[]) => {
     categories.value = newCategories
   }
+
+  // DISCOUNTS
+  const discounts = ref<Discount[]>([])
 
   return {
     // Products

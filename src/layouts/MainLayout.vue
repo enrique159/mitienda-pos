@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full bg-white-1">
+  <div class="flex flex-col h-full bg-white-1 overflow-hidden">
     <header
       class="bg-white w-full py-2 px-4 flex items-center border-b border-gray-200"
     >

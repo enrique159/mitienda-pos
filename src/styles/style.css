@@ -60,6 +60,15 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 .side-menu-grid {
+  height: calc(100vh - 82px);
   display: grid;
   grid-template-columns: 240px 1fr;
+}
+
+.required::after {
+  content: '*';
+  color: var(--bittersweet-orange);
+  font-size: 1rem;
+  font-weight: bold;
+  margin-left: 4px;
 }

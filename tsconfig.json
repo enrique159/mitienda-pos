@@ -11,6 +11,7 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
+    "types": ["vite/client", "@vue/runtime-core"],
     "skipLibCheck": true,
     "paths": {
       "@/*": [

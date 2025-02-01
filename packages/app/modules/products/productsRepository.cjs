@@ -2,13 +2,23 @@ const knex = require('knex')(require('../../database/knexfile.cjs'))
 const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
 
 function normalizeProduct(product) {
+  let taxes = []
+  try {
+    taxes = product.taxes ? JSON.parse(product.taxes) : []
+  } catch (err) {
+    logger.error({ type: 'NORMALIZE PRODUCT', message: `${err}`, data: err })
+    taxes = product.taxes
+  }
   return {
     ...product,
+    taxes: taxes,
+    unlimited_stock: parseBoolean(product.unlimited_stock),
     is_bulk: parseBoolean(product.is_bulk),
     is_active: parseBoolean(product.is_active),
-    has_expiration_date: parseBoolean(product.has_expiration_date),
-    requires_quantity: parseBoolean(product.requires_quantity),
-    is_composite: parseBoolean(product.is_composite),
+    is_available: parseBoolean(product.is_available),
+    is_service: parseBoolean(product.is_service),
+    is_taxable: parseBoolean(product.is_taxable),
+    is_visible: parseBoolean(product.is_visible),
   }
 }
 

@@ -12,7 +12,7 @@ exports.createTable = async function(knex) {
     table.string('product_name').notNullable() // Nombre del producto
     table.integer('quantity').notNullable() // Cantidad vendida
     table.integer('selling_price').notNullable() // Precio de venta unitario (en centavos)
-    table.integer('tax_rate').notNullable() // Tasa de impuesto aplicada a este producto (en centavos)
+    table.integer('tax_amount').notNullable() // Tasa de impuesto aplicada a este producto (en centavos)
     table.integer('discount').defaultTo(0) // Descuento aplicado a este producto (en centavos)
     table.integer('total').notNullable() // Total de la venta de este producto (en centavos)
     table.integer('profit').notNullable() // Ganancia neta de la venta de este producto (en centavos)

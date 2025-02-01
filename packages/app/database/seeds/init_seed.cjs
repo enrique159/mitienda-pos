@@ -87,7 +87,10 @@ exports.seed = async function(knex) {
 
     // Products
     await knex('products').del()
-    await knex('products').insert(products)
+    await knex('products').insert(products.map((product) => ({
+      ...product,
+      taxes: JSON.stringify(product.taxes),
+    })))
 
     // Customers
     await knex('customers').del()
@@ -97,7 +100,7 @@ exports.seed = async function(knex) {
       name: 'Jose Eduardo Ezpinosa', // Nombre
       rfc: 'EJIE840101123',
       email: 'jose@mail.com',
-      phone: '555-123-4567',
+      phone: '5551234567',
       address: 'Calle Principal #123, Centro',
     })
   } catch (error) {

@@ -292,7 +292,7 @@
 
         <div class="grid grid-cols-1 gap-2 w-full h-fit max-h-[300px] overflow-y-auto">
           <button
-            v-for="client in customers"
+            v-for="client in filteredCustomers"
             :key="client.id"
             class="btn btn-ghost bg-white-1 hover:bg-white-2 flex items-center gap-2"
             @click="() => { setCustomerCurrentSale(client); closeSelectClientModal() }"
@@ -322,6 +322,7 @@ import { useCustomer } from '@/composables/useCustomer'
 import { useUser } from '@/composables/useUser'
 import { toast } from 'vue3-toastify'
 import { Snackbar } from '@/types/Snackbar'
+import { parseAmount } from '@/utils/Payments'
 
 const { formatCurrency } = useCurrency()
 
@@ -337,7 +338,7 @@ const {
 const { saleFolio, branch, generateFolio } = useBranch()
 const { user } = useUser()
 const { cashRegister } = useCashRegister()
-const { customers, customerCurrentSale, setCustomerCurrentSale, clearCustomerCurrentSale } = useCustomer()
+const { getActiveCustomers, customerCurrentSale, setCustomerCurrentSale, clearCustomerCurrentSale } = useCustomer()
 
 /**
  * *************** Select client ***************
@@ -355,6 +356,12 @@ const closeSelectClientModal = () => {
   showSelectClientModal.value = false
   dialogSelectClientRef.value.close()
 }
+
+const filteredCustomers = computed(() => {
+  return getActiveCustomers.value.filter((customer) => {
+    return customer.name.toLowerCase().includes(searchClient.value.toLowerCase())
+  })
+})
 
 /*
  * *************** Payment Sale ***************
@@ -479,10 +486,8 @@ const isCurrencyInputDisabled = computed(() => {
 })
 
 const cashPaymentChange = computed(() => {
-  if (paymentQuantity.value === '') return 0
-  return parseFloat(paymentQuantity.value) - currentCartTotal.value < 0
-    ? 0
-    : parseFloat(paymentQuantity.value) - currentCartTotal.value
+  const payment = parseAmount(paymentQuantity.value)
+  return !payment ? 0 : Math.max(0, payment - currentCartTotal.value)
 })
 
 const saleComments = ref('')
@@ -510,7 +515,8 @@ const createCurrentSale = () => {
       product_name: product.name,
       quantity: product.quantity,
       selling_price: product.selling_price,
-      tax_rate: product.tax_rate,
+      tax_amount: product.taxes.reduce((acc, tax) => acc + tax.fixed, 0),
+      // TODO: Integrar los descuentos
       discount: 0,
       total: product.selling_price * product.quantity,
       profit: (product.selling_price - product.purchase_price) * product.quantity,
@@ -526,8 +532,8 @@ const createCurrentSale = () => {
       folio: saleFolio.value,
       subtotal: currentCartSubtotal.value,
       total: currentCartTotal.value,
-      amount_paid: isPaidAmountLowerThanTotal.value ? parseFloat(paymentQuantity.value) : currentCartTotal.value,
-      balance_due: isPaidAmountLowerThanTotal.value ? currentCartTotal.value - parseFloat(paymentQuantity.value) : 0,
+      amount_paid: isPaidAmountLowerThanTotal.value ? parseAmount(paymentQuantity.value) : currentCartTotal.value,
+      balance_due: isPaidAmountLowerThanTotal.value ? currentCartTotal.value - parseAmount(paymentQuantity.value) : 0,
       discount: currentCartDiscount.value,
       tax: currentCartTax.value,
       on_trust: isPaidAmountLowerThanTotal.value,
@@ -540,7 +546,7 @@ const createCurrentSale = () => {
     payments: [
       {
         payment_method: onePaymentMethod.value.payment_method,
-        amount: parseFloat(paymentQuantity.value) - cashPaymentChange.value,
+        amount: parseAmount(paymentQuantity.value) - cashPaymentChange.value,
       },
     ],
   }
@@ -561,15 +567,15 @@ const createCurrentSale = () => {
 const printTicket = ref(true)
 
 const getStatusSale = () => {
-  return parseFloat(paymentQuantity.value) < currentCartTotal.value
-    ? parseFloat(paymentQuantity.value) === 0
-      ? SaleStatus.PENDING
-      : SaleStatus.PARTIALLY_PAID
-    : SaleStatus.PAID
+  const paidAmount = parseAmount(paymentQuantity.value)
+
+  if (paidAmount >= currentCartTotal.value) return SaleStatus.PAID
+  if (paidAmount === 0) return SaleStatus.PENDING
+  return SaleStatus.PARTIALLY_PAID
 }
 
 const isPaidAmountLowerThanTotal = computed(() => {
-  return !paymentQuantity.value || parseFloat(paymentQuantity.value) < currentCartTotal.value
+  return parseAmount(paymentQuantity.value) < currentCartTotal.value
 })
 </script>
 

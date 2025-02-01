@@ -31,8 +31,11 @@ export const useProduct = () => {
 
   const currentCartTax = computed(() => {
     return currentCart.value.reduce((acc, product) => {
-      const productTax = Math.floor((product.selling_price * product.tax_rate) / 100)
-      return acc + productTax * product.quantity
+      const productTaxes = product.taxes.reduce((acc, tax) => {
+        const taxAmount = tax.fixed * product.quantity
+        return acc + taxAmount
+      }, 0)
+      return acc + productTaxes
     }, 0)
   })
 

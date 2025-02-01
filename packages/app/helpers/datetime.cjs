@@ -14,5 +14,5 @@ exports.getToday = function () {
 }
 
 exports.getUTCToday = function () {
-  return dayjs().utc().format('YYYYMMDD')
+  return dayjs().utc().format('YYYY-MM-DD 00:00:00')
 }

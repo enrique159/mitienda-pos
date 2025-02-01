@@ -33,7 +33,7 @@ export interface SaleDetail {
   product_name: string
   quantity: number
   selling_price: number
-  tax_rate: number
+  tax_amount: number
   discount: number
   total: number
   profit: number
@@ -103,7 +103,7 @@ export interface SaleDetailPayload {
   product_name: string
   quantity: number
   selling_price: number
-  tax_rate: number
+  tax_amount: number
   discount: number
   total: number
   profit: number

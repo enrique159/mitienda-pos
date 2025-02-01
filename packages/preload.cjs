@@ -6,7 +6,7 @@ const { getBranchInfo } = require('./app/modules/branches/branchesListeners.cjs'
 const { getCashRegisterActive, createCashRegister, getCurrentCashRegisterState } = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
 const { createSale, getSales, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
 const { getConfiguration, updateConfiguration, createConfiguration, exportDatabase, importDatabase, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
-const { getCustomers } = require('./app/modules/customers/customersListeners.cjs')
+const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
 
 window.addEventListener('DOMContentLoaded', () => {
   const replaceText = (selector, text) => {
@@ -44,6 +44,10 @@ contextBridge.exposeInMainWorld('electron', {
   getConfiguration,
   // Customers
   getCustomers,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+  // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),
 })

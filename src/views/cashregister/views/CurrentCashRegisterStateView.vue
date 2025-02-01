@@ -12,7 +12,7 @@
             Total de ventas
           </h6>
           <p class="text-sm text-gray-500">
-            Ventas realizadas en el día
+            Ventas realizadas desde apertura
           </p>
           <p class="text-xl font-bold">
             {{ cashRegisterState.total_sales }}

@@ -12,3 +12,9 @@ export const getPaymentMethodName = (paymentMethod: PaymentMethod) => {
     return 'Otro'
   }
 }
+
+export const parseAmount = (amount: number | string | null | undefined) => {
+  if (amount === null || amount === undefined) return 0
+  if (typeof amount === 'string' && amount.trim() === '') return 0
+  return parseFloat(amount.toString())
+}
