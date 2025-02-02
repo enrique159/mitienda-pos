@@ -4,7 +4,7 @@
       Crear nuevo producto
     </h6>
     <form @submit.prevent="handleSubmit" class="space-y-12">
-      <!-- GENERAL INFO -->
+      <!-- **************** GENERAL INFO **************** -->
       <div>
         <h6 class="font-bold text-lg text-black-1">
           Información general
@@ -150,11 +150,24 @@
         </div>
       </div>
 
-      <!-- SALES INFO -->
+      <!-- **************** SALES INFO **************** -->
       <div>
-        <h6 class="font-bold text-lg text-black-1">
-          Venta
-        </h6>
+        <div class="flex justify-between items-center">
+          <h6 class="font-bold text-lg text-black-1">
+            Venta
+          </h6>
+          <div class="form-control">
+            <label class="label cursor-pointer">
+              <span class="label-text mr-2">Impuestos incluidos en el precio de venta</span>
+              <input
+                type="checkbox"
+                class="toggle checked:text-brand-pink"
+                :checked="isTaxesIncludedInSellingPrice"
+                @change="isTaxesIncludedInSellingPrice = !isTaxesIncludedInSellingPrice"
+              >
+            </label>
+          </div>
+        </div>
         <div class="divider my-0" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Precio de compra -->
@@ -163,14 +176,17 @@
               <span class="label-text text-black-1 font-medium required">Precio de compra</span>
               <span class="text-xs text-black-2">Costo del producto con proveedor</span>
             </div>
-            <input
-              id="purchase_price"
-              v-model="formData.purchase_price"
-              type="number"
-              min="0"
-              step="0.01"
-              class="input input-bordered w-full"
-            >
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 transform -translate-y-1/2">$</span>
+              <input
+                id="purchase_price"
+                v-model="formData.purchase_price"
+                type="number"
+                min="0"
+                step="0.01"
+                class="input input-bordered w-full pl-7"
+              >
+            </div>
             <div v-for="(error, index) in v$.purchase_price.$errors" :key="`error-purchase_price-${index}`">
               <span class="text-brand-pink text-sm">{{ error.$message }}</span>
             </div>
@@ -182,18 +198,99 @@
               <span class="label-text text-black-1 font-medium required">Precio de venta</span>
               <span class="text-xs text-black-2">Precio de venta al cliente</span>
             </div>
-            <input
-              id="selling_price"
-              v-model="formData.selling_price"
-              type="number"
-              min="0"
-              step="0.01"
-              class="input input-bordered w-full"
-            >
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 transform -translate-y-1/2">$</span>
+              <input
+                id="selling_price"
+                v-model="formData.selling_price"
+                type="number"
+                min="0"
+                step="0.01"
+                class="input input-bordered w-full pl-7"
+              >
+            </div>
             <div v-for="(error, index) in v$.selling_price.$errors" :key="`error-selling_price-${index}`">
               <span class="text-brand-pink text-sm">{{ error.$message }}</span>
             </div>
           </label>
+
+          <!-- TAXES AVAILABLE -->
+          <div class="form-control w-full">
+            <div class="label">
+              <span class="label-text text-black-1 font-medium required">Impuestos</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <select
+                id="taxes"
+                class="select select-bordered w-full"
+                v-model="selectedTax"
+              >
+                <option v-for="tax in taxesAvailable" :key="`select-option-tax_${tax.value}`" :value="tax.value">
+                  {{ `${tax.code} - ${tax.label} - ${tax.import}` }}
+                </option>
+              </select>
+              <button
+                type="button"
+                class="btn bg-white-2 shadow-none"
+                @click="addTax"
+              >
+                Agregar
+                <IconArrowRight class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <!-- TAXES APPLIED -->
+          <div class="form-control w-full">
+            <div class="label">
+              <span class="label-text text-black-1 font-medium">Impuestos aplicados</span>
+            </div>
+            <div class="flex flex-col gap-2">
+              <div
+                v-for="(tax, index) in taxesApplied"
+                :key="`tax-applied-${index}`"
+                class="flex items-center gap-2"
+              >
+                <div class="w-full flex items-center justify-between border-2 border-dashed border-white-3 rounded-md p-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm text-black-2">{{ tax.code }}</span>
+                    <span class="text-sm text-black-2">{{ tax.label }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm text-black-2">{{ tax.type }}</span>
+                    <span class="text-sm text-black-2">{{ tax.import }}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-circle btn-error text-brand-white"
+                  @click="removeTax(index)"
+                >
+                  <IconX class="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            <div v-if="taxesApplied.length > 0" class="w-full">
+              <div class="divider my-0 mt-4" />
+
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-black-1">Impuestos totales:</span>
+                  <span class="text-black-1 font-bold">{{ formatCurrencySimple(taxTotal) }}</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <span class="text-black-1">Precio venta total:</span>
+                  <span class="text-green-500 font-bold">{{ formatCurrencySimple(sellingPriceWithTaxes) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <p v-else class="text-lg text-black-3 py-2 px-2">
+              No se han aplicado impuestos aún
+            </p>
+          </div>
 
           <!-- UNIT MEASUREMENT -->
           <label class="form-control w-full">
@@ -234,7 +331,7 @@
         </div>
       </div>
 
-      <!-- STOCK INFO -->
+      <!-- **************** STOCK INFO **************** -->
       <div>
         <div class="flex justify-between items-center">
           <h6 class="font-bold text-lg text-black-1">
@@ -311,20 +408,74 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowRight, IconX } from '@tabler/icons-vue'
 import { required, helpers, minValue } from '@vuelidate/validators'
 import { CreateProduct, UnitMeasurement } from '@/api/interfaces'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
+import { useCurrency } from '@/composables/useCurrency'
 import { useRouter } from 'vue-router'
 import { useBranch } from '@/composables/useBranch'
 import { useProduct } from '@/composables/useProduct'
-import { Months } from '@/constants/Months'
+import { Months } from '@/constants'
 import { toast } from 'vue3-toastify'
 
 const { branch } = useBranch()
 const { categories } = useProduct()
+const { formatCurrencySimple } = useCurrency()
 const router = useRouter()
 
+// Taxes
+interface Tax {
+  value: number
+  label: string
+  code: string
+  type: string
+  import: string
+  importValue: number
+}
+
+const isTaxesIncludedInSellingPrice = ref(true)
+const selectedTax = ref<number>(2)
+const taxesApplied = ref<Tax[]>([])
+const taxesAvailable = [
+  { value: 2, label: 'IVA', code: '002', type: 'TASA', import: '16%', importValue: 16 },
+  { value: 1, label: 'ISR', code: '001', type: 'TASA', import: '16%', importValue: 16 },
+  { value: 3, label: 'IEPS', code: '003', type: 'TASA', import: '16%', importValue: 16 },
+]
+const addTax = () => {
+  const tax = taxesAvailable.find((tax) => tax.value === selectedTax.value)
+  if (tax) {
+    taxesApplied.value.push({
+      value: tax.value,
+      code: tax.code,
+      label: tax.label,
+      type: tax.type,
+      import: tax.import,
+      importValue: tax.importValue,
+    })
+    selectedTax.value = 2
+  }
+}
+const removeTax = (index: number) => {
+  taxesApplied.value.splice(index, 1)
+}
+
+const taxTotal = computed(() => {
+  return taxesApplied.value.reduce((total: number, tax: any) => {
+    if (tax.type === 'TASA') {
+      const taxValue = formData.selling_price * tax.importValue / 100
+      return total + taxValue
+    } else if (tax.type === 'CUOTA') {
+      return total + tax.importValue
+    }
+  }, 0)
+})
+const sellingPriceWithTaxes = computed(() => {
+  return isTaxesIncludedInSellingPrice.value ? formData.selling_price : formData.selling_price + taxTotal.value
+})
+
+// Unidades de medida
 const unitMeasurements = [
   { value: UnitMeasurement.PIECE, label: 'Pieza' },
   { value: UnitMeasurement.KG, label: 'Kilogramo' },
