@@ -95,13 +95,25 @@ exports.seed = async function(knex) {
     // Customers
     await knex('customers').del()
     await knex('customers').insert({
-      id: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120006', // UUID generado
+      id: uuidv4(), // UUID generado
       id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002', // ID de la empresa relacionada
       name: 'Jose Eduardo Ezpinosa', // Nombre
       rfc: 'EJIE840101123',
       email: 'jose@mail.com',
       phone: '5551234567',
       address: 'Calle Principal #123, Centro',
+    })
+
+    // Taxes
+    await knex('taxes').del()
+    await knex('taxes').insert({
+      id: uuidv4(), // UUID generado
+      id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002', // ID de la empresa relacionada
+      code: '002', // Código
+      name: 'IVA', // Nombre
+      type: 'tasa', // Tipo
+      percentage: 16, // Porcentaje
+      import: null, // Importe
     })
   } catch (error) {
     console.error('Error seeding data:', error)

@@ -225,8 +225,8 @@
                 class="select select-bordered w-full"
                 v-model="selectedTax"
               >
-                <option v-for="tax in taxesAvailable" :key="`select-option-tax_${tax.value}`" :value="tax.value">
-                  {{ `${tax.code} - ${tax.label} - ${tax.import}` }}
+                <option v-for="tax in taxes" :key="`select-option-tax_${tax.code}`" :value="tax.code">
+                  {{ `${tax.code} - ${tax.name} - ${tax.type === 'tasa' ? tax.percentage + '%' : '$' + tax.import}` }}
                 </option>
               </select>
               <button
@@ -254,11 +254,11 @@
                 <div class="w-full flex items-center justify-between border-2 border-dashed border-white-3 rounded-md p-3">
                   <div class="flex items-center gap-2">
                     <span class="text-sm text-black-2">{{ tax.code }}</span>
-                    <span class="text-sm text-black-2">{{ tax.label }}</span>
+                    <span class="text-sm text-black-2">{{ tax.name }}</span>
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-sm text-black-2">{{ tax.type }}</span>
-                    <span class="text-sm text-black-2">{{ tax.import }}</span>
+                    <span class="text-sm text-black-2">{{ tax.type === 'tasa' ? tax.percentage + '%' : '$' + tax.import }}</span>
                   </div>
                 </div>
                 <button
@@ -410,51 +410,32 @@
 <script setup lang="ts">
 import { IconArrowRight, IconX } from '@tabler/icons-vue'
 import { required, helpers, minValue } from '@vuelidate/validators'
-import { CreateProduct, UnitMeasurement } from '@/api/interfaces'
+import { CreateProduct, UnitMeasurement, Tax } from '@/api/interfaces'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { useCurrency } from '@/composables/useCurrency'
 import { useRouter } from 'vue-router'
 import { useBranch } from '@/composables/useBranch'
+import { useTax } from '@/composables/useTax'
 import { useProduct } from '@/composables/useProduct'
 import { Months } from '@/constants'
 import { toast } from 'vue3-toastify'
 
+const { taxes } = useTax()
 const { branch } = useBranch()
 const { categories } = useProduct()
 const { formatCurrencySimple } = useCurrency()
 const router = useRouter()
 
 // Taxes
-interface Tax {
-  value: number
-  label: string
-  code: string
-  type: string
-  import: string
-  importValue: number
-}
-
 const isTaxesIncludedInSellingPrice = ref(true)
-const selectedTax = ref<number>(2)
+const selectedTax = ref<string>(taxes.value[0].code)
 const taxesApplied = ref<Tax[]>([])
-const taxesAvailable = [
-  { value: 2, label: 'IVA', code: '002', type: 'TASA', import: '16%', importValue: 16 },
-  { value: 1, label: 'ISR', code: '001', type: 'TASA', import: '16%', importValue: 16 },
-  { value: 3, label: 'IEPS', code: '003', type: 'TASA', import: '16%', importValue: 16 },
-]
 const addTax = () => {
-  const tax = taxesAvailable.find((tax) => tax.value === selectedTax.value)
+  const tax = taxes.value.find((tax) => tax.code === selectedTax.value)
   if (tax) {
-    taxesApplied.value.push({
-      value: tax.value,
-      code: tax.code,
-      label: tax.label,
-      type: tax.type,
-      import: tax.import,
-      importValue: tax.importValue,
-    })
-    selectedTax.value = 2
+    taxesApplied.value.push(tax)
+    selectedTax.value = tax.code
   }
 }
 const removeTax = (index: number) => {
@@ -462,12 +443,14 @@ const removeTax = (index: number) => {
 }
 
 const taxTotal = computed(() => {
-  return taxesApplied.value.reduce((total: number, tax: any) => {
-    if (tax.type === 'TASA') {
-      const taxValue = formData.selling_price * tax.importValue / 100
+  return taxesApplied.value.reduce((total: number, tax: Tax): number => {
+    if (tax.type === 'tasa') {
+      const taxValue = formData.selling_price * tax.percentage! / 100
       return total + taxValue
-    } else if (tax.type === 'CUOTA') {
-      return total + tax.importValue
+    } else if (tax.type === 'cuota') {
+      return total + tax.import!
+    } else {
+      return total
     }
   }, 0)
 })

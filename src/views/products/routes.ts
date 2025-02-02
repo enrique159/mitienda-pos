@@ -1,6 +1,7 @@
 import ProductsModule from './ProductsModule.vue'
 import ProductsView from './views/ProductsView.vue'
 import CreateProductView from './views/CreateProductView.vue'
+import TaxesView from './views/TaxesView.vue'
 
 export const ProductsRoutes = [
   {
@@ -18,6 +19,11 @@ export const ProductsRoutes = [
         path: 'create',
         name: 'CreateProductView',
         component: CreateProductView,
+      },
+      {
+        path: 'taxes',
+        name: 'TaxesView',
+        component: TaxesView,
       },
     ],
   },

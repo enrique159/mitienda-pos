@@ -14,7 +14,7 @@ export interface Product {
   stock_minimum: number;
   purchase_price: number;
   selling_price: number;
-  taxes: Tax[];
+  taxes: ProductTax[];
   is_active: boolean;
   has_expiration_date: boolean;
   expiration_date?: Date;
@@ -26,7 +26,7 @@ export interface Product {
   synced_at?: Date;
 }
 
-export interface Tax {
+export interface ProductTax {
   code: string;
   type: string;
   percent: number;
@@ -63,7 +63,7 @@ export interface CreateProduct {
   stock_minimum: number | null;
   purchase_price: number;
   selling_price: number;
-  taxes: Tax[];
+  taxes: ProductTax[];
   is_active: boolean;
   has_expiration_date: boolean;
   expiration_date?: Date;

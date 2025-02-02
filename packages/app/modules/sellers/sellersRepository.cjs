@@ -8,7 +8,7 @@ const mapDataToSeller = (data) => ({
   permissions: data.permissions,
   status: data.status,
   created_at: data.created_at,
-  created_at: data.updated_at,
+  updated_at: data.updated_at,
 })
 
 const mapDataToSellerSimple = (data) => ({
