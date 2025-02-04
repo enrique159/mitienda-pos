@@ -20,7 +20,7 @@ export const useCurrency = () => {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency,
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 6,
     }).format(value)
   }
 

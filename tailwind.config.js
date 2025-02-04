@@ -20,6 +20,7 @@ export default {
         "black-1": "#3D3C3C",
         "black-2": "#5A5A5A",
         "black-3": "#8E8E8E",
+        "table-row": "#FBFCFC",
       },
       boxShadow: {
         card: '0 35px 60px -15px rgba(0, 0, 0, 0.05)',

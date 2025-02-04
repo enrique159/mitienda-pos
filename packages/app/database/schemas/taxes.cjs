@@ -12,7 +12,7 @@ exports.createTable = async function(knex) {
     table.string('name')
     table.enu('type', ['tasa', 'cuota', 'exento']).notNullable().defaultTo('tasa')
     table.decimal('percentage')
-    table.decimal('import')
+    table.decimal('import') // Importe de la cuota (en decimales)
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable()
     table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable()
     table.timestamp('synced_at')

@@ -13,10 +13,11 @@
       </div>
     </header>
 
-    <table class="table bg-white rounded-none">
+    <table class="table table-sm bg-white rounded-none">
       <!-- head -->
       <thead>
         <tr>
+          <th class="w-12" />
           <th class="w-48">
             Nombre
           </th>
@@ -31,8 +32,10 @@
         </tr>
       </thead>
       <tbody>
-        <!-- row 1 -->
-        <tr v-for="customer in filteredCustomers" :key="`customer-${customer.id}`">
+        <tr v-for="(customer, i) in filteredCustomers" :key="`customer-${customer.id}`" :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'">
+          <td>
+            <span class="text-sm text-black-3">{{ i + 1 }}</span>
+          </td>
           <td class="whitespace-nowrap max-w-[12rem] overflow-hidden overflow-ellipsis">
             {{ customer.name }}
           </td>
@@ -45,8 +48,8 @@
           </td>
           <td>
             <div
-              class="badge badge-outline font-medium"
-              :class="[customer.status === 'active' ? 'text-success' : 'text-black-3']"
+              class="badge font-medium border-none"
+              :class="[customer.status === 'active' ? 'text-green-500 bg-success/20' : 'text-black-3 bg-white-2']"
             >
               {{ customer.status === 'active' ? 'activo' : 'inactivo' }}
             </div>

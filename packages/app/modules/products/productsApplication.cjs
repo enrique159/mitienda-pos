@@ -1,6 +1,15 @@
 const { ipcMain } = require('electron')
 const productsRepository = require('./productsRepository.cjs')
 
+ipcMain.on('create_product', async (event, product) => {
+  const response = await productsRepository.createProduct(product)
+  event.reply('create_product', response)
+})
+
+ipcMain.on('delete_product', async (event, productId) => {
+  const response = await productsRepository.deleteProduct(productId)
+  event.reply('delete_product', response)
+})
 
 ipcMain.on('get_active_products', async (event) => {
   const response = await productsRepository.getActiveProducts()

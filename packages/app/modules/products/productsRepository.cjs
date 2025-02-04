@@ -74,3 +74,30 @@ exports.getProductsByCategory = async function (categoryId) {
       return response(false, 'Error al traer los productos', err)
     })
 }
+
+exports.createProduct = async function (product) {
+  product.taxes = product.taxes.length ? JSON.stringify(product.taxes) : '[]'
+  return await knex('products').insert(product).returning('*')
+    .then((product) => {
+      logger.info({ type: 'CREATE PRODUCT', message: 'Producto creado exitosamente', data: product })
+      return response(true, 'Producto creado exitosamente', product)
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'CREATE PRODUCT ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al crear el producto', err)
+    })
+}
+
+exports.deleteProduct = async function (productId) {
+  return await knex('products').where('id', productId).del()
+    .then((product) => {
+      logger.info({ type: 'DELETE PRODUCT', message: 'Producto eliminado exitosamente', data: product })
+      return response(true, 'Producto eliminado exitosamente', product)
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'DELETE PRODUCT ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al eliminar el producto', err)
+    })
+}

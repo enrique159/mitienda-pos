@@ -8,14 +8,34 @@
 <script setup lang="ts">
 import SideMenu from '@/components/menus/SideMenu.vue'
 import { IconBox, IconCategory, IconCirclePlus, IconCoins } from '@tabler/icons-vue'
-import { getTaxes } from '@/api/electron'
+import { getTaxes, getProducts, getCategories } from '@/api/electron'
+import { Response, Product, Category } from '@/api/interfaces'
 import { useTax } from '@/composables/useTax'
+import { useProduct } from '@/composables/useProduct'
 import { onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 
 const { taxes } = useTax()
+const { setProducts, setCategories } = useProduct()
 
-const loadTaxes = async () => {
+const loadData = async () => {
+  // Load Products
+  getProducts((response: Response<Product[]>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    setProducts(response.response)
+  })
+  // Load Categories
+  getCategories((response: Response<Category[]>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    setCategories(response.response)
+  })
+  // Load Taxes
   const response = await getTaxes()
   if (!response.success) {
     toast.error(response.message)
@@ -25,7 +45,7 @@ const loadTaxes = async () => {
 }
 
 onMounted(() => {
-  loadTaxes()
+  loadData()
 })
 
 const productsMenu = [

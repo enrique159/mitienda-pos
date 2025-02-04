@@ -29,8 +29,8 @@ export interface Product {
 export interface ProductTax {
   code: string;
   type: string;
-  percent: number;
-  fixed: number;
+  percent: number | null;
+  fixed: number | null;
 }
 
 export enum UnitMeasurement {

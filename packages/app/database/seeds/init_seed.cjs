@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const { products } = require('./products_seed.cjs')
 const { categories } = require('./categories_seed.cjs')
+const { taxes } = require('./taxes_seed.cjs')
 const { logger } = require('../../helpers/index.cjs')
 
 /**
@@ -106,15 +107,7 @@ exports.seed = async function(knex) {
 
     // Taxes
     await knex('taxes').del()
-    await knex('taxes').insert({
-      id: uuidv4(), // UUID generado
-      id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002', // ID de la empresa relacionada
-      code: '002', // Código
-      name: 'IVA', // Nombre
-      type: 'tasa', // Tipo
-      percentage: 16, // Porcentaje
-      import: null, // Importe
-    })
+    await knex('taxes').insert(taxes)
   } catch (error) {
     console.error('Error seeding data:', error)
     logger.error({ type: 'DB SEEDS', message: `${error}`, error })

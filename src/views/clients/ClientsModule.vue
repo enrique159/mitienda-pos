@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import SideMenu from '@/components/menus/SideMenu.vue'
-import { IconUserPlus, IconUsers } from '@tabler/icons-vue'
+import { IconUserPlus, IconUsers, IconAddressBook } from '@tabler/icons-vue'
 const clientsMenu = [
   {
     title: 'Clientes',
@@ -18,6 +18,11 @@ const clientsMenu = [
     title: 'Nuevo cliente',
     path: '/main/clients/create',
     icon: IconUserPlus,
+  },
+  {
+    title: 'Créditos pendientes',
+    path: '/main/clients/credits',
+    icon: IconAddressBook,
   },
 ]
 

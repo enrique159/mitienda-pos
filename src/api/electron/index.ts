@@ -1,4 +1,4 @@
-import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax } from '@/api/interfaces'
+import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct } from '@/api/interfaces'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 
@@ -18,6 +18,8 @@ export const getCategories = async (callback: any) => window.electron.getCategor
 export const getProducts = async (callback: any) => window.electron.getActiveProducts(callback)
 export const getProductCategories = async (callback: any) => window.electron.getProductCategories(callback)
 export const getProductsByCategory = async (categoryId: string , callback: any) => window.electron.getProductsByCategory(categoryId, callback)
+export const createProduct = async (product: CreateProduct, callback: any) => window.electron.createProduct(product, callback)
+export const deleteProduct = async (productId: string, callback: any) => window.electron.deleteProduct(productId, callback)
 
 /* Taxes */
 export const getTaxes = async (): Promise<Response<Tax[]>> => window.electron.getTaxes()

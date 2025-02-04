@@ -183,7 +183,7 @@
                 v-model="formData.purchase_price"
                 type="number"
                 min="0"
-                step="0.01"
+                step="any"
                 class="input input-bordered w-full pl-7"
               >
             </div>
@@ -205,7 +205,7 @@
                 v-model="formData.selling_price"
                 type="number"
                 min="0"
-                step="0.01"
+                step="any"
                 class="input input-bordered w-full pl-7"
               >
             </div>
@@ -225,8 +225,8 @@
                 class="select select-bordered w-full"
                 v-model="selectedTax"
               >
-                <option v-for="tax in taxes" :key="`select-option-tax_${tax.code}`" :value="tax.code">
-                  {{ `${tax.code} - ${tax.name} - ${tax.type === 'tasa' ? tax.percentage + '%' : '$' + tax.import}` }}
+                <option v-for="tax in taxes" :key="`select-option-tax_${tax.id}`" :value="tax.id">
+                  {{ `${tax.code} - ${tax.name} - ${tax.type === 'tasa' ? tax.percentage + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.import!) : 'EXENTO'}` }}
                 </option>
               </select>
               <button
@@ -244,10 +244,11 @@
           <div class="form-control w-full">
             <div class="label">
               <span class="label-text text-black-1 font-medium">Impuestos aplicados</span>
+              <span v-if="taxesApplied.length === 0" class="text-xs text-brand-orange">No se han agregado impuestos aún</span>
             </div>
             <div class="flex flex-col gap-2">
               <div
-                v-for="(tax, index) in taxesApplied"
+                v-for="(tax, index) in taxesAppliedInfo"
                 :key="`tax-applied-${index}`"
                 class="flex items-center gap-2"
               >
@@ -258,7 +259,8 @@
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-sm text-black-2">{{ tax.type }}</span>
-                    <span class="text-sm text-black-2">{{ tax.type === 'tasa' ? tax.percentage + '%' : '$' + tax.import }}</span>
+                    <span class="text-sm text-black-2">{{ tax.type === 'tasa' ? tax.percentage + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.import!) : 'EXENTO' }}</span>
+                    <span class="text-sm text-black-1">{{ formatCurrencySimple(tax.fixed) }}</span>
                   </div>
                 </div>
                 <button
@@ -274,7 +276,7 @@
             <div v-if="taxesApplied.length > 0" class="w-full">
               <div class="divider my-0 mt-4" />
 
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
                   <span class="text-black-1">Impuestos totales:</span>
                   <span class="text-black-1 font-bold">{{ formatCurrencySimple(taxTotal) }}</span>
@@ -286,10 +288,6 @@
                 </div>
               </div>
             </div>
-
-            <p v-else class="text-lg text-black-3 py-2 px-2">
-              No se han aplicado impuestos aún
-            </p>
           </div>
 
           <!-- UNIT MEASUREMENT -->
@@ -410,7 +408,8 @@
 <script setup lang="ts">
 import { IconArrowRight, IconX } from '@tabler/icons-vue'
 import { required, helpers, minValue } from '@vuelidate/validators'
-import { CreateProduct, UnitMeasurement, Tax } from '@/api/interfaces'
+import { CreateProduct, UnitMeasurement, Tax, Response, ProductTax, Product } from '@/api/interfaces'
+import { createProduct, getProducts } from '@/api/electron'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { useCurrency } from '@/composables/useCurrency'
@@ -423,19 +422,25 @@ import { toast } from 'vue3-toastify'
 
 const { taxes } = useTax()
 const { branch } = useBranch()
-const { categories } = useProduct()
+const { categories, setProducts } = useProduct()
 const { formatCurrencySimple } = useCurrency()
 const router = useRouter()
 
 // Taxes
 const isTaxesIncludedInSellingPrice = ref(true)
-const selectedTax = ref<string>(taxes.value[0].code)
+const selectedTax = ref<string>(taxes.value[0].id)
 const taxesApplied = ref<Tax[]>([])
+const taxesAppliedInfo = computed(() => {
+  return taxesApplied.value.map((tax) => ({
+    ...tax,
+    fixed: tax.type === 'tasa' ? formData.selling_price * tax.percentage! / 100 : tax.import!,
+  }))
+})
 const addTax = () => {
-  const tax = taxes.value.find((tax) => tax.code === selectedTax.value)
+  const tax = taxes.value.find((tax) => tax.id === selectedTax.value)
   if (tax) {
     taxesApplied.value.push(tax)
-    selectedTax.value = tax.code
+    selectedTax.value = tax.id
   }
 }
 const removeTax = (index: number) => {
@@ -510,13 +515,20 @@ const rules = computed(() => {
     purchase_price: {
       required: helpers.withMessage('El precio de compra es requerido', required),
       minValue: helpers.withMessage('El precio de compra debe ser mayor o igual a 0', minValue(0)),
+      maxTwoDecimals: helpers.withMessage('El precio de compra no debe tener más de 2 decimales', maxTwoDecimals),
     },
     selling_price: {
       required: helpers.withMessage('El precio de venta es requerido', required),
       minValue: helpers.withMessage('El precio de venta debe ser mayor o igual a 0', minValue(0)),
+      maxTwoDecimals: helpers.withMessage('El precio de venta no debe tener más de 2 decimales', maxTwoDecimals),
     },
   }
 })
+
+const maxTwoDecimals = (value: number) => {
+  const decimalStr = value.toString().split('.')[1]
+  return !decimalStr || decimalStr.length <= 2
+}
 
 const v$ = useVuelidate(rules, formData)
 
@@ -527,6 +539,21 @@ const toggleUnlimitedStock = () => {
   formData.stock_minimum = formData.unlimited_stock ? 0 : null
 }
 
+
+const taxMaping = (tax: Tax, sellingPrice: number): ProductTax => {
+  const fixedValue = tax.type === 'tasa'
+    ? tax.percentage! * sellingPrice
+    : tax.type === 'cuota'
+      ? tax.import! * 100 : null
+  return {
+    code: tax.code,
+    type: tax.type,
+    percent: tax.type === 'tasa' ? tax.percentage! : null,
+    fixed: fixedValue ? Number(fixedValue.toFixed(4)) : null,
+  }
+}
+
+
 const handleSubmit = async () => {
   try {
     const isFormCorrect = await v$.value.$validate()
@@ -535,19 +562,32 @@ const handleSubmit = async () => {
       return
     }
 
+    const sellingPrice = !isTaxesIncludedInSellingPrice.value
+      ? formData.selling_price + taxTotal.value
+      : formData.selling_price
     const newProduct: CreateProduct = {
       ...formData,
+      taxes: taxesApplied.value.map((tax) => taxMaping(tax, formData.selling_price)),
+      purchase_price: formData.purchase_price * 100,
+      selling_price: Number((sellingPrice * 100).toFixed(4)),
       id_company: branch.value.id_company,
     }
 
-    // createProduct(newProduct, (response: Response<any>) => {
-    //   if (!response.success) {
-    //     toast.error(response.message)
-    //     return
-    //   }
-    //   toast.success('Producto creado exitosamente')
-    //   router.push('/main/products')
-    // })
+    createProduct(newProduct, (response: Response<void>) => {
+      if (!response.success) {
+        toast.error(response.message)
+        return
+      }
+      getProducts((response: Response<Product[]>) => {
+        if (!response.success) {
+          toast.error(response.message)
+          return
+        }
+        setProducts(response.response)
+      })
+      router.push('/main/products')
+      toast.success('Producto creado exitosamente')
+    })
   } catch (error) {
     console.error('Error creating product:', error)
     toast.error('Error al crear el producto')

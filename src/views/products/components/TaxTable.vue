@@ -1,9 +1,10 @@
 <template>
-  <div class="overflow-x-auto h-full">
-    <table class="table bg-white rounded-none">
+  <div class="overflow-auto pb-20 h-custom">
+    <table class="table table-sm bg-white rounded-none">
       <!-- head -->
       <thead>
         <tr>
+          <th class="w-12" />
           <th>Código</th>
           <th>Nombre</th>
           <th>Tipo</th>
@@ -14,11 +15,14 @@
 
       <tbody>
         <!-- row 1 -->
-        <tr v-for="tax in taxes" :key="`tax-row-${tax.id}`">
+        <tr v-for="(tax, i) in taxes" :key="`tax-row-${tax.id}`" :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'">
+          <td>
+            <span class="text-sm text-black-3">{{ i + 1 }}</span>
+          </td>
           <td>{{ tax.code }}</td>
           <td>{{ tax.name }}</td>
           <td>{{ tax.type.toUpperCase() }}</td>
-          <td>{{ tax.type === 'tasa' ? tax.percentage + '%' : formatCurrencySimple(tax.import!) }}</td>
+          <td>{{ tax.type === 'tasa' ? tax.percentage + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.import!) : '-' }}</td>
           <td>
             <div class="dropdown dropdown-left">
               <div
@@ -76,3 +80,9 @@ const getAllTaxes = async () => {
   setTaxes(response.response)
 }
 </script>
+
+<style scoped>
+.h-custom {
+  height: calc(100% - 65px);
+}
+</style>
