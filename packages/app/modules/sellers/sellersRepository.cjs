@@ -39,6 +39,21 @@ exports.startSession = async function (data) {
   return response(true, 'Vendedor encontrado', mapDataToSeller(seller))
 }
 
+exports.closeSession = async function (sellerId) {
+  try {
+    const seller = await knex('sellers').select().where('id', sellerId).first()
+    if (!seller) {
+      logger.error({ type: 'CLOSE SESSION', message: 'Vendedor no encontrado', sellerId })
+      return response(false, 'Vendedor no encontrado', seller)
+    }
+    logger.info({ type: 'CLOSE SESSION', seller: { name: seller.name }})
+    return response(true, 'Vendedor cerrado exitosamente', seller)
+  } catch (error) {
+    logger.error({ type: 'CLOSE SESSION', message: `${error}`, sellerId })
+    return response(false, 'Error al cerrar sesión', error)
+  }
+}
+
 /**
  * Obtiene todos los usuarios activos
  */

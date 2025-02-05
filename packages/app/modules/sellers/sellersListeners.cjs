@@ -6,6 +6,8 @@ exports.startSession = function (params, callback) {
   ipcRenderer.send('start_session', params)
 }
 
+exports.closeSession = (sellerId) => ipcRenderer.sendSync('close_session', sellerId)
+
 exports.getSellers = function (callback) {
   ipcRenderer.removeAllListeners('get_sellers')
   ipcRenderer.on('get_sellers', (_, response) => callback(response))

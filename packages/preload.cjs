@@ -1,5 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron')
-const { startSession, getSellers } = require('./app/modules/sellers/sellersListeners.cjs')
+const { startSession, getSellers, closeSession } = require('./app/modules/sellers/sellersListeners.cjs')
 const { createProduct, deleteProduct, getActiveProducts, getProductCategories, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
 const { getCategories } = require('./app/modules/categories/categoriesListeners.cjs')
 const { getBranchInfo } = require('./app/modules/branches/branchesListeners.cjs')
@@ -24,6 +24,7 @@ contextBridge.exposeInMainWorld('electron', {
   // Sellers
   getSellers,
   startSession,
+  closeSession,
   // Products
   createProduct,
   deleteProduct,
@@ -57,4 +58,11 @@ contextBridge.exposeInMainWorld('electron', {
   // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),
+  // System events
+  onSystemSuspend: (callback) => {
+    ipcRenderer.on('system-suspend', () => callback())
+  },
+  onSystemResume: (callback) => {
+    ipcRenderer.on('system-resume', () => callback())
+  },
 })

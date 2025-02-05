@@ -11,6 +11,10 @@ export const useUserStore = defineStore('user', () => {
     user.value = newUser
   }
 
+  const logout = () => {
+    user.value = {} as Seller
+  }
+
   const permissions = computed(() => {
     return {
       canSell: checkPermision(user.value.permissions, 1),
@@ -24,5 +28,6 @@ export const useUserStore = defineStore('user', () => {
     permissions,
     // Actions
     setUser,
+    logout,
   }
 })

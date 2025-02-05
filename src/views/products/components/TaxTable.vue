@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-auto pb-20 h-custom">
+  <div class="overflow-auto h-table">
     <table class="table table-sm bg-white rounded-none">
       <!-- head -->
       <thead>
@@ -80,9 +80,3 @@ const getAllTaxes = async () => {
   setTaxes(response.response)
 }
 </script>
-
-<style scoped>
-.h-custom {
-  height: calc(100% - 65px);
-}
-</style>

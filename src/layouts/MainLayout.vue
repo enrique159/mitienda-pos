@@ -65,8 +65,8 @@ import {
   IconCashRegister,
   IconChartBar
 } from '@tabler/icons-vue'
-import { useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { ref, computed, watchEffect, onBeforeUnmount, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useProduct } from '@/composables/useProduct'
 import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
@@ -74,17 +74,17 @@ import { getProducts, getCategories, getBranchInfo, getCashRegisterActive, getCu
 import { Category, Product, Response, Branch } from '@/api/interfaces'
 import { useDate } from '@/composables/useDate'
 import { useCustomer } from '@/composables/useCustomer'
+import { useUser } from '@/composables/useUser'
 import { toast } from 'vue3-toastify'
-import router from '@/router'
-import { onBeforeUnmount } from 'vue'
-import { ref, watchEffect } from 'vue'
 
 const { setProducts, setCategories } = useProduct()
 const { setBranch, branch } = useBranch()
 const { setCashRegister } = useCashRegister()
 const { getCurrentDate } = useDate()
 const { setCustomers } = useCustomer()
+const { logout } = useUser()
 const route = useRoute()
+const router = useRouter()
 
 // El numero 2 es porque todas las rutas del main empiezan por /main/...
 const currentRoute = computed(() => route.path.split('/')[2])
@@ -165,4 +165,29 @@ watchEffect(() => {
 
 const showHour = computed(() => time.value)
 
+// System events
+const cleanupFunctions: (() => void)[] = []
+
+// System suspend handler
+const suspendHandler = () => {
+  console.log('System Suspend')
+  logout()
+  router.push({ name: 'SignInAsUser' })
+}
+
+// System resume handler
+const resumeHandler = () => {
+  console.log('System Resume')
+}
+
+// Register event listeners
+cleanupFunctions.push(
+  window.electron.onSystemSuspend(suspendHandler),
+  window.electron.onSystemResume(resumeHandler)
+)
+
+// Cleanup on component unmount
+onUnmounted(() => {
+  cleanupFunctions.forEach((cleanup) => cleanup?.())
+})
 </script>

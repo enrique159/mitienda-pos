@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-x-auto">
+  <div class="overflow-hidden">
     <header class="w-full h-fit px-8 py-4 bg-white border-b border-gray-200 flex items-center justify-between">
       <h1 class="text-2xl text-black-2 font-medium">
         Clientes
@@ -13,79 +13,81 @@
       </div>
     </header>
 
-    <table class="table table-sm bg-white rounded-none">
-      <!-- head -->
-      <thead>
-        <tr>
-          <th class="w-12" />
-          <th class="w-48">
-            Nombre
-          </th>
-          <th>RFC</th>
-          <th class="w-48">
-            Correo electrónico
-          </th>
-          <th>Teléfono</th>
-          <th>Estado</th>
-          <th>Fecha creación</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(customer, i) in filteredCustomers" :key="`customer-${customer.id}`" :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'">
-          <td>
-            <span class="text-sm text-black-3">{{ i + 1 }}</span>
-          </td>
-          <td class="whitespace-nowrap max-w-[12rem] overflow-hidden overflow-ellipsis">
-            {{ customer.name }}
-          </td>
-          <td>{{ customer.rfc }}</td>
-          <td class="max-w-[12rem] overflow-hidden overflow-ellipsis">
-            {{ customer.email }}
-          </td>
-          <td class="whitespace-nowrap">
-            {{ formatPhone(customer.phone) }}
-          </td>
-          <td>
-            <div
-              class="badge font-medium border-none"
-              :class="[customer.status === 'active' ? 'text-green-500 bg-success/20' : 'text-black-3 bg-white-2']"
-            >
-              {{ customer.status === 'active' ? 'activo' : 'inactivo' }}
-            </div>
-          </td>
-          <td>{{ formatDatetimeShort(customer.created_at) }}</td>
-          <td>
-            <div class="dropdown dropdown-left">
+    <div class="overflow-auto h-table">
+      <table class="table table-sm bg-white rounded-none">
+        <!-- head -->
+        <thead>
+          <tr>
+            <th class="w-12" />
+            <th class="w-48">
+              Nombre
+            </th>
+            <th>RFC</th>
+            <th class="w-48">
+              Correo electrónico
+            </th>
+            <th>Teléfono</th>
+            <th>Estado</th>
+            <th>Fecha creación</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(customer, i) in filteredCustomers" :key="`customer-${customer.id}`" :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'">
+            <td>
+              <span class="text-sm text-black-3">{{ i + 1 }}</span>
+            </td>
+            <td class="whitespace-nowrap max-w-[12rem] overflow-hidden overflow-ellipsis">
+              {{ customer.name }}
+            </td>
+            <td>{{ customer.rfc }}</td>
+            <td class="max-w-[12rem] overflow-hidden overflow-ellipsis">
+              {{ customer.email }}
+            </td>
+            <td class="whitespace-nowrap">
+              {{ formatPhone(customer.phone) }}
+            </td>
+            <td>
               <div
-                tabindex="0"
-                role="button"
-                class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
+                class="badge font-medium border-none"
+                :class="[customer.status === 'active' ? 'text-green-500 bg-success/20' : 'text-black-3 bg-white-2']"
               >
-                <icon-dots-vertical class="w-4 h-4" />
+                {{ customer.status === 'active' ? 'activo' : 'inactivo' }}
               </div>
-              <ul
-                tabindex="0"
-                class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow"
-              >
-                <li @click.stop="openEditCustomerModal(customer)">
-                  <a>
-                    <icon-edit class="w-4 h-4" />
-                    Editar cliente
-                  </a>
-                </li>
-                <li @click.stop="deleteCustomerHandler(customer.id)">
-                  <a class="text-brand-pink">
-                    <icon-trash class="w-4 h-4" />
-                    Eliminar cliente
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+            <td>{{ formatDatetimeShort(customer.created_at) }}</td>
+            <td>
+              <div class="dropdown dropdown-left">
+                <div
+                  tabindex="0"
+                  role="button"
+                  class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
+                >
+                  <icon-dots-vertical class="w-4 h-4" />
+                </div>
+                <ul
+                  tabindex="0"
+                  class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow"
+                >
+                  <li @click.stop="openEditCustomerModal(customer)">
+                    <a>
+                      <icon-edit class="w-4 h-4" />
+                      Editar cliente
+                    </a>
+                  </li>
+                  <li @click.stop="deleteCustomerHandler(customer.id)">
+                    <a class="text-brand-pink">
+                      <icon-trash class="w-4 h-4" />
+                      Eliminar cliente
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <dialog id="dialogEditCustomer" ref="dialogEditCustomerRef" class="modal" @keydown.escape="closeEditCustomerModal">

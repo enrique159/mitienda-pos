@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron')
 const path = require('path')
 const env = require('./env.json')
 const initDB = require('./app/database/index.cjs')
@@ -30,21 +30,22 @@ function createWindow() {
     console.log('[electron]: Opening DevTools')
     mainWindow.webContents.openDevTools()
   }
+
+  // Store mainWindow reference to use it later
+  global.mainWindow = mainWindow
 }
-
-
-// if (dev) {
-//   const { default: installExtension, VUEJS_DEVTOOLS } = require('electron-devtools-installer');
-//   app.whenReady().then(() => {
-//     installExtension(VUEJS_DEVTOOLS)
-//       .then((name) => console.log(`[electron]: Added Extension:  ${name}`))
-//       .catch((err) => console.log('[electron]: An error occurred: ', err));
-//   });
-// }
 
 app.whenReady().then(() => {
   initDB().then(() => {
     createWindow()
+  })
+
+  powerMonitor.on('lock-screen', () => {
+    if (global.mainWindow) global.mainWindow.webContents.send('system-suspend')
+  })
+
+  powerMonitor.on('unlock-screen', () => {
+    if (global.mainWindow) global.mainWindow.webContents.send('system-resume')
   })
 
   app.on('activate', function() {

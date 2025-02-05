@@ -5,6 +5,7 @@ export const getVersion = async (callback: any) => window.electron.getVersion(ca
 /* Sellers */
 export const getSellers = async (callback: any) => window.electron.getSellers(callback)
 export const startSession = async (params: StartSessionParams, callback: any) => window.electron.startSession(params, callback)
+export const closeSession = async (sellerId: string) => window.electron.closeSession(sellerId)
 
 /* Sales */
 export const createSale = async (data: any, callback: any) => window.electron.createSale(data, callback)

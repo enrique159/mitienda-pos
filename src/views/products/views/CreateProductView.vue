@@ -265,7 +265,7 @@
                 </div>
                 <button
                   type="button"
-                  class="btn btn-sm btn-circle btn-error text-brand-white"
+                  class="btn btn-sm btn-circle bg-brand-pink hover:bg-brand-black text-brand-white"
                   @click="removeTax(index)"
                 >
                   <IconX class="w-6 h-6" />
