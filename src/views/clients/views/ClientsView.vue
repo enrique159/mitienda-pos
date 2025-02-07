@@ -182,16 +182,24 @@
               </div>
             </div>
 
-            <div class="col-span-2">
-              <div class="w-fit">
-                <label class="label cursor-pointer text-sm font-medium text-black-2">
-                  <span class="label-text w-16">{{ customerToEdit.status === 'active' ? 'Activo' : 'Inactivo' }}</span>
-                  <input type="checkbox" class="toggle checked:text-success" :checked="customerToEdit.status === 'active'" @change="toggleStatus">
-                </label>
-              </div>
-              <span v-if="customerToEdit.status !== 'active'" class="text-black-3 text-sm">
-                *Si el cliente está inactivo, no se le podrá asignar ventas a crédito.
-              </span>
+            <div class="form-control col-span-2">
+              <label class="label cursor-pointer w-fit">
+                <input
+                  type="checkbox"
+                  class="toggle checked:text-success"
+                  :checked="customerToEdit.status === 'active'"
+                  @change="toggleStatus"
+                >
+                <div class="flex flex-col items-start ml-2">
+                  <span class="font-semibold text-black-1 mr-2">Activo</span>
+                  <span class="text-sm text-black-2">
+                    El producto se vende en la tienda
+                  </span>
+                  <span v-if="customerToEdit.status !== 'active'" class="text-black-3 text-sm">
+                    *Si el cliente está inactivo, no se le podrá asignar ventas a crédito.
+                  </span>
+                </div>
+              </label>
             </div>
           </div>
 

@@ -1,11 +1,11 @@
 import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleStatus, PaymentMethods, SalePayload, PaymentPayload, SaleDetailPayload, PaymentMethod } from './sale'
 import { Product, ProductCart, UnitMeasurement, Unit, CreateProduct, ProductTax } from './products'
 import { CashRegister, CashRegisterState } from './cashRegisters'
+import { Category, CreateCategory } from './categories'
 import { Customer, CreateCustomer } from './customer'
 import { Configuration } from './configuration'
 import { StartSessionParams } from './auth'
 import { Tax, CreateTax } from './taxes'
-import { Category } from './categories'
 import { User, Seller } from './users'
 import { Discount } from './discount'
 import { Branch } from './branches'
@@ -38,6 +38,7 @@ export type {
   PaymentMethod,
   CreateProduct,
   Configuration,
+  CreateCategory,
   GeneratedFolio,
   PaymentPayload,
   CreateCustomer,

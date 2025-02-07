@@ -18,3 +18,7 @@ export const parseAmount = (amount: number | string | null | undefined) => {
   if (typeof amount === 'string' && amount.trim() === '') return 0
   return parseFloat(amount.toString())
 }
+
+export const fixedAmount = (amount: number) => {
+  return Number(amount.toFixed(2))
+}

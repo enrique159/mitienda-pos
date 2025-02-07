@@ -1,7 +1,7 @@
 <template>
   <div class="grid-sales h-full">
     <section class="w-full h-full pb-1 pt-2 px-4 bg-white flex items-center justify-between">
-      <p class="text-xl font-semibold text-gray-800">
+      <p class="text-lg font-semibold text-gray-800">
         Ticket No. {{ saleFolio }}
       </p>
       <button
@@ -138,7 +138,7 @@
           Todos
         </button>
         <button
-          v-for="category in categories"
+          v-for="category in availableCategories"
           :key="`category-button-${category.id}`"
           class="px-4 py-2 border rounded-md active:scale-95 transition-all text-sm"
           :class="[ category.id === categorySelected?.id ? 'bg-brand-pink text-white border-brand-pink' : 'border-white-2' ]"
@@ -510,6 +510,7 @@ const {
   setProducts,
   addProductToCart,
   clearCurrentCart,
+  availableCategories,
   isCurrentCartEmpty,
   removeProductFromCart,
   editProductQuantityInCart,
@@ -664,7 +665,25 @@ const searchInProductsCategory = ref('')
 const inputSearchInProductsCategoryRef = ref()
 
 const productsByCategoryFiltered = computed(() => {
-  return productsByCategory.value.filter((product) => product.name.toLowerCase().includes(searchInProductsCategory.value.toLowerCase()) || product?.barcode?.includes(searchInProductsCategory.value))
+  if (!searchInProductsCategory.value || searchInProductsCategory.value === '') {
+    return productsByCategory.value.filter((product) => availableCategories.value.some((category) => category.id === product.id_category))
+  }
+
+  const foundProducts = productsByCategory.value.filter((product) => {
+    const isMatchingSearch =
+      product.name.toLowerCase().includes(searchInProductsCategory.value.toLowerCase()) ||
+      product?.barcode?.includes(searchInProductsCategory.value)
+
+    const isCategoryActive = availableCategories.value.some((category) => category.id === product.id_category)
+
+    return isMatchingSearch && isCategoryActive
+  })
+
+  if (foundProducts.length === 0) {
+    return []
+  }
+
+  return foundProducts
 })
 
 const openSearchProductsModal = () => {

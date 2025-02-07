@@ -84,19 +84,12 @@ exports.getSales = async function () {
 */
 exports.generateSaleFolio = async function () {
   try {
-    const sales = await knex('sales').where('created_at', '>=', getUTCToday()).select()
     const todayString = getToday()
-    if (!sales.length) {
-      const branch = await knex('branches').select('branch_alias').first()
-      return response(true, 'Folio generado', { folio: `${branch.branch_alias}-${todayString}-0001` })
-    }
-    const lastSale = sales[sales.length - 1]
-    const lastFolio = lastSale.folio
-    const lastFolioNumber = parseInt(lastFolio.split('-')[2])
-    const newFolioNumber = (lastFolioNumber + 1).toString().padStart(4, '0')
-    return response(true, 'Folio generado', { folio: `${lastFolio.split('-')[0]}-${todayString}-${newFolioNumber}` })
+    const timestamp = Math.floor(Date.now() / 1000)
+
+    const branch = await knex('branches').select('branch_alias').first()
+    return response(true, 'Folio generado', { folio: `${branch.branch_alias}-${todayString}-${timestamp}` })
   } catch (err) {
-    console.log(err)
     logger.error({ type: 'GENERATE SALE FOLIO ERROR', message: `${err}`, data: err })
     return response(false, 'Error al generar el folio de la venta', err)
   }

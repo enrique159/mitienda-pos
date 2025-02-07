@@ -322,7 +322,7 @@ import { useCustomer } from '@/composables/useCustomer'
 import { useUser } from '@/composables/useUser'
 import { toast } from 'vue3-toastify'
 import { Snackbar } from '@/types/Snackbar'
-import { parseAmount } from '@/utils/Payments'
+import { parseAmount, fixedAmount } from '@/utils/Payments'
 
 const { formatCurrency } = useCurrency()
 
@@ -515,7 +515,7 @@ const createCurrentSale = () => {
       product_name: product.name,
       quantity: product.quantity,
       selling_price: product.selling_price,
-      tax_amount: product.taxes.reduce((acc, tax) => acc + tax.fixed, 0),
+      tax_amount: product.taxes.reduce((acc, tax) => acc + (tax.fixed ?? 0), 0),
       // TODO: Integrar los descuentos
       discount: 0,
       total: product.selling_price * product.quantity,
@@ -530,12 +530,13 @@ const createCurrentSale = () => {
       id_cash_register: cashRegister.value.id,
       id_customer: customerCurrentSale.value?.id,
       folio: saleFolio.value,
-      subtotal: currentCartSubtotal.value,
-      total: currentCartTotal.value,
-      amount_paid: isPaidAmountLowerThanTotal.value ? parseAmount(paymentQuantity.value) : currentCartTotal.value,
-      balance_due: isPaidAmountLowerThanTotal.value ? currentCartTotal.value - parseAmount(paymentQuantity.value) : 0,
+      subtotal: fixedAmount(currentCartSubtotal.value),
+      total: fixedAmount(currentCartTotal.value),
+      amount_paid: isPaidAmountLowerThanTotal.value ? fixedAmount(parseAmount(paymentQuantity.value)) : fixedAmount(currentCartTotal.value),
+      balance_due: isPaidAmountLowerThanTotal.value ? fixedAmount(currentCartTotal.value - parseAmount(paymentQuantity.value)) : 0,
+      change: fixedAmount(cashPaymentChange.value),
       discount: currentCartDiscount.value,
-      tax: currentCartTax.value,
+      tax: fixedAmount(currentCartTax.value),
       on_trust: isPaidAmountLowerThanTotal.value,
       due_date: isPaidAmountLowerThanTotal.value ? new Date(new Date().setMonth(new Date().getMonth() + 1)) : undefined,
       status: getStatusSale(),
@@ -546,7 +547,7 @@ const createCurrentSale = () => {
     payments: [
       {
         payment_method: onePaymentMethod.value.payment_method,
-        amount: parseAmount(paymentQuantity.value) - cashPaymentChange.value,
+        amount: parseAmount(paymentQuantity.value) - fixedAmount(cashPaymentChange.value),
       },
     ],
   }

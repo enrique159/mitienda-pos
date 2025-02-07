@@ -10,6 +10,10 @@ export const useProduct = () => {
   const { products, currentCart, categories, discounts } = storeToRefs(productStore)
 
   // Computed
+  const availableCategories = computed(() => {
+    return categories.value.filter((category) => category.status === 'active')
+  })
+
   const currentCartSubtotal = computed(() => {
     return currentCart.value.reduce((acc, product) => acc + product.selling_price * product.quantity, 0)
   })
@@ -32,7 +36,7 @@ export const useProduct = () => {
   const currentCartTax = computed(() => {
     return currentCart.value.reduce((acc, product) => {
       const productTaxes = product.taxes.reduce((acc, tax) => {
-        const taxAmount = tax.fixed * product.quantity
+        const taxAmount = (tax.fixed ?? 0) * product.quantity
         return acc + taxAmount
       }, 0)
       return acc + productTaxes
@@ -60,10 +64,18 @@ export const useProduct = () => {
 
   const searchProductByCodeOrName = (search: string): Product[] | null => {
     if (!search || search === '') return null
-    const foundProducts = products.value.filter((product) =>
-      product.name.toLowerCase().includes(search.toLowerCase()) ||
-      product.id.toLowerCase().includes(search.toLowerCase())
-    )
+    const foundProducts = products.value.filter((product) => {
+      const isMatchingSearch =
+        product.name.toLowerCase().includes(search.toLowerCase()) ||
+        product.barcode?.toLowerCase().includes(search.toLowerCase())
+
+      // Check if the product's category is active
+      const productCategory = categories.value.find((category) => category.id === product.id_category)
+      const isCategoryActive = productCategory?.status === 'active'
+
+      return isMatchingSearch && isCategoryActive
+    })
+
     if (foundProducts.length === 0) {
       return null
     }
@@ -96,6 +108,7 @@ export const useProduct = () => {
     getProductById,
     searchProductByCodeOrName,
 
+    availableCategories,
     currentCart,
     addProductToCart,
     currentCartTotal,

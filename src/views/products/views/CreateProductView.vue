@@ -69,7 +69,7 @@
               v-model="formData.id_category"
               class="select select-bordered w-full"
             >
-              <option v-for="category in categories" :key="`select-option-${category.id}`" :value="category.id">
+              <option v-for="category in availableCategories" :key="`select-option-${category.id}`" :value="category.id">
                 {{ category.name }}
               </option>
             </select>
@@ -422,7 +422,7 @@ import { toast } from 'vue3-toastify'
 
 const { taxes } = useTax()
 const { branch } = useBranch()
-const { categories, setProducts } = useProduct()
+const { setProducts, availableCategories } = useProduct()
 const { formatCurrencySimple } = useCurrency()
 const router = useRouter()
 
@@ -595,7 +595,7 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
-  formData.id_category = categories.value[0].id
+  formData.id_category = availableCategories.value[0] ? availableCategories.value[0].id : ''
   formData.stock = 0
   formData.stock_minimum = 0
 })

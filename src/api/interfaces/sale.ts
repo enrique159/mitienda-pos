@@ -14,6 +14,7 @@ export interface Sale {
   total: number
   amount_paid: number
   balance_due: number
+  change: number
   discount: number
   tax: number
   on_trust: boolean
@@ -88,6 +89,7 @@ export interface SalePayload {
   total: number
   amount_paid: number
   balance_due: number
+  change: number
   discount: number
   tax: number
   on_trust: boolean

@@ -10,7 +10,7 @@
           v-for="option in menuOptions"
           :key="`menu-option-${option.label}`"
           :to="option.route"
-          class="flex items-center justify-center gap-1 py-2 w-fit px-3 relative rounded-md cursor-pointer transition-all"
+          class="flex items-center justify-center gap-1 py-2 w-fit px-2 relative rounded-md cursor-pointer transition-all"
           :class="[
             currentRoute === option.value
               ? 'bg-brand-orange'

@@ -40,6 +40,10 @@ app.whenReady().then(() => {
     createWindow()
   })
 
+  powerMonitor.on('suspend', () => {
+    if (global.mainWindow) global.mainWindow.webContents.send('system-suspend')
+  })
+
   powerMonitor.on('lock-screen', () => {
     if (global.mainWindow) global.mainWindow.webContents.send('system-suspend')
   })
