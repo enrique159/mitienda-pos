@@ -12,8 +12,9 @@ function normalizeSale(sale) {
 /*
   ** ******** CREACION DE UNA VENTA ********
 */
-exports.createSale = async function (sale) {
-  return await knex('sales').insert(sale).returning('id')
+exports.createSale = async function (sale, trx) {
+  const queryBuilder = trx ? knex('sales').transacting(trx) : knex('sales')
+  return await queryBuilder.insert(sale).returning('id')
     .then((sale) => {
       logger.info({ type: 'CREATE SALE', message: 'Venta creada', data: Array.isArray(sale) ? sale[0] : sale })
       return response(true, 'Venta creada', Array.isArray(sale) ? sale[0] : sale)
@@ -25,8 +26,10 @@ exports.createSale = async function (sale) {
     })
 }
 
-exports.createSaleDetail = async function (saleDetail) {
-  return await knex('sale_details').insert(saleDetail)
+exports.createSaleDetail = async function (saleDetail, trx) {
+  saleDetail.taxes = saleDetail.taxes.length ? JSON.stringify(saleDetail.taxes) : []
+  const queryBuilder = trx ? knex('sale_details').transacting(trx) : knex('sale_details')
+  return await queryBuilder.insert(saleDetail)
     .then((saleDetail) => {
       return response(true, 'Detalle de venta creado', saleDetail)
     })
@@ -37,8 +40,9 @@ exports.createSaleDetail = async function (saleDetail) {
     })
 }
 
-exports.createSalePayment = async function (salePayment) {
-  return await knex('sale_payments').insert(salePayment)
+exports.createSalePayment = async function (salePayment, trx) {
+  const queryBuilder = trx ? knex('sale_payments').transacting(trx) : knex('sale_payments')
+  return await queryBuilder.insert(salePayment)
     .then((salePayment) => {
       return response(true, 'Pago de venta creado', salePayment)
     })

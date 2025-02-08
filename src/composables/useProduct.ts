@@ -36,11 +36,40 @@ export const useProduct = () => {
   const currentCartTax = computed(() => {
     return currentCart.value.reduce((acc, product) => {
       const productTaxes = product.taxes.reduce((acc, tax) => {
-        const taxAmount = (tax.fixed ?? 0) * product.quantity
-        return acc + taxAmount
+        if (tax.type === 'tasa') {
+          const taxAmount = tax.value ? product.subtotal * (tax.value / 100) : 0
+          return acc + taxAmount
+        } else if (tax.type === 'cuota') {
+          return acc + tax.value! * 100
+        } else {
+          return acc
+        }
       }, 0)
       return acc + productTaxes
     }, 0)
+  })
+
+  const currentCartTaxesPerProduct = computed(() => {
+    return currentCart.value.map((product) => {
+      const tax_amount = product.taxes.reduce((acc, tax) => {
+        if (tax.type === 'tasa') {
+          if (!tax.value) return acc
+          const taxPercentageCoeff = (tax.value / 100) + 1
+          const totalPlusTax = product.subtotal * taxPercentageCoeff
+          const taxAmount = totalPlusTax - product.subtotal
+          return acc + taxAmount
+        } else if (tax.type === 'cuota') {
+          return acc + (tax.value ?? 0) * 100
+        }
+        return acc
+      }, 0)
+
+      return {
+        id: product.id,
+        tax_amount,
+        subtotal: product.subtotal - tax_amount,
+      }
+    })
   })
 
   const currentCartTotal = computed(() => {
@@ -86,6 +115,7 @@ export const useProduct = () => {
     const productCart = {
       ...product,
       quantity,
+      subtotal: quantity * product.selling_price,
     }
     productStore.addCart(productCart)
   }
@@ -115,6 +145,7 @@ export const useProduct = () => {
     currentCartSubtotal,
     currentCartDiscount,
     currentCartTax,
+    currentCartTaxesPerProduct,
     removeProductFromCart,
     editProductQuantityInCart,
     isCurrentCartEmpty,

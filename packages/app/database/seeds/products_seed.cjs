@@ -10,12 +10,13 @@ exports.products = [
     barcode: '7501234567891',
     description: 'Bolsa de arroz blanco de 1 kg.',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 100,
     stock_minimum: 10,
     purchase_price: 1800, // $18.00 MXN
     selling_price: 2500, // $25.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 400 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,
@@ -30,12 +31,13 @@ exports.products = [
     barcode: '7501234567892',
     description: 'Bolsa de frijol negro de 1 kg.',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 80,
     stock_minimum: 10,
     purchase_price: 2300, // $23.00 MXN
     selling_price: 3000, // $30.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 480 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,
@@ -50,12 +52,13 @@ exports.products = [
     barcode: '7501234567893',
     description: 'Botella de aceite vegetal de 1 litro.',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 50,
     stock_minimum: 5,
     purchase_price: 2800, // $28.00 MXN
     selling_price: 3500, // $35.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 560 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2026-01-01',
@@ -70,12 +73,13 @@ exports.products = [
     barcode: '7501234567894',
     description: 'Leche entera pasteurizada de 1 litro.',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 60,
     stock_minimum: 10,
     purchase_price: 1600, // $16.00 MXN
     selling_price: 2000, // $20.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 320 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-12-31',
@@ -90,12 +94,13 @@ exports.products = [
     barcode: '7501234567895',
     description: 'Refresco Coca-Cola de 600 ml.',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 120,
     stock_minimum: 20,
     purchase_price: 1000, // $10.00 MXN
     selling_price: 1500, // $15.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 240 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-06-30',
@@ -110,12 +115,13 @@ exports.products = [
     barcode: '7501234567896',
     description: 'Pan blanco de caja (680 g).',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 40,
     stock_minimum: 5,
     purchase_price: 2700, // $27.00 MXN
     selling_price: 3500, // $35.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 560 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-01-20',
@@ -130,12 +136,13 @@ exports.products = [
     barcode: '7501234567897',
     description: 'Paquete de 4 rollos de papel higiénico.',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 30,
     stock_minimum: 5,
     purchase_price: 3200, // $32.00 MXN
     selling_price: 4200, // $42.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 672 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,
@@ -150,12 +157,13 @@ exports.products = [
     barcode: '7501234567898',
     description: 'Detergente en polvo multiusos de 1 kg.',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 25,
     stock_minimum: 5,
     purchase_price: 4000, // $40.00 MXN
     selling_price: 5500, // $55.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 880 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,
@@ -170,12 +178,13 @@ exports.products = [
     barcode: '7501234567899',
     description: 'Frasco de café soluble (200 g).',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 15,
     stock_minimum: 3,
     purchase_price: 8500, // $85.00 MXN
     selling_price: 10000, // $100.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 1600 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-10-10',
@@ -190,12 +199,13 @@ exports.products = [
     barcode: '7501234567890',
     description: 'Lata de atún en agua (140 g).',
     unit_measurement: 'piece',
+    is_bulk: false,
     unlimited_stock: false,
     stock: 50,
     stock_minimum: 10,
     purchase_price: 1800, // $18.00 MXN
     selling_price: 2500, // $25.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 400 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-12-31',
@@ -216,7 +226,7 @@ exports.products = [
     stock_minimum: 10,
     purchase_price: 2300, // $23.00 MXN
     selling_price: 3000, // $30.00 MXN
-    taxes: [{ code: '002', type: 'TASA', percent: 16, fixed: 480 }],
+    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,

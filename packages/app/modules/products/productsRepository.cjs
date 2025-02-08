@@ -76,7 +76,7 @@ exports.getProductsByCategory = async function (categoryId) {
 }
 
 exports.createProduct = async function (product) {
-  product.taxes = product.taxes.length ? JSON.stringify(product.taxes) : '[]'
+  product.taxes = product.taxes.length ? JSON.stringify(product.taxes) : []
   return await knex('products').insert(product).returning('*')
     .then((product) => {
       logger.info({ type: 'CREATE PRODUCT', message: 'Producto creado exitosamente', data: product })

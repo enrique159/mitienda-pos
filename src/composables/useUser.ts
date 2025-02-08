@@ -13,8 +13,8 @@ export const useUser = () => {
   }
 
   function logout() {
-    userStore.logout()
     closeSession(user.value.id)
+    userStore.logout()
   }
 
   return {

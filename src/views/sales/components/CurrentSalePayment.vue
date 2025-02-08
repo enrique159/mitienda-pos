@@ -312,7 +312,7 @@ import SnackBar from '@/components/SnackBar.vue'
 import { useProduct } from '@/composables/useProduct'
 import { useCurrency } from '@/composables/useCurrency'
 import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical, IconSearch, IconUser, IconX, IconPlus } from '@tabler/icons-vue'
-import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response } from '@/api/interfaces'
+import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response, TaxDetail } from '@/api/interfaces'
 import { getPaymentMethodName } from '@/utils/Payments'
 import { createSale } from '@/api/electron'
 import { ref, reactive, computed, watch } from 'vue'
@@ -332,6 +332,7 @@ const {
   currentCartSubtotal,
   currentCartDiscount,
   currentCartTax,
+  currentCartTaxesPerProduct,
   clearCurrentCart,
 } = useProduct()
 
@@ -515,7 +516,16 @@ const createCurrentSale = () => {
       product_name: product.name,
       quantity: product.quantity,
       selling_price: product.selling_price,
-      tax_amount: product.taxes.reduce((acc, tax) => acc + (tax.fixed ?? 0), 0),
+      tax_amount: currentCartTaxesPerProduct.value.find((tax) => tax.id === product.id)?.tax_amount ?? 0,
+      taxes: product.taxes.map((tax): TaxDetail => {
+        return {
+          code: tax.code,
+          type: tax.type,
+          value: tax.value ?? null,
+          fixed: tax.type === 'tasa' ? (product.subtotal * (tax.value! / 100) / product.quantity)
+            : tax.type === 'cuota' ? tax.value! * 100 : 0,
+        }
+      }),
       // TODO: Integrar los descuentos
       discount: 0,
       total: product.selling_price * product.quantity,

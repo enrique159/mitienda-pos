@@ -20,7 +20,7 @@ exports.createTable = async function(knex) {
     table.integer('stock_minimum').defaultTo(null) // Nivel mínimo
     table.integer('purchase_price').defaultTo(null) // Precio de compra (en centavos)
     table.integer('selling_price').defaultTo(0).notNullable() // Precio de venta (en centavos)
-    table.jsonb('taxes').defaultTo([]) // Impuestos aplicados: [{ code: '002', type: 'TASA', percent: 16, fixed: 0 }]
+    table.jsonb('taxes').defaultTo([]) // Impuestos aplicados: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }]
     table.boolean('is_active').defaultTo(true).notNullable() // Disponible para venta
     table.boolean('has_expiration_date').defaultTo(false).notNullable() // Si tiene fecha de caducidad
     table.date('expiration_date') // Fecha de caducidad

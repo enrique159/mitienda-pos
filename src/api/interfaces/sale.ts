@@ -106,9 +106,17 @@ export interface SaleDetailPayload {
   quantity: number
   selling_price: number
   tax_amount: number
+  taxes: Array<TaxDetail>
   discount: number
   total: number
   profit: number
+}
+
+export interface TaxDetail {
+  code: string
+  type: string
+  value: number | null
+  fixed: number
 }
 
 export interface PaymentPayload {

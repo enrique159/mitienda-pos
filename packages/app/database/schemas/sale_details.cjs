@@ -13,7 +13,6 @@ exports.createTable = async function(knex) {
     table.integer('quantity').notNullable() // Cantidad vendida
     table.integer('selling_price').notNullable() // Precio de venta unitario (en centavos)
     table.integer('tax_amount').notNullable() // Tasa de impuesto aplicada a este producto (en centavos)
-    // TODO: Guardar el impuesto aplicado
     table.jsonb('taxes').defaultTo([]) // Impuestos aplicados a este producto Ej: [{ code: '002', type: 'TASA', percent: 16, fixed: 0 }] (fixed en centavos)
     table.integer('discount').defaultTo(0) // Descuento aplicado a este producto (en centavos)
     table.integer('total').notNullable() // Total de la venta de este producto (en centavos)

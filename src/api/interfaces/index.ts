@@ -1,14 +1,14 @@
-import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleStatus, PaymentMethods, SalePayload, PaymentPayload, SaleDetailPayload, PaymentMethod } from './sale'
+import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleStatus, PaymentMethods, SalePayload, PaymentPayload, SaleDetailPayload, PaymentMethod, TaxDetail } from './sale'
 import { Product, ProductCart, UnitMeasurement, Unit, CreateProduct, ProductTax } from './products'
 import { CashRegister, CashRegisterState } from './cashRegisters'
 import { Category, CreateCategory } from './categories'
 import { Customer, CreateCustomer } from './customer'
 import { Configuration } from './configuration'
 import { StartSessionParams } from './auth'
-import { Tax, CreateTax } from './taxes'
 import { User, Seller } from './users'
 import { Discount } from './discount'
 import { Branch } from './branches'
+import { Tax } from './taxes'
 
 interface Response<T> {
   success: boolean
@@ -28,7 +28,7 @@ export type {
   Category,
   Discount,
   Customer,
-  CreateTax,
+  TaxDetail,
   SaleDetail,
   ProductTax,
   SalePayment,

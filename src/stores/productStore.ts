@@ -18,6 +18,7 @@ export const useProductStore = defineStore('product', () => {
     const productIndex = currentCart.value.findIndex((item) => item.id === product.id)
     if (productIndex !== -1) {
       currentCart.value[productIndex].quantity += product.quantity
+      currentCart.value[productIndex].subtotal = product.subtotal
       return
     }
     currentCart.value.push(product)
@@ -32,15 +33,11 @@ export const useProductStore = defineStore('product', () => {
   }
 
   const editQuantityCart = (productId: string, quantity: number) => {
-    currentCart.value = currentCart.value.map((product) => {
-      if (product.id === productId) {
-        return {
-          ...product,
-          quantity,
-        }
-      }
-      return product
-    })
+    const productIndex = currentCart.value.findIndex((item) => item.id === productId)
+    if (productIndex !== -1) {
+      currentCart.value[productIndex].quantity = quantity
+      currentCart.value[productIndex].subtotal = quantity * currentCart.value[productIndex].selling_price
+    }
   }
 
 

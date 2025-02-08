@@ -152,22 +152,9 @@
 
       <!-- **************** SALES INFO **************** -->
       <div>
-        <div class="flex justify-between items-center">
-          <h6 class="font-bold text-lg text-black-1">
-            Venta
-          </h6>
-          <div class="form-control">
-            <label class="label cursor-pointer">
-              <span class="label-text mr-2">Impuestos incluidos en el precio de venta</span>
-              <input
-                type="checkbox"
-                class="toggle checked:text-brand-pink"
-                :checked="isTaxesIncludedInSellingPrice"
-                @change="isTaxesIncludedInSellingPrice = !isTaxesIncludedInSellingPrice"
-              >
-            </label>
-          </div>
-        </div>
+        <h6 class="font-bold text-lg text-black-1">
+          Venta
+        </h6>
         <div class="divider my-0" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Precio de compra -->
@@ -225,8 +212,8 @@
                 class="select select-bordered w-full"
                 v-model="selectedTax"
               >
-                <option v-for="tax in taxes" :key="`select-option-tax_${tax.id}`" :value="tax.id">
-                  {{ `${tax.code} - ${tax.name} - ${tax.type === 'tasa' ? tax.percentage + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.import!) : 'EXENTO'}` }}
+                <option v-for="tax in taxesAvailable" :key="`select-option-tax_${tax.id}`" :value="tax.id">
+                  {{ `${tax.code} - ${tax.name} - ${tax.type === 'tasa' ? tax.value + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.value!) : 'EXENTO'}` }}
                 </option>
               </select>
               <button
@@ -259,8 +246,8 @@
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-sm text-black-2">{{ tax.type }}</span>
-                    <span class="text-sm text-black-2">{{ tax.type === 'tasa' ? tax.percentage + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.import!) : 'EXENTO' }}</span>
-                    <span class="text-sm text-black-1">{{ formatCurrencySimple(tax.fixed) }}</span>
+                    <span class="text-sm text-black-2">{{ tax.type === 'tasa' ? tax.value + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.value!) : 'EXENTO' }}</span>
+                    <span class="text-sm text-black-1">{{ tax.value ? formatCurrencySimple((tax.value * formData.selling_price) / 100) : formatCurrencySimple(0) }}</span>
                   </div>
                 </div>
                 <button
@@ -284,7 +271,7 @@
 
                 <div class="flex items-center gap-2">
                   <span class="text-black-1">Precio venta total:</span>
-                  <span class="text-green-500 font-bold">{{ formatCurrencySimple(sellingPriceWithTaxes) }}</span>
+                  <span class="text-green-500 font-bold">{{ formatCurrencySimple(formData.selling_price) }}</span>
                 </div>
               </div>
             </div>
@@ -427,15 +414,15 @@ const { formatCurrencySimple } = useCurrency()
 const router = useRouter()
 
 // Taxes
-const isTaxesIncludedInSellingPrice = ref(true)
 const selectedTax = ref<string>(taxes.value[0].id)
 const taxesApplied = ref<Tax[]>([])
+const taxesAvailable = computed(() => taxes.value.filter((tax) => tax.transferred))
 const taxesAppliedInfo = computed(() => {
   return taxesApplied.value.map((tax) => ({
     ...tax,
-    fixed: tax.type === 'tasa' ? formData.selling_price * tax.percentage! / 100 : tax.import!,
   }))
 })
+
 const addTax = () => {
   const tax = taxes.value.find((tax) => tax.id === selectedTax.value)
   if (tax) {
@@ -450,17 +437,14 @@ const removeTax = (index: number) => {
 const taxTotal = computed(() => {
   return taxesApplied.value.reduce((total: number, tax: Tax): number => {
     if (tax.type === 'tasa') {
-      const taxValue = formData.selling_price * tax.percentage! / 100
+      const taxValue = Number((formData.selling_price * tax.value! / 100).toFixed(2))
       return total + taxValue
     } else if (tax.type === 'cuota') {
-      return total + tax.import!
+      return total + Number(tax.value!.toFixed(2))
     } else {
       return total
     }
   }, 0)
-})
-const sellingPriceWithTaxes = computed(() => {
-  return isTaxesIncludedInSellingPrice.value ? formData.selling_price : formData.selling_price + taxTotal.value
 })
 
 // Unidades de medida
@@ -540,16 +524,12 @@ const toggleUnlimitedStock = () => {
 }
 
 
-const taxMaping = (tax: Tax, sellingPrice: number): ProductTax => {
-  const fixedValue = tax.type === 'tasa'
-    ? tax.percentage! * sellingPrice
-    : tax.type === 'cuota'
-      ? tax.import! * 100 : null
+const taxMaping = (tax: Tax): ProductTax => {
   return {
     code: tax.code,
     type: tax.type,
-    percent: tax.type === 'tasa' ? tax.percentage! : null,
-    fixed: fixedValue ? Number(fixedValue.toFixed(4)) : null,
+    name: tax.name,
+    value: tax.value ?? null,
   }
 }
 
@@ -562,14 +542,11 @@ const handleSubmit = async () => {
       return
     }
 
-    const sellingPrice = !isTaxesIncludedInSellingPrice.value
-      ? formData.selling_price + taxTotal.value
-      : formData.selling_price
     const newProduct: CreateProduct = {
       ...formData,
-      taxes: taxesApplied.value.map((tax) => taxMaping(tax, formData.selling_price)),
+      taxes: taxesApplied.value.map(taxMaping),
       purchase_price: formData.purchase_price * 100,
-      selling_price: Number((sellingPrice * 100).toFixed(4)),
+      selling_price: formData.selling_price * 100,
       id_company: branch.value.id_company,
     }
 

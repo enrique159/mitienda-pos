@@ -28,9 +28,9 @@ export interface Product {
 
 export interface ProductTax {
   code: string;
+  name: string;
   type: string;
-  percent: number | null;
-  fixed: number | null;
+  value: number | null;
 }
 
 export enum UnitMeasurement {
@@ -47,6 +47,7 @@ export type Unit = 'u' | 'kg' | 'g' | 'L' | 'ml' | 'caja' | 'otro';
 
 export interface ProductCart extends Product {
   quantity: number
+  subtotal: number
 }
 
 export interface CreateProduct {

@@ -1,10 +1,18 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
+const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
+
+const normalizeTax = function (tax) {
+  return {
+    ...tax,
+    transferred: parseBoolean(tax.transferred),
+    withheld: parseBoolean(tax.withheld),
+  }
+}
 
 exports.getTaxes = async function () {
   try {
     const taxes = await knex('taxes').select().orderBy('code', 'asc')
-    return response(true, 'Impuestos encontrados', taxes)
+    return response(true, 'Impuestos encontrados', taxes.map(normalizeTax))
   } catch (error) {
     logger.error({ type: 'GET TAXES', message: error.message })
     return response(false, 'Error al obtener los impuestos', error)
