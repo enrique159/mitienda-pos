@@ -8,7 +8,7 @@
         <img src="@/assets/logo_fill_orange.png" alt="Logo" class="w-16">
         <div>
           <h1 class="text-brand-orange font-medium text-[2.5rem] leading-10">
-            Mi Tienda
+            MiTienda
           </h1>
           <p class="text-brand-pink font-medium pl-1">
             El punto de venta ideal para ti

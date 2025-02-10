@@ -103,6 +103,10 @@ exports.seed = async function(knex) {
       email: 'jose@mail.com',
       phone: '5551234567',
       address: 'Calle Principal #123, Centro',
+      has_credit: true,
+      credit_limit: 1000,
+      cutoff_day: 15,
+      days_until_due: 20,
     })
 
     // Taxes

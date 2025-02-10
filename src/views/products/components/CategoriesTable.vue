@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(category, i) in categories" :key="`category-row-${category.id}`" :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'">
+        <tr v-for="(category, i) in filteredCategories" :key="`category-row-${category.id}`" :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'">
           <td>
             <span class="text-sm text-black-3">{{ i + 1 }}</span>
           </td>
@@ -45,7 +45,7 @@
                     Editar categoría
                   </a>
                 </li>
-                <li @click.stop="">
+                <li @click.stop="deleteSelectedCategory(category.id)">
                   <a class="text-brand-pink">
                     <icon-trash class="w-4 h-4" />
                     Eliminar categoría
@@ -156,6 +156,16 @@ import { toast } from 'vue3-toastify'
 
 const { categories, setCategories } = useProduct()
 
+const props = defineProps<{
+  search: String
+}>()
+
+const filteredCategories = computed(() => {
+  return categories.value.filter((category) => {
+    return category.name.toLowerCase().includes(props.search.toLowerCase())
+  })
+})
+
 // EDIT CATEGORY
 const dialogEditCategoryRef = ref()
 const selectedCategory = ref<Category | null>(null)
@@ -165,13 +175,11 @@ const formDataEditCategory = reactive({
   status: 'active',
 })
 
-const rules = computed(() => {
-  return {
-    name: { required: helpers.withMessage('El nombre es requerido', required) },
-  }
-})
+const editCategoryRules = {
+  name: { required: helpers.withMessage('El nombre es requerido locoshon', required) },
+}
 
-const vEdit$ = useVuelidate(rules, formDataEditCategory)
+const vEdit$ = useVuelidate(editCategoryRules, formDataEditCategory)
 
 const openEditCategoryModal = (category: Category) => {
   selectedCategory.value = category
@@ -223,6 +231,17 @@ const getAllCategories = () => {
       return
     }
     setCategories(response.response)
+  })
+}
+
+const deleteSelectedCategory = (categoryId: string) => {
+  deleteCategory(categoryId, (response: Response<void>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    getAllCategories()
+    toast.success('Categoría eliminada exitosamente')
   })
 }
 </script>

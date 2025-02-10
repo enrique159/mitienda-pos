@@ -13,6 +13,10 @@ exports.createTable = async function(knex) {
     table.string('email').unique() // Correo electrónico
     table.string('phone') // Teléfono
     table.string('address') // Dirección
+    table.boolean('has_credit').defaultTo(false) // Tiene crédito
+    table.integer('credit_limit').defaultTo(0) // Límite de crédito
+    table.integer('cutoff_day').defaultTo(1) // Día de corte
+    table.integer('days_until_due').defaultTo(10) // Días hasta la vencimiento
     table.enu('status', ['active', 'inactive']).defaultTo('active').notNullable() // Estado del cliente
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable() // Fecha de creación
     table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable() // Fecha de edición

@@ -89,7 +89,7 @@ exports.getSales = async function () {
 exports.generateSaleFolio = async function () {
   try {
     const todayString = getToday()
-    const timestamp = Math.floor(Date.now() / 1000)
+    const timestamp = Math.floor((Date.now() / 1000) % 1000000)
 
     const branch = await knex('branches').select('branch_alias').first()
     return response(true, 'Folio generado', { folio: `${branch.branch_alias}-${todayString}-${timestamp}` })

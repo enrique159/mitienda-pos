@@ -67,7 +67,7 @@ export interface CreateProduct {
   taxes: ProductTax[];
   is_active: boolean;
   has_expiration_date: boolean;
-  expiration_date?: Date;
+  expiration_date?: Date | string;
   requires_quantity?: boolean;
   is_composite: boolean;
 }

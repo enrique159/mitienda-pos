@@ -33,7 +33,7 @@
       <div class="h-fit py-1 bg-white-1 rounded-2xl">
         <div class="flex justify-between items-center px-4 py-1">
           <p class="font-bold text-black-1">
-            Total
+            Subtotal
           </p>
           <p class="font-bold">
             {{ formatCurrency(currentCartSubtotal) }}

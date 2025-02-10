@@ -404,6 +404,7 @@ import { useRouter } from 'vue-router'
 import { useBranch } from '@/composables/useBranch'
 import { useTax } from '@/composables/useTax'
 import { useProduct } from '@/composables/useProduct'
+import { useDate } from '@/composables/useDate'
 import { Months } from '@/constants'
 import { toast } from 'vue3-toastify'
 
@@ -411,6 +412,7 @@ const { taxes } = useTax()
 const { branch } = useBranch()
 const { setProducts, availableCategories } = useProduct()
 const { formatCurrencySimple } = useCurrency()
+const { formatDate } = useDate()
 const router = useRouter()
 
 // Taxes
@@ -519,8 +521,8 @@ const v$ = useVuelidate(rules, formData)
 // Methods
 const toggleUnlimitedStock = () => {
   formData.unlimited_stock = !formData.unlimited_stock
-  formData.stock = formData.unlimited_stock ? 0 : null
-  formData.stock_minimum = formData.unlimited_stock ? 0 : null
+  formData.stock = formData.unlimited_stock ? null : 0
+  formData.stock_minimum = formData.unlimited_stock ? null : 0
 }
 
 
@@ -544,6 +546,9 @@ const handleSubmit = async () => {
 
     const newProduct: CreateProduct = {
       ...formData,
+      expiration_date: formData.has_expiration_date
+        ? formatDate(new Date(expirationDate.value.year, expirationDate.value.month, 1))
+        : undefined,
       taxes: taxesApplied.value.map(taxMaping),
       purchase_price: formData.purchase_price * 100,
       selling_price: formData.selling_price * 100,

@@ -842,7 +842,7 @@ const getVerifyProductArrayInfo = computed(() => {
       { title: 'Código de barra', value: verifyProductSuccess.value.barcode },
       { title: 'Nombre', value: verifyProductSuccess.value.name },
       { title: 'Precio de venta', value: formatCurrency(verifyProductSuccess.value.selling_price) },
-      { title: 'Categoría', value: verifyProductSuccess.value.category },
+      { title: 'Categoría', value: categories.value.find((category) => category.id === verifyProductSuccess.value?.id_category)?.name },
       { title: 'Unidad de medida', value: getNameUnitMeasurement(verifyProductSuccess.value.unit_measurement) },
       { title: 'Stock', value: verifyProductSuccess.value.stock },
     ]
