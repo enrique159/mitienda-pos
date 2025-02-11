@@ -13,6 +13,26 @@ export const getPaymentMethodName = (paymentMethod: PaymentMethod) => {
   }
 }
 
+export const getSaleStatusName = (status: string | undefined) => {
+  if (!status) return 'Ninguno'
+  switch (status) {
+  case 'pending':
+    return 'Pendiente de pago'
+  case 'partially_paid':
+    return 'Parcialmente pagado'
+  case 'paid':
+    return 'Pagado'
+  case 'rejected':
+    return 'Rechazado'
+  case 'deleted':
+    return 'Eliminado'
+  case 'refunded':
+    return 'Reembolsado'
+  default:
+    return 'Pendiente de pago'
+  }
+}
+
 export const parseAmount = (amount: number | string | null | undefined) => {
   if (amount === null || amount === undefined) return 0
   if (typeof amount === 'string' && amount.trim() === '') return 0

@@ -544,7 +544,6 @@ const createCurrentSale = () => {
       total: fixedAmount(currentCartTotal.value),
       amount_paid: isPaidAmountLowerThanTotal.value ? fixedAmount(parseAmount(paymentQuantity.value)) : fixedAmount(currentCartTotal.value),
       balance_due: isPaidAmountLowerThanTotal.value ? fixedAmount(currentCartTotal.value - parseAmount(paymentQuantity.value)) : 0,
-      change: fixedAmount(cashPaymentChange.value),
       discount: currentCartDiscount.value,
       tax: fixedAmount(currentCartTax.value),
       on_trust: isPaidAmountLowerThanTotal.value,
@@ -558,6 +557,7 @@ const createCurrentSale = () => {
       {
         payment_method: onePaymentMethod.value.payment_method,
         amount: parseAmount(paymentQuantity.value) - fixedAmount(cashPaymentChange.value),
+        change: fixedAmount(cashPaymentChange.value),
       },
     ],
   }

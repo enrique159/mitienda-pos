@@ -62,6 +62,7 @@ module.exports ={
     window: "readonly",
     Window: "readonly",
     document: "readonly",
+    navigator: "readonly",
     KeyboardEvent: "readonly",
   },
   // settings: {

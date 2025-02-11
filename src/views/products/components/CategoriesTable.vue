@@ -31,7 +31,7 @@
               <div
                 tabindex="0"
                 role="button"
-                class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
+                class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center cursor-pointer"
               >
                 <icon-dots-vertical class="w-4 h-4" />
               </div>

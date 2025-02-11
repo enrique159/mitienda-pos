@@ -1,3 +1,5 @@
+import { Seller } from "./users"
+
 export interface GeneratedFolio {
   folio: string
 }
@@ -14,7 +16,6 @@ export interface Sale {
   total: number
   amount_paid: number
   balance_due: number
-  change: number
   discount: number
   tax: number
   on_trust: boolean
@@ -22,9 +23,12 @@ export interface Sale {
   status: SaleStatus
   customer_notes?: string
   cancellation_reason?: string
-  created_at: Date
-  updated_at: Date
-  synced_at?: Date
+  details: SaleDetail[]
+  payments: SalePayment[]
+  seller_name: string
+  created_at: Date | string
+  updated_at: Date | string
+  synced_at?: Date | string | null
 }
 
 export interface SaleDetail {
@@ -47,6 +51,7 @@ export interface SalePayment {
   id_sale: string
   payment_method: PaymentMethods
   amount: number
+  change?: number
   created_at: Date
   synced_at?: Date
 }
@@ -89,7 +94,6 @@ export interface SalePayload {
   total: number
   amount_paid: number
   balance_due: number
-  change: number
   discount: number
   tax: number
   on_trust: boolean
@@ -122,4 +126,5 @@ export interface TaxDetail {
 export interface PaymentPayload {
   payment_method: PaymentMethods
   amount: number
+  change?: number
 }

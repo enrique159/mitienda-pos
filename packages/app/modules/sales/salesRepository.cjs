@@ -59,17 +59,22 @@ exports.createSalePayment = async function (salePayment, trx) {
 */
 exports.getSales = async function () {
   try {
-    const sales = await knex('sales').select()
+    const sales = await knex('sales').select().orderBy('created_at', 'desc')
     if (!sales.length) {
       logger.error({ type: 'GET SALES', message: 'No se encontraron ventas' })
-      return response(false, 'Ventas no encontradas', [])
+      return response(true, 'Ventas no encontradas', [])
     }
 
     const salesWithDetails = await Promise.all(sales.map(async (sale) => {
       const details = await knex('sale_details').where('id_sale', sale.id).select()
+      const payments = await knex('sale_payments').where('id_sale', sale.id).select()
+      const seller = await knex('sellers').where('id', sale.id_seller).select().first()
+
       return {
         ...normalizeSale(sale),
         details,
+        payments,
+        seller_name: seller.name,
       }
     }))
 

@@ -17,7 +17,6 @@ exports.createTable = async function(knex) {
     table.integer('total').defaultTo(0).notNullable() // Total de la venta (en centavos)
     table.integer('amount_paid').defaultTo(0).notNullable() // Cantidad pagada hasta el momento (en centavos)
     table.integer('balance_due').defaultTo(0).notNullable() // Cantidad pendiente de pago (en centavos)
-    table.integer('change').defaultTo(0).notNullable() // Cambio entregado por el cliente (en centavos)
     table.integer('discount').defaultTo(0).notNullable() // Descuento aplicado (en centavos)
     table.integer('tax').defaultTo(0).notNullable() // Impuesto aplicado (en centavos)
     table.boolean('on_trust').defaultTo(false) // La venta fue a crédito

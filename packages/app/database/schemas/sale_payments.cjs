@@ -10,6 +10,7 @@ exports.createTable = async function(knex) {
     table.uuid('id_sale').notNullable().references('sales.id') // Relación con la venta
     table.enu('payment_method', ['cash', 'card', 'transfer', 'other']).notNullable() // Método de pago
     table.integer('amount').notNullable() // Cantidad pagada con este método (en centavos)
+    table.integer('change').defaultTo(0) // Cambio en el efectivo
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable() // Fecha de creación del pago
     table.timestamp('synced_at') // Fecha de sincronización con un servidor externo
   }).then(() => {

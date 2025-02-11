@@ -16,7 +16,7 @@ export const useDate = () => {
     return dayjs.utc().tz(tz.value).locale("es").format("dddd, D [de] MMMM hh:mm a")
   }
 
-  const formatDatetime = (date: string | undefined) => {
+  const formatDatetime = (date: string | Date | undefined) => {
     if (!date) return ""
     return dayjs.utc(date).tz(tz.value).locale("es").format("dddd, D [de] MMMM [de] YYYY hh:mm:ss a")
   }
