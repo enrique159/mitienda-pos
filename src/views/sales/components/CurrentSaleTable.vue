@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-x-auto overflow-y-visible" @click.self="clearSelectedProduct">
+  <div ref="tableContainerRef" class="overflow-x-auto overflow-y-visible" @click.self="clearSelectedProduct">
     <table class="table bg-white rounded-none">
       <!-- head -->
       <thead>
@@ -64,7 +64,7 @@ import { useProduct } from '@/composables/useProduct'
 import { useCurrency } from '@/composables/useCurrency'
 import { ProductCart } from '@/api/interfaces'
 import { getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const emits = defineEmits(['on:select-product', 'remove-product-from-cart', 'show-edit-quantity-modal'])
 
@@ -97,6 +97,18 @@ const editProductQuantity = (product: ProductCart) => {
   selectProduct(product)
   emits('show-edit-quantity-modal')
 }
+
+// CHANGES IN CURRENT CART SCROLL TO BOTTOM
+const tableContainerRef = ref()
+
+const scrollToBottom = () => {
+  console.log('scroll to bottom')
+  tableContainerRef.value.scrollTop = tableContainerRef.value.scrollHeight
+}
+
+watch(currentCart.value, () => {
+  scrollToBottom()
+})
 
 defineExpose({
   unselectProduct,

@@ -11,11 +11,11 @@
         soporte técnico
       </router-link>
     </p>
-    <router-link
-      to="/main"
+    <button
+      @click="$router.back()"
       class="btn bg-brand-pink text-white hover:bg-brand-pink/80 mt-4"
     >
-      Volver a la página principal
-    </router-link>
+      Volver a la página anterior
+    </button>
   </div>
 </template>

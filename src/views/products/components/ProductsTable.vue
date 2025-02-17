@@ -80,6 +80,10 @@ const filteredProducts = computed(() => {
 })
 
 const deleteProductHandler = async (productId: string) => {
+  // eslint-disable-next-line
+  if (!confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+    return
+  }
   deleteProduct(productId, (response: Response<void>) => {
     if (!response.success) {
       return toast.error(response.message)

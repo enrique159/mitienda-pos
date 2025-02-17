@@ -246,9 +246,9 @@
         </section>
 
         <section class="w-full flex justify-end">
-          <base-button>
+          <!-- <base-button>
             cerrar
-          </base-button>
+          </base-button> -->
         </section>
       </div>
     </div>
