@@ -1,6 +1,6 @@
 <template>
   <label
-    class="input bg-white-1 input-bordered flex items-center gap-2"
+    class="input input-bordered flex items-center gap-2"
     :class="className"
   >
     <input
@@ -26,7 +26,7 @@ const props = defineProps({
   },
   className: {
     type: String,
-    default: '',
+    default: 'bg-white-1',
   },
   value: {
     type: String,

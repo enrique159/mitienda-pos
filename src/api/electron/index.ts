@@ -1,4 +1,4 @@
-import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct } from '@/api/interfaces'
+import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount } from '@/api/interfaces'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 
@@ -20,10 +20,14 @@ export const deleteCategory = async (id: string, callback: any) => window.electr
 
 /* Products */
 export const getProducts = async (callback: any) => window.electron.getActiveProducts(callback)
-export const getProductCategories = async (callback: any) => window.electron.getProductCategories(callback)
 export const getProductsByCategory = async (categoryId: string , callback: any) => window.electron.getProductsByCategory(categoryId, callback)
 export const createProduct = async (product: CreateProduct, callback: any) => window.electron.createProduct(product, callback)
 export const deleteProduct = async (productId: string, callback: any) => window.electron.deleteProduct(productId, callback)
+
+/* Discounts */
+export const getDiscounts = async (callback: any): Promise<Response<Discount[]>> => window.electron.getDiscounts(callback)
+export const createDiscount = async (data: CreateDiscount, callback: any) => window.electron.createDiscount(data, callback)
+export const attachProductsToDiscount = async (discountId: string, productsId: Array<string>, callback: any) => window.electron.createDiscountProduct(discountId, productsId, callback)
 
 /* Taxes */
 export const getTaxes = async (): Promise<Response<Tax[]>> => window.electron.getTaxes()

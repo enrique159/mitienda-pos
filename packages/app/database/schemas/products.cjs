@@ -31,7 +31,7 @@ exports.createTable = async function(knex) {
     table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable() // Fecha de edición
     table.timestamp('synced_at')
   }).then(() => {
-    console.log("Table 'sellers' created.")
+    console.log("Table 'products' created.")
   }).catch((err) => {
     logger.error({ type: 'DB', message: `${err}`, error: err })
     console.error(err)

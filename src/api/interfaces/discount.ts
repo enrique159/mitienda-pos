@@ -1,13 +1,16 @@
 export interface Discount {
   id: string
+  id_company: string
   id_branch: string
-  id_product: string
-  id_discount_type: DiscountType
-  discount_value: number
-  condition_quantity: number
+  description: string
+  type: 'percentage' | 'amount'
+  value: number
+  condition_quantity?: number
+  discount_for_one: boolean
   start_date: Date
   end_date?: Date
-  schedule?: Array<DiscountSchedule>
+  schedule?: Array<DiscountSchedule> | null
+  status: 'active' | 'inactive'
   created_at: Date
   updated_at: Date
   synced_at?: Date
@@ -19,7 +22,16 @@ export interface DiscountSchedule {
   end_time: string
 }
 
-export enum DiscountType {
-  PERCENTAGE = 'percentage',
-  FIXED = 'fixed'
+export interface CreateDiscount {
+  id_company: string
+  id_branch: string
+  description: string
+  type: 'percentage' | 'amount'
+  value: number
+  condition_quantity?: number
+  discount_for_one: boolean
+  start_date: Date
+  end_date?: Date
+  schedule: Array<DiscountSchedule>
+  status: 'active' | 'inactive'
 }

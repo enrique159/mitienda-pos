@@ -77,3 +77,9 @@ h1, h2, h3, h4, h5, h6, p {
   height: calc(100% - 65px);
   padding-bottom: 5rem;
 }
+
+.dp__input {
+  padding: 11px 2rem !important;
+  height: 3rem !important;
+  border-radius: 0.5rem !important;
+}

@@ -26,36 +26,38 @@ function normalizeProduct(product) {
  * Obtiene todos los productos activos
  */
 exports.getActiveProducts = async function () {
-  return await knex('products').select().where('status', 'active')
-    .then((products) => {
+  return await knex('products')
+    .select('products.*')
+    .leftJoin('products_discounts', 'products.id', 'products_discounts.id_product')
+    .leftJoin('discounts', 'products_discounts.id_discount', 'discounts.id')
+    .where('products.status', 'active')
+    .groupBy('products.id')
+    .then(async (products) => {
       if (!products.length) {
         logger.error({ type: 'GET PRODUCTS', message: 'No se encontraron productos' })
         return response(false, 'Productos no encontrados', [])
       }
-      return response(true, 'Productos encontrados', products.map(normalizeProduct))
+
+      // Get discounts for each product
+      const productsWithDiscounts = await Promise.all(
+        products.map(async (product) => {
+          const discounts = await knex('discounts')
+            .select('discounts.*')
+            .join('products_discounts', 'discounts.id', 'products_discounts.id_discount')
+            .where('products_discounts.id_product', product.id)
+          return {
+            ...normalizeProduct(product),
+            discounts: discounts || [],
+          }
+        })
+      )
+
+      return response(true, 'Productos encontrados', productsWithDiscounts)
     })
     .catch((err) => {
       console.log(err)
       logger.error({ type: 'GET PRODUCTS ERROR', message: `${err}`, data: err })
       return response(false, 'Error al traer los productos', err)
-    })
-}
-
-// DEPRECATED
-exports.getProductCategories = async function () {
-  // return all the categories that are in the products rows in the category column grouped by category
-  return await knex('products').select('category').groupBy('category')
-    .then((categories) => {
-      if (!categories.length) {
-        logger.error({ type: 'GET CATEGORIES', message: 'No se encontraron categorias' })
-        return response(false, 'Categorias no encontradas', [])
-      }
-      return response(true, 'Categorias encontradas', categories)
-    })
-    .catch((err) => {
-      console.log(err)
-      logger.error({ type: 'GET CATEGORIES ERROR', message: `${err}`, data: err })
-      return response(false, 'Error al traer las categorias', err)
     })
 }
 

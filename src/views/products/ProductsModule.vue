@@ -7,16 +7,16 @@
 
 <script setup lang="ts">
 import SideMenu from '@/components/menus/SideMenu.vue'
-import { IconBox, IconCategory, IconCirclePlus, IconCoins } from '@tabler/icons-vue'
-import { getTaxes, getProducts, getCategories } from '@/api/electron'
-import { Response, Product, Category } from '@/api/interfaces'
+import { IconBox, IconCategory, IconCirclePlus, IconCoins, IconDiscount } from '@tabler/icons-vue'
+import { getTaxes, getProducts, getCategories, getDiscounts } from '@/api/electron'
+import { Response, Product, Category, Discount } from '@/api/interfaces'
 import { useTax } from '@/composables/useTax'
 import { useProduct } from '@/composables/useProduct'
 import { onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 
-const { taxes } = useTax()
-const { setProducts, setCategories } = useProduct()
+const { setTaxes } = useTax()
+const { setProducts, setCategories, setDiscounts } = useProduct()
 
 const loadData = async () => {
   // Load Products
@@ -36,12 +36,20 @@ const loadData = async () => {
     setCategories(response.response)
   })
   // Load Taxes
-  const response = await getTaxes()
-  if (!response.success) {
-    toast.error(response.message)
+  const responseTaxes = await getTaxes()
+  if (!responseTaxes.success) {
+    toast.error(responseTaxes.message)
     return
   }
-  taxes.value = response.response
+  setTaxes(responseTaxes.response)
+  // Load Discounts
+  await getDiscounts((response: Response<Discount[]>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    setDiscounts(response.response)
+  })
 }
 
 onMounted(() => {
@@ -63,6 +71,11 @@ const productsMenu = [
     title: 'Categorías',
     path: '/main/products/categories',
     icon: IconCategory,
+  },
+  {
+    title: 'Descuentos',
+    path: '/main/products/discounts',
+    icon: IconDiscount,
   },
   {
     title: 'Impuestos',

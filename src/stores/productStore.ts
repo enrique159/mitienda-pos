@@ -51,6 +51,10 @@ export const useProductStore = defineStore('product', () => {
   // DISCOUNTS
   const discounts = ref<Discount[]>([])
 
+  const setDiscounts = (newDiscounts: Discount[]) => {
+    discounts.value = newDiscounts
+  }
+
   return {
     // Products
     products,
@@ -69,5 +73,6 @@ export const useProductStore = defineStore('product', () => {
 
     // Discounts
     discounts,
+    setDiscounts,
   }
 })

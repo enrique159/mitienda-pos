@@ -1,3 +1,5 @@
+import { Discount } from "./discount"
+
 export interface Product {
   id: string;
   id_company: string;
@@ -15,6 +17,7 @@ export interface Product {
   purchase_price: number;
   selling_price: number;
   taxes: ProductTax[];
+  discounts?: Array<Discount>;
   is_active: boolean;
   has_expiration_date: boolean;
   expiration_date?: Date;

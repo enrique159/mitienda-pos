@@ -1,5 +1,5 @@
 import { useProductStore } from "@/stores/productStore"
-import { Category, Product } from "@/api/interfaces"
+import { Category, Discount, Product } from "@/api/interfaces"
 import { storeToRefs } from "pinia"
 import { computed } from "vue"
 
@@ -18,18 +18,19 @@ export const useProduct = () => {
     return currentCart.value.reduce((acc, product) => acc + product.selling_price * product.quantity, 0)
   })
 
-  // TODO: Verificar al implementar descuentos
   const currentCartDiscount = computed(() => {
     return currentCart.value.reduce((acc, product) => {
-      const discount = discounts.value.find((d) => d.id_product === product.id)
-      if (!discount) return acc
-      if (discount.start_date && discount.start_date > today) return acc
-      if (discount.end_date && discount.end_date < today) return acc
-      if (discount.condition_quantity > product.quantity) return acc
-      if (discount.id_discount_type === 'percentage') {
-        return acc + (product.selling_price * discount.discount_value) / 100
+      if (!product?.discounts || product.discounts.length === 0) return acc
+      for (const discount of product.discounts) {
+        if (discount.start_date && discount.start_date > today) return acc
+        if (discount.end_date && discount.end_date < today) return acc
+        if (product.quantity < (discount?.condition_quantity ?? 0)) return acc
+        if (discount.type === 'percentage') {
+          return acc + (product.selling_price * discount.value) / 100
+        }
+        return acc + discount.value
       }
-      return acc + discount.discount_value
+      return acc
     }, 0)
   })
 
@@ -85,6 +86,10 @@ export const useProduct = () => {
 
   const setCategories = (categories: Category[]) => {
     productStore.setCategories(categories)
+  }
+
+  const setDiscounts = (discounts: Discount[]) => {
+    productStore.setDiscounts(discounts)
   }
 
   const getProductById = (id: string): Product | undefined => {
@@ -153,5 +158,8 @@ export const useProduct = () => {
 
     categories,
     setCategories,
+
+    discounts,
+    setDiscounts,
   }
 }

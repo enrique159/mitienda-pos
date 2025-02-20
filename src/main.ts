@@ -13,6 +13,10 @@ declare global {
 import Vue3Toastify, { type ToastContainerOptions } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
+// Vuepic Datetime Picker
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+
 // Global Components
 import BaseButton from './components/buttons/BaseButton.vue'
 import DeleteButton from './components/buttons/DeleteButton.vue'
@@ -35,5 +39,6 @@ app.component('DeleteButton', DeleteButton)
 app.component('PinInput', PinInput)
 app.component('CurrencyInput', CurrencyInput)
 app.component('CustomKbd', CustomKbd)
+app.component('DatePicker', VueDatePicker)
 
 app.mount('#app')

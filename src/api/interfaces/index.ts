@@ -3,10 +3,10 @@ import { Product, ProductCart, UnitMeasurement, Unit, CreateProduct, ProductTax 
 import { CashRegister, CashRegisterState } from './cashRegisters'
 import { Category, CreateCategory } from './categories'
 import { Customer, CreateCustomer } from './customer'
+import { Discount, CreateDiscount, DiscountSchedule } from './discount'
 import { Configuration } from './configuration'
 import { StartSessionParams } from './auth'
 import { User, Seller } from './users'
-import { Discount } from './discount'
 import { Branch } from './branches'
 import { Tax } from './taxes'
 
@@ -38,10 +38,12 @@ export type {
   PaymentMethod,
   CreateProduct,
   Configuration,
+  CreateDiscount,
   CreateCategory,
   GeneratedFolio,
   PaymentPayload,
   CreateCustomer,
+  DiscountSchedule,
   SaleDetailPayload,
   CreateSalePayload,
   CashRegisterState,

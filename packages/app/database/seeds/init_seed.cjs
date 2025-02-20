@@ -105,7 +105,6 @@ exports.seed = async function(knex) {
       address: 'Calle Principal #123, Centro',
       has_credit: true,
       credit_limit: 1000,
-      cutoff_day: 15,
       days_until_due: 20,
     })
 

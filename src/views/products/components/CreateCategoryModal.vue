@@ -3,7 +3,7 @@
     <div class="modal-box min-w-[480px]">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-bold">
-          Editar categoría
+          Crear categoría
         </h3>
         <div class="modal-action mt-0">
           <form method="dialog" @submit="closeCreateCategoryModal">
