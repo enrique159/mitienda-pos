@@ -35,3 +35,5 @@ export interface CreateDiscount {
   schedule: Array<DiscountSchedule>
   status: 'active' | 'inactive'
 }
+
+export type UpdateDiscount = Omit<Discount, 'created_at' | 'updated_at' | 'synced_at'>

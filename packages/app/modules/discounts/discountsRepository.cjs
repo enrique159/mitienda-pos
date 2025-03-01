@@ -41,10 +41,6 @@ exports.getActiveDiscounts = async function () {
 exports.getDiscounts = async function () {
   return await knex('discounts').select()
     .then((discounts) => {
-      if (!discounts.length) {
-        logger.error({ type: 'GET DISCOUNTS', message: 'No se encontraron descuentos' })
-        return response(false, 'Descuentos no encontrados', [])
-      }
       return response(true, 'Descuentos encontrados', discounts.map(normalizeDiscount))
     })
     .catch((err) => {
@@ -59,6 +55,10 @@ exports.getDiscounts = async function () {
  */
 exports.createDiscount = async function (discount) {
   discount.schedule = discount.schedule.length ? JSON.stringify(discount.schedule) : []
+  discount.start_date = discount.start_date.toISOString().slice(0, 10)
+  if (discount.end_date) {
+    discount.end_date = discount.end_date.toISOString().slice(0, 10)
+  }
   return await knex('discounts').insert(discount).returning('*')
     .then((discount) => {
       if (!discount) {
@@ -71,6 +71,41 @@ exports.createDiscount = async function (discount) {
       console.log(err)
       logger.error({ type: 'CREATE DISCOUNT ERROR', message: `${err}`, data: err })
       return response(false, 'Error al crear el descuento', err)
+    })
+}
+
+/**
+ * Actualizar un descuento
+ */
+exports.updateDiscount = async function (discount) {
+  discount.schedule = discount.schedule.length? JSON.stringify(discount.schedule) : []
+  discount.start_date = discount.start_date.toISOString().slice(0, 10)
+  if (discount.end_date) {
+    discount.end_date = discount.end_date.toISOString().slice(0, 10)
+  }
+  return await knex('discounts').where('id', discount.id).update(discount)
+    .then((discount) => {
+      return response(true, 'Descuento actualizado', discount)
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'UPDATE DISCOUNT ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al actualizar el descuento', err)
+    })
+}
+
+/**
+ * Eliminar un descuento
+ */
+exports.deleteDiscount = async function (discountId) {
+  return await knex('discounts').where('id', discountId).del()
+    .then((discount) => {
+      return response(true, 'Descuento eliminado', discount)
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'DELETE DISCOUNT ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al eliminar el descuento', err)
     })
 }
 

@@ -6,7 +6,7 @@ const { logger } = require('../../helpers/index.cjs')
  */
 exports.createTable = async function(knex) {
   await knex.schema.createTable('discounts', (table) => {
-    table.increments('id').primary()
+    table.uuid('id').defaultTo(knex.fn.uuid()).primary()
     table.uuid('id_company').notNullable().references('company.id') // Relación con la empresa
     table.uuid('id_branch').notNullable().references('branches.id') // Relación con la sucursal
     table.string('description') // Descripción del descuento

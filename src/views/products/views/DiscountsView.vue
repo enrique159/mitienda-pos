@@ -26,23 +26,42 @@
       </div>
     </header>
 
-    <DiscountsTable :search="search" />
+    <DiscountsTable
+      :search="search"
+      @edit-discount="openEditDiscountModal"
+      @attach-products-discounts="openAttachProductsDiscountsModal"
+    />
 
     <CreateDiscountModal ref="createDiscountRef" />
+    <EditDiscountModal ref="editDiscountRef" />
+    <AttachProductsDiscounts ref="attachProductsDiscountsRef" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import CreateDiscountModal from '../components/CreateDiscountModal.vue'
+import EditDiscountModal from '../components/EditDiscountModal.vue'
+import AttachProductsDiscounts from '../components/AttachProductsDiscounts.vue'
 import DiscountsTable from '../components/DiscountsTable.vue'
 import { IconPlus, IconSearch } from '@tabler/icons-vue'
 import { ref } from 'vue'
+import { Discount } from '@/api/interfaces'
 
 const search = ref('')
 
 const createDiscountRef = ref()
+const editDiscountRef = ref()
+const attachProductsDiscountsRef = ref()
 
 const show = () => {
   createDiscountRef.value.openCreateDiscountModal()
+}
+
+const openEditDiscountModal = (discount: Discount) => {
+  editDiscountRef.value.openEditDiscountModal(discount)
+}
+
+const openAttachProductsDiscountsModal = (discount: Discount) => {
+  attachProductsDiscountsRef.value.openAttachProductsDiscountsModal(discount)
 }
 </script>

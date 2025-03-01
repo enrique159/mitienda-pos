@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron')
 const { startSession, getSellers, closeSession } = require('./app/modules/sellers/sellersListeners.cjs')
 const { createProduct, deleteProduct, getActiveProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
-const { getActiveDiscounts, getDiscounts, createDiscount, createDiscountProduct } = require('./app/modules/discounts/discountsListeners.cjs')
+const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, deleteDiscount, createDiscountProduct } = require('./app/modules/discounts/discountsListeners.cjs')
 const { getCategories, createCategory, updateCategory, deleteCategory } = require('./app/modules/categories/categoriesListeners.cjs')
 const { getBranchInfo } = require('./app/modules/branches/branchesListeners.cjs')
 const { getCashRegisterActive, createCashRegister, getCurrentCashRegisterState } = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
@@ -36,6 +36,8 @@ contextBridge.exposeInMainWorld('electron', {
   getDiscounts,
   createDiscount,
   createDiscountProduct,
+  updateDiscount,
+  deleteDiscount,
   // Taxes
   getTaxes,
   createTax,

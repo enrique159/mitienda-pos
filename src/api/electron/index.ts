@@ -1,4 +1,4 @@
-import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount } from '@/api/interfaces'
+import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount, UpdateDiscount } from '@/api/interfaces'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 
@@ -27,6 +27,7 @@ export const deleteProduct = async (productId: string, callback: any) => window.
 /* Discounts */
 export const getDiscounts = async (callback: any): Promise<Response<Discount[]>> => window.electron.getDiscounts(callback)
 export const createDiscount = async (data: CreateDiscount, callback: any) => window.electron.createDiscount(data, callback)
+export const updateDiscount = async (discount: UpdateDiscount, callback: any) => window.electron.updateDiscount(discount, callback)
 export const attachProductsToDiscount = async (discountId: string, productsId: Array<string>, callback: any) => window.electron.createDiscountProduct(discountId, productsId, callback)
 
 /* Taxes */

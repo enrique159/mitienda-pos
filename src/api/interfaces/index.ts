@@ -3,7 +3,7 @@ import { Product, ProductCart, UnitMeasurement, Unit, CreateProduct, ProductTax 
 import { CashRegister, CashRegisterState } from './cashRegisters'
 import { Category, CreateCategory } from './categories'
 import { Customer, CreateCustomer } from './customer'
-import { Discount, CreateDiscount, DiscountSchedule } from './discount'
+import { Discount, CreateDiscount, UpdateDiscount, DiscountSchedule } from './discount'
 import { Configuration } from './configuration'
 import { StartSessionParams } from './auth'
 import { User, Seller } from './users'
@@ -40,6 +40,7 @@ export type {
   Configuration,
   CreateDiscount,
   CreateCategory,
+  UpdateDiscount,
   GeneratedFolio,
   PaymentPayload,
   CreateCustomer,

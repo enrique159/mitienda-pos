@@ -1,12 +1,12 @@
 <template>
-  <dialog id="dialogCreateDiscount" ref="dialogCreateDiscountRef" class="modal" @keydown.escape="closeCreateDiscountModal">
+  <dialog id="dialogEditDiscount" ref="dialogEditDiscountRef" class="modal" @keydown.escape="closeEditDiscountModal">
     <div class="modal-box min-w-[700px] h-fit overflow-hidden">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-bold">
-          Crear descuento
+          Editar descuento
         </h3>
         <div class="modal-action mt-0">
-          <form method="dialog" @submit="closeCreateDiscountModal">
+          <form method="dialog" @submit="closeEditDiscountModal">
             <button class="close-btn">
               Cerrar
               <CustomKbd>ESC</CustomKbd>
@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <form @submit.prevent="handleSubmitCreate" class="w-full space-y-4">
+      <form @submit.prevent="handleSubmitEdit" class="w-full space-y-4">
         <!-- DESCRIPTION -->
         <label class="form-control w-full">
           <div class="label">
@@ -183,26 +183,46 @@
           </div>
         </div>
 
-        <!-- SCHEDULE -->
-        <label class="form-control w-full">
-          <div class="label">
-            <span class="label-text text-black-1 font-medium required">Horarios de descuento</span>
+        <div class="grid grid-cols-2 gap-x-4">
+          <!-- SCHEDULE -->
+          <label class="form-control w-full">
+            <div class="label">
+              <span class="label-text text-black-1 font-medium required">Horarios de descuento</span>
+            </div>
+            <base-button type="button" @click="openScheduleModal">
+              Configurar horarios
+            </base-button>
+          </label>
+
+          <!-- STATUS -->
+          <div class="form-control pt-2">
+            <label class="label cursor-pointer w-fit">
+              <input
+                type="checkbox"
+                class="toggle checked:text-success"
+                :checked="formData.status === 'active'"
+                @change="formData.status = formData.status !== 'active' ? 'active' : 'inactive'"
+              >
+              <div class="flex flex-col items-start ml-2">
+                <span class="font-semibold text-black-1 mr-2">Activo</span>
+                <span class="text-sm text-black-2">
+                  El descuento se aplicará a los productos que no tengan un descuento asociado
+                </span>
+              </div>
+            </label>
           </div>
-          <base-button type="button" @click="openScheduleModal">
-            Configurar horarios
-          </base-button>
-        </label>
+        </div>
 
         <!-- BUTTONS -->
         <div class="flex justify-end space-x-4">
-          <base-button type="button" @click="closeCreateDiscountModal">
+          <base-button type="button" @click="closeEditDiscountModal">
             Cancelar
           </base-button>
           <button
             type="submit"
             class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
           >
-            Guardar
+            Guardar cambios
           </button>
         </div>
       </form>
@@ -285,8 +305,8 @@ import { IconHelpCircle, IconClock } from '@tabler/icons-vue'
 import { required, helpers, minValue } from '@vuelidate/validators'
 import { ref, reactive, computed } from 'vue'
 import { useProduct } from '@/composables/useProduct'
-import { CreateDiscount, Response, DiscountSchedule, Discount } from '@/api/interfaces'
-import { createDiscount, getDiscounts } from '@/api/electron'
+import { Response, DiscountSchedule, Discount, UpdateDiscount } from '@/api/interfaces'
+import { updateDiscount, getDiscounts } from '@/api/electron'
 import { useBranch } from '@/composables/useBranch'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
 import { toast } from 'vue3-toastify'
@@ -359,20 +379,43 @@ const toggleScheduleDay = (dayIndex: number) => {
 }
 
 // DIALOG
-const dialogCreateDiscountRef = ref()
+const dialogEditDiscountRef = ref()
 const dropdownTypeRef = ref()
 
-const openCreateDiscountModal = () => {
-  dialogCreateDiscountRef.value.showModal()
+const openEditDiscountModal = (discount: Discount) => {
+  formData.id = discount.id
+  formData.description = discount.description
+  formData.type = discount.type
+  formData.value = discount.value
+  formData.condition_quantity = discount.condition_quantity || 0
+  formData.discount_for_one = discount.discount_for_one
+  formData.start_date = new Date(discount.start_date)
+  formData.end_date = discount.end_date ? new Date(discount.end_date) : null
+  formData.status = discount.status
+
+  // Set schedule
+  discountSchedule.value.forEach((schedule) => {
+    const existingSchedule = discount.schedule?.find((s) => s.day === schedule.day)
+    if (existingSchedule) {
+      schedule.active = true
+      schedule.start_time = existingSchedule.start_time
+      schedule.end_time = existingSchedule.end_time
+    } else {
+      schedule.active = false
+    }
+  })
+
+  dialogEditDiscountRef.value.showModal()
 }
 
-const closeCreateDiscountModal = () => {
-  dialogCreateDiscountRef.value.close()
+const closeEditDiscountModal = () => {
+  dialogEditDiscountRef.value.close()
   vCreate$.value.$reset()
   clearFormData()
 }
 
 const clearFormData = () => {
+  formData.id = null
   formData.description = ''
   formData.type = 'percentage'
   formData.value = 0
@@ -381,10 +424,12 @@ const clearFormData = () => {
   formData.start_date = new Date()
   formData.end_date = null
   formData.schedule = []
+  formData.status = 'active'
 }
 
-// CREATE CATEGORY
+// EDIT DISCOUNT
 const formData = reactive({
+  id: null as string | null,
   description: '',
   type: 'percentage',
   value: 0,
@@ -393,6 +438,7 @@ const formData = reactive({
   start_date: new Date(),
   end_date: null as Date | null,
   schedule: [] as Array<DiscountSchedule>,
+  status: 'active',
 })
 
 const type = computed(() => formData.type === 'percentage' ? 'Porcentaje' : 'Monto fijo')
@@ -427,7 +473,7 @@ const rules = {
 
 const vCreate$ = useVuelidate(rules, formData)
 
-const handleSubmitCreate = async () => {
+const handleSubmitEdit = async () => {
   const isFormValid = await vCreate$.value.$validate()
   if (!isFormValid) {
     toast.warn('Formulario no válido, revise los errores')
@@ -440,7 +486,8 @@ const handleSubmitCreate = async () => {
       end_time: schedule.end_time,
     }
   })
-  const newDiscount: CreateDiscount = {
+  const editedDiscount: UpdateDiscount = {
+    id: formData.id!,
     id_company: branch.value.id_company,
     id_branch: branch.value.id,
     description: formData.description,
@@ -451,16 +498,16 @@ const handleSubmitCreate = async () => {
     start_date: formData.start_date,
     end_date: formData.end_date ?? undefined,
     schedule: discountScheduleSaved,
-    status: 'active',
+    status: formData.status === 'active' ? 'active' : 'inactive',
   }
-  createDiscount(newDiscount, (response: Response<any>) => {
+  updateDiscount(editedDiscount, (response: Response<any>) => {
     if (!response.success) {
       toast.error(response.message)
       return
     }
     getAllDiscounts()
-    closeCreateDiscountModal()
-    toast.success('Descuento creado exitosamente')
+    closeEditDiscountModal()
+    toast.success('Descuento actualizado exitosamente')
   })
 }
 
@@ -475,7 +522,6 @@ const getAllDiscounts = async () => {
 }
 
 defineExpose({
-  openCreateDiscountModal,
-  closeCreateDiscountModal,
+  openEditDiscountModal,
 })
 </script>

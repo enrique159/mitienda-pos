@@ -31,10 +31,28 @@ export const useDate = () => {
     return dayjs(date).format("YYYY-MM-DD")
   }
 
+  const formatDateShort = (date: Date | string | undefined) => {
+    if (!date) return ""
+    return dayjs(date).format("DD/MM/YYYY")
+  }
+
+  const formatTime12 = (time: string | undefined) => {
+    if (!time) return ""
+    return dayjs(`2000-01-01 ${time}`).format("hh:mm a")
+  }
+
+  const formatTime24 = (time: string | undefined) => {
+    if (!time) return ""
+    return dayjs(`2000-01-01 ${time}`).format("HH:mm")
+  }
+
   return {
     getCurrentDate,
     formatDatetime,
     formatDatetimeShort,
+    formatDateShort,
     formatDate,
+    formatTime12,
+    formatTime24,
   }
 }
