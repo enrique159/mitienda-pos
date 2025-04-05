@@ -26,6 +26,11 @@ ipcMain.on('delete_discount', async (event, discountId) => {
   event.reply('delete_discount', response)
 })
 
+ipcMain.on('get_discount_products', async (event, discountId) => {
+  const response = await discountsRepository.getDiscountProducts(discountId)
+  event.reply('get_discount_products', response)
+})
+
 ipcMain.on('create_discount_product', async (event, discountId, productsId) => {
   const response = await discountsRepository.createDiscountProduct(discountId, productsId)
   event.reply('create_discount_product', response)

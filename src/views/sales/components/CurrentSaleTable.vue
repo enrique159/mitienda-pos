@@ -16,7 +16,7 @@
       <tbody>
         <!-- row 1 -->
         <tr
-          v-for="item in currentCart"
+          v-for="item in currentCartProductsWithDiscount"
           :key="item.id"
           class="cursor-pointer"
           :class="[ selectedProduct && selectedProduct.id === item.id ? 'bg-brand-blue text-white' : 'hover:bg-gray-100' ]"
@@ -24,7 +24,13 @@
         >
           <td>{{ item.barcode }}</td>
           <td>{{ item.name }}</td>
-          <td>{{ item.description }}</td>
+          <td>
+            {{ item.description }}
+            <br>
+            <span class="text-red-400 font-medium">
+              {{ item.valid_discounts?.map(d => d.description).join(', ') }}
+            </span>
+          </td>
           <td>{{ formatCurrency(item.selling_price) }}</td>
           <td>
             <div class="dropdown">
@@ -48,7 +54,17 @@
               </ul>
             </div>
           </td>
-          <td class="font-semibold">
+          <td v-if="item.valid_discounts?.length">
+            <div class="flex flex-col">
+              <span class="text-red-400 font-medium line-through">
+                {{ formatCurrency(getTotalIncomeFromProduct(item.selling_price, item.quantity)) }}
+              </span>
+              <span class="font-semibold">
+                {{ formatCurrency(item.subtotal) }}
+              </span>
+            </div>
+          </td>
+          <td v-else class="font-semibold">
             {{ formatCurrency(getTotalIncomeFromProduct(item.selling_price, item.quantity)) }}
           </td>
           <td>{{ item.stock }}</td>
@@ -69,7 +85,7 @@ import { ref, watch } from 'vue'
 const emits = defineEmits(['on:select-product', 'remove-product-from-cart', 'show-edit-quantity-modal'])
 
 const { formatCurrency } = useCurrency()
-const { currentCart } = useProduct()
+const { currentCart, currentCartProductsWithDiscount } = useProduct()
 
 const getTotalIncomeFromProduct = (price: number, quantity: number) => {
   return price * quantity
@@ -102,7 +118,6 @@ const editProductQuantity = (product: ProductCart) => {
 const tableContainerRef = ref()
 
 const scrollToBottom = () => {
-  console.log('scroll to bottom')
   tableContainerRef.value.scrollTop = tableContainerRef.value.scrollHeight
 }
 

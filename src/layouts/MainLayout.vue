@@ -170,7 +170,6 @@ const cleanupFunctions: (() => void)[] = []
 
 // System suspend handler
 const suspendHandler = () => {
-  console.log('System Suspend')
   logout()
   router.push({ name: 'SignInAsUser' })
 }

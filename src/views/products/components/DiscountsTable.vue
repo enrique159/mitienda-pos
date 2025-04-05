@@ -31,7 +31,7 @@
             {{ formatDateShort(discount.start_date) }}
           </td>
           <td>
-            {{ formatDateShort(discount.end_date) }}
+            {{ formatDateShort(discount.end_date) || '-' }}
           </td>
           <td>
             <button

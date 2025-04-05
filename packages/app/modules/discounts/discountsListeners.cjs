@@ -25,6 +25,12 @@ exports.deleteDiscount = function (discountId, callback) {
   ipcRenderer.send('delete_discount', discountId)
 }
 
+exports.getDiscountProducts = function (discountId, callback) {
+  ipcRenderer.removeAllListeners('get_discount_products')
+  ipcRenderer.on('get_discount_products', (_, response) => callback(response))
+  ipcRenderer.send('get_discount_products', discountId)
+}
+
 exports.createDiscountProduct = function (discountId, productsId, callback) {
   ipcRenderer.removeAllListeners('create_discount_product')
   ipcRenderer.on('create_discount_product', (_, response) => callback(response))

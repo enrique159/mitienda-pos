@@ -1,10 +1,10 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
+const { response, logger, parseBoolean, parseArrayJson } = require('../../helpers/index.cjs')
 
 function normalizeProduct(product) {
   let taxes = []
   try {
-    taxes = product.taxes ? JSON.parse(product.taxes) : []
+    taxes = parseArrayJson(product.taxes)
   } catch (err) {
     logger.error({ type: 'NORMALIZE PRODUCT', message: `${err}`, data: err })
     taxes = product.taxes
@@ -47,7 +47,10 @@ exports.getActiveProducts = async function () {
             .where('products_discounts.id_product', product.id)
           return {
             ...normalizeProduct(product),
-            discounts: discounts || [],
+            discounts: discounts ? discounts.map((discount) => ({
+              ...discount,
+              schedule: parseArrayJson(discount.schedule),
+            })) : [],
           }
         })
       )

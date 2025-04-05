@@ -1,10 +1,10 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
+const { response, logger, parseBoolean, parseArrayJson } = require('../../helpers/index.cjs')
 
 function normalizeDiscount(discount) {
   let schedule = []
   try {
-    schedule = discount.schedule? JSON.parse(discount.schedule) : []
+    schedule = parseArrayJson(discount.schedule)
   } catch (err) {
     logger.error({ type: 'NORMALIZE DISCOUNT', message: `${err}`, data: err })
     schedule = discount.schedule
@@ -109,12 +109,34 @@ exports.deleteDiscount = async function (discountId) {
     })
 }
 
+
+/*
+ * Obtiene todos los id de productos asociados a un descuento
+*/
+exports.getDiscountProducts = async function (discountId) {
+  return await knex('products_discounts').select('id_product').where('id_discount', discountId)
+    .then((discounts) => {
+      return response(true, 'Descuento encontrados', discounts)
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'GET DISCOUNT PRODUCTS ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al traer los descuentos', err)
+    })
+}
+
 /*
  * Asociar descuento a productos
 */
 exports.createDiscountProduct = async function (discountId, productsId) {
   const trx = await knex.transaction()
   try {
+    // First delete all existing associations for this discount
+    await trx('products_discounts')
+      .where('id_discount', discountId)
+      .del()
+
+    // Then insert new associations
     await trx('products_discounts').insert(
       productsId.map((productId) => ({
         id_product: productId,
