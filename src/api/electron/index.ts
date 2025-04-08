@@ -1,4 +1,4 @@
-import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount, UpdateDiscount } from '@/api/interfaces'
+import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount, UpdateDiscount, CreateCashMovement } from '@/api/interfaces'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 
@@ -44,6 +44,9 @@ export const getBranchInfo = async (callback: any) => window.electron.getBranchI
 export const getCashRegisterActive = async (): Promise<Response<any>> => window.electron.getCashRegisterActive()
 export const getCurrentCashRegisterState = async (): Promise<Response<CashRegisterState>> => window.electron.getCurrentCashRegisterState()
 export const openCashRegister = async (data: Partial<CashRegister> ,callback: any) => window.electron.createCashRegister(data, callback)
+
+/* Cash Movements */
+export const createCashMovement = async (data: CreateCashMovement, callback: any) => window.electron.createCashMovement(data, callback)
 
 /* Configuration */
 export const getConfiguration = async (callback: any) => window.electron.getConfiguration(callback)

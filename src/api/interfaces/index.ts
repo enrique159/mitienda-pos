@@ -1,9 +1,10 @@
 import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleStatus, PaymentMethods, SalePayload, PaymentPayload, SaleDetailPayload, PaymentMethod, TaxDetail } from './sale'
 import { Product, ProductCart, UnitMeasurement, Unit, CreateProduct, ProductTax } from './products'
+import { Discount, CreateDiscount, UpdateDiscount, DiscountSchedule } from './discount'
+import { CashMovement, CreateCashMovement } from './cashMovements'
 import { CashRegister, CashRegisterState } from './cashRegisters'
 import { Category, CreateCategory } from './categories'
 import { Customer, CreateCustomer } from './customer'
-import { Discount, CreateDiscount, UpdateDiscount, DiscountSchedule } from './discount'
 import { Configuration } from './configuration'
 import { StartSessionParams } from './auth'
 import { User, Seller } from './users'
@@ -35,6 +36,7 @@ export type {
   ProductCart,
   SalePayload,
   CashRegister,
+  CashMovement,
   PaymentMethod,
   CreateProduct,
   Configuration,
@@ -48,7 +50,8 @@ export type {
   SaleDetailPayload,
   CreateSalePayload,
   CashRegisterState,
-  StartSessionParams
+  StartSessionParams,
+  CreateCashMovement
 }
 
 export { UnitMeasurement, SaleStatus, PaymentMethods }
