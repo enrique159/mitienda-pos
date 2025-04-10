@@ -18,6 +18,7 @@ const taxes = require('./schemas/taxes.cjs')
 const categories = require('./schemas/categories.cjs')
 const cashRegisters = require('./schemas/cash_registers.cjs')
 const cashMovements = require('./schemas/cash_movements.cjs')
+const cashRegisterAudits = require('./schemas/cash_register_audits.cjs')
 const customers = require('./schemas/customers.cjs')
 const sales = require('./schemas/sales.cjs')
 const saleDetails = require('./schemas/sale_details.cjs')
@@ -49,6 +50,7 @@ const initDB = async() => {
         taxes.createTable(knex),
         cashRegisters.createTable(knex),
         cashMovements.createTable(knex),
+        cashRegisterAudits.createTable(knex),
         customers.createTable(knex),
         sales.createTable(knex),
         saleDetails.createTable(knex),

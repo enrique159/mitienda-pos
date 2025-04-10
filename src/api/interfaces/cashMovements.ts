@@ -2,7 +2,7 @@ export interface CashMovement {
   id: string
   id_cash_register: string
   amount: number
-  type: 'income' | 'outcome'
+  type: 'income' | 'withdraw'
   reason: string
   description?: string
   created_at: string

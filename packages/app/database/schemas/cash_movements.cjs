@@ -8,7 +8,7 @@ exports.createTable = async function(knex) {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary()
     table.uuid('id_cash_register').notNullable().references('cash_registers.id')
     table.integer('amount').notNullable()
-    table.enum('type', ['income', 'outcome']).notNullable()
+    table.enum('type', ['income', 'withdraw']).notNullable()
     table.string('reason').notNullable()
     table.string('description')
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable()

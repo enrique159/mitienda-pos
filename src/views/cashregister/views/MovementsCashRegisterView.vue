@@ -14,7 +14,7 @@
             <IconSwipeRight size="24" />
             Ingresar
           </button>
-          <button class="btn rounded-md" :class="{ 'btn-error text-white': movementType === 'expense' }" @click="handleMovementType('expense')">
+          <button class="btn rounded-md" :class="{ 'btn-error text-white': movementType === 'withdraw' }" @click="handleMovementType('withdraw')">
             <IconSwipeLeft size="24" />
             Retirar
           </button>
@@ -79,7 +79,7 @@ import { useCashRegister } from '@/composables/useCashRegister'
 // Reference
 const currencyInputRef = ref()
 
-const movementType = ref('income')
+const movementType = ref<'income' | 'withdraw'>('income')
 const movementQuantity = ref('')
 const movementComments = ref('')
 const movementTypeReason = ref('')
@@ -102,7 +102,7 @@ const currentReasons = computed(() => {
   return movementType.value === 'income' ? depositReasons : withdrawalReasons
 })
 
-const handleMovementType = (type: string) => {
+const handleMovementType = (type: 'income' | 'withdraw') => {
   movementType.value = type
   movementTypeReason.value = ''
 }
@@ -121,7 +121,7 @@ const handleCreateCashMovement = () => {
   const data: CreateCashMovement = {
     id_cash_register: cashRegister.value?.id || '',
     amount: Number(movementQuantity.value),
-    type: movementType.value as 'income' | 'outcome',
+    type: movementType.value as 'income' | 'withdraw',
     reason: movementTypeReason.value,
     description: movementComments.value,
   }

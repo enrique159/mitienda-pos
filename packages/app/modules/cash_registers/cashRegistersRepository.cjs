@@ -73,3 +73,18 @@ exports.getCurrentCashRegisterState = async function () {
     return response(false, 'Error al traer el estado actual de la caja registradora', err)
   }
 }
+
+/*
+ * Cierre de caja registradora
+ */
+exports.closeCashRegister = async function (data) {
+  return await knex('cash_registers').where('id', data.id).update(data).returning('*')
+    .then((cashRegister) => {
+      const cashRegisterData = Array.isArray(cashRegister) ? cashRegister[0] : cashRegister
+      return response(true, 'Caja registradora cerrada', cashRegisterData)
+    })
+    .catch((err) => {
+      logger.error({ type: 'CLOSE CASH REGISTER ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al cerrar la caja registradora', err)
+    })
+}
