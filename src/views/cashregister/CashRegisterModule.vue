@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import SideMenu from '@/components/menus/SideMenu.vue'
-import { IconCashRegister, IconSwipeRight, IconSwipeLeft } from '@tabler/icons-vue'
+import { IconCashRegister, IconSwipeRight, IconDeviceDesktopDollar } from '@tabler/icons-vue'
 const cashRegisterMenu = [
   {
     title: 'Estado actual',
@@ -18,6 +18,11 @@ const cashRegisterMenu = [
     title: 'Ingresar o retirar',
     path: '/main/cashregister/movements',
     icon: IconSwipeRight,
+  },
+  {
+    title: 'Cierre de caja',
+    path: '/main/cashregister/close',
+    icon: IconDeviceDesktopDollar,
   },
 ]
 

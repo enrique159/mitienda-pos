@@ -21,7 +21,6 @@
         </div>
         <div class="flex items-center">
           <currency-input
-            ref="currencyInputRef"
             class-name="max-w-[160px]"
             :value="movementQuantity"
             @add:value="editMovementQuantity"
@@ -75,9 +74,6 @@ import { createCashMovement } from '@/api/electron'
 import { computed, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import { useCashRegister } from '@/composables/useCashRegister'
-
-// Reference
-const currencyInputRef = ref()
 
 const movementType = ref<'income' | 'withdraw'>('income')
 const movementQuantity = ref('')

@@ -17,8 +17,19 @@ export interface CashRegisterState {
     transfer: number
     other: number
   }
+  movements: {
+    income: number
+    withdraw: number
+  }
   opening_amount: number
   total_amount_paid: number
   total_sales_amount: number
   total_sales: number
+  total_movements: number
+}
+
+export type Denomination = {
+  denomination: string
+  type: 'coin' | 'bill'
+  quantity: number
 }

@@ -89,6 +89,38 @@ exports.getSales = async function () {
 
 
 /*
+  ** ******** OBTENER VENTAS DE TURNO ********
+*/
+exports.getSalesInTurn = async function (idCashRegister) {
+  try {
+    const sales = await knex('sales').where('id_cash_register', idCashRegister).select()
+    if (!sales.length) {
+      logger.error({ type: 'GET SALES IN TURN', message: 'No se encontraron ventas' })
+      return response(true, 'Ventas no encontradas', [])
+    }
+
+    const salesWithDetails = await Promise.all(sales.map(async (sale) => {
+      const details = await knex('sale_details').where('id_sale', sale.id).select()
+      const payments = await knex('sale_payments').where('id_sale', sale.id).select()
+      const seller = await knex('sellers').where('id', sale.id_seller).select().first()
+
+      return {
+        ...normalizeSale(sale),
+        details,
+        payments,
+        seller_name: seller.name,
+      }
+    }))
+
+    return response(true, 'Ventas encontradas', salesWithDetails)
+  } catch (err) {
+    console.log(err)
+    logger.error({ type: 'GET SALES IN TURN ERROR', message: `${err}`, data: err })
+    return response(false, 'Error al traer las ventas', err)
+  }
+}
+
+/*
   ** ******** GENERAR EL SIGUIENTE FOLIO DE VENTA ********
 */
 exports.generateSaleFolio = async function () {

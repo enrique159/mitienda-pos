@@ -259,14 +259,16 @@
 import { ref, computed, onMounted } from 'vue'
 import { IconDotsVertical, IconCopy } from '@tabler/icons-vue'
 import { Sale, Response } from '@/api/interfaces'
-import { getSales } from '@/api/electron'
+import { getSalesInTurn } from '@/api/electron'
 import { useCurrency } from '@/composables/useCurrency'
 import { useDate } from '@/composables/useDate'
 import { toast } from 'vue3-toastify'
 import { getPaymentMethodName, getSaleStatusName } from '@/utils/Payments'
+import { useCashRegister } from '@/composables/useCashRegister'
 
 const { formatDatetimeShort, formatDatetime } = useDate()
 const { formatCurrency } = useCurrency()
+const { cashRegister } = useCashRegister()
 
 const sales = ref<Sale[]>([])
 
@@ -275,7 +277,8 @@ const emptySales = computed(() => {
 })
 
 onMounted(() => {
-  getSales((response: Response<Sale[]>) => {
+  if (!cashRegister.value) return
+  getSalesInTurn(cashRegister.value.id, (response: Response<Sale[]>) => {
     if (!response.success) {
       toast.error(response.message)
       return

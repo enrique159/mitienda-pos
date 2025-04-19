@@ -38,6 +38,11 @@ ipcMain.on('get_sales', async (event) => {
   event.reply('get_sales', response)
 })
 
+ipcMain.on('get_sales_in_turn', async (event, idCashRegister) => {
+  const response = await salesRepository.getSalesInTurn(idCashRegister)
+  event.reply('get_sales_in_turn', response)
+})
+
 ipcMain.on('generate_sale_folio', async (event) => {
   const response = await salesRepository.generateSaleFolio()
   event.returnValue = response

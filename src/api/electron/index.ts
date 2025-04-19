@@ -1,4 +1,5 @@
 import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount, UpdateDiscount, CreateCashMovement } from '@/api/interfaces'
+import { CreateCashRegisterAudit } from '../interfaces/cashRegisterAudits'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 
@@ -10,6 +11,7 @@ export const closeSession = async (sellerId: string) => window.electron.closeSes
 /* Sales */
 export const createSale = async (data: any, callback: any) => window.electron.createSale(data, callback)
 export const getSales = async (callback: any) => window.electron.getSales(callback)
+export const getSalesInTurn = async (idCashRegister: string, callback: any) => window.electron.getSalesInTurn(idCashRegister, callback)
 export const generateSaleFolio = async (): Promise<Response<GeneratedFolio>> => window.electron.generateSaleFolio()
 
 /* Categories */
@@ -44,6 +46,7 @@ export const getBranchInfo = async (callback: any) => window.electron.getBranchI
 export const getCashRegisterActive = async (): Promise<Response<any>> => window.electron.getCashRegisterActive()
 export const getCurrentCashRegisterState = async (): Promise<Response<CashRegisterState>> => window.electron.getCurrentCashRegisterState()
 export const openCashRegister = async (data: Partial<CashRegister> ,callback: any) => window.electron.createCashRegister(data, callback)
+export const closeCashRegister = async (data: CreateCashRegisterAudit, callback: any) => window.electron.createCashRegisterAudit(data, callback)
 
 /* Cash Movements */
 export const createCashMovement = async (data: CreateCashMovement, callback: any) => window.electron.createCashMovement(data, callback)

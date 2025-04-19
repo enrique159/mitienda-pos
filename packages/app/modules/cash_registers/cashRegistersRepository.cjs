@@ -1,6 +1,9 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
 const { response, logger } = require('../../helpers/index.cjs')
 
+/**
+ * Crea una caja registradora
+ */
 exports.createCashRegister = async function (data) {
   return await knex('cash_registers').insert(data).returning('*')
     .then((cashRegister) => {
@@ -13,7 +16,9 @@ exports.createCashRegister = async function (data) {
     })
 }
 
-
+/**
+ * Obtiene la caja registradora activa
+ */
 exports.getCashRegisterActive = async function () {
   return await knex('cash_registers').select('cash_registers.*', 'open_sellers.name as open_user_name', 'close_sellers.name as close_user_name')
     .leftJoin('sellers as open_sellers', 'open_sellers.id', 'cash_registers.id_user_opening')
@@ -33,8 +38,10 @@ exports.getCashRegisterActive = async function () {
     })
 }
 
+/**
+ * Obtiene el estado actual de la caja registradora
+ */
 exports.getCurrentCashRegisterState = async function () {
-  // Quiero traer de la caja registradora activa el total de ventas, separado por tipo de pago, los pagos estan en la tabla sales_payments
   try {
     const cashRegister = await this.getCashRegisterActive()
     if (!cashRegister.success) {
@@ -55,6 +62,15 @@ exports.getCurrentCashRegisterState = async function () {
       })
       .groupBy('payment_method')
 
+    const movementsSummary = await knex('cash_movements')
+      .select('type', knex.raw('SUM(amount) as total'))
+      .where('id_cash_register', cashRegister.response.id)
+      .groupBy('type')
+
+    const movementsCount = await knex('cash_movements')
+      .select(knex.raw('COUNT(*) as total_movements'))
+      .where('id_cash_register', cashRegister.response.id)
+
     const summary = {
       opening_amount: cashRegister.response.opening_amount,
       total_sales: salesSummary[0].total_sales || 0,
@@ -64,6 +80,11 @@ exports.getCurrentCashRegisterState = async function () {
         acc[payment.payment_method] = payment.total
         return acc
       }, { cash: 0, card: 0, transfer: 0, other: 0 }),
+      movements: movementsSummary.reduce((acc, movement) => {
+        acc[movement.type] = movement.total
+        return acc
+      }, { income: 0, withdraw: 0 }),
+      total_movements: movementsCount[0].total_movements || 0,
     }
 
     return response(true, 'Estado actual de la caja registradora obtenido', summary)

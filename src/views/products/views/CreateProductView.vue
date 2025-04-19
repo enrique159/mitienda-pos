@@ -400,7 +400,6 @@ import { createProduct, getProducts } from '@/api/electron'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { useCurrency } from '@/composables/useCurrency'
-import { useRouter } from 'vue-router'
 import { useBranch } from '@/composables/useBranch'
 import { useTax } from '@/composables/useTax'
 import { useProduct } from '@/composables/useProduct'
@@ -413,7 +412,6 @@ const { branch } = useBranch()
 const { setProducts, availableCategories } = useProduct()
 const { formatCurrencySimple } = useCurrency()
 const { formatDate } = useDate()
-const router = useRouter()
 
 // Taxes
 const selectedTax = ref<string>(taxes.value[0].id)
@@ -567,7 +565,6 @@ const handleSubmit = async () => {
         }
         setProducts(response.response)
       })
-      router.push('/main/products')
       toast.success('Producto creado exitosamente')
     })
   } catch (error) {

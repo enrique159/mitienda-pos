@@ -5,7 +5,8 @@ const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, delete
 const { getCategories, createCategory, updateCategory, deleteCategory } = require('./app/modules/categories/categoriesListeners.cjs')
 const { getBranchInfo } = require('./app/modules/branches/branchesListeners.cjs')
 const { getCashRegisterActive, createCashRegister, getCurrentCashRegisterState } = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
-const { createSale, getSales, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
+const { createCashRegisterAudit } = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
+const { createSale, getSales, getSalesInTurn, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
 const { getTaxes, createTax, deleteTax } = require('./app/modules/taxes/taxesListeners.cjs')
 const { getConfiguration, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
 const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
@@ -60,6 +61,7 @@ contextBridge.exposeInMainWorld('electron', {
   // Sales
   createSale,
   getSales,
+  getSalesInTurn,
   generateSaleFolio,
   // Configuration
   getVersion,
@@ -71,6 +73,8 @@ contextBridge.exposeInMainWorld('electron', {
   deleteCustomer,
   // Cash Movements
   createCashMovement,
+  // Cash Register Audits
+  createCashRegisterAudit,
   // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),
