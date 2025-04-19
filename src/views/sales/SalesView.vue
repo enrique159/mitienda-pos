@@ -212,7 +212,7 @@
               Precio venta
             </p>
             <p class="font-bold text-brand-black">
-              {{ previewProductToAdd && formatCurrency(previewProductToAdd?.selling_price) }}
+              {{ previewProductToAdd && formatCurrency(previewProductToAdd?.selling_price) }}/{{ previewProductToAdd?.unit_measurement }}
             </p>
           </div>
           <!-- CHANGE QUANTITY TO IMPORT -->
@@ -256,7 +256,7 @@
               <input
                 ref="inputAddProductQuantityRef"
                 class="w-full"
-                placeholder="Cantidad"
+                :placeholder="`Cantidad (${previewProductToAdd?.unit_measurement})`"
                 @keydown="(event) => {
                   !previewProductToAdd?.is_bulk
                     ? validateOnlyNumbers(event)
