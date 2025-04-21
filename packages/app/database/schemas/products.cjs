@@ -11,7 +11,7 @@ exports.createTable = async function(knex) {
     table.uuid('id_category').notNullable().references('categories.id') // Relación con la categoría
     table.string('name').notNullable() // Nombre del producto
     table.string('sku').unique().notNullable() // Código único (SKU)
-    table.string('barcode').unique() // Código de barras
+    table.string('barcode') // Código de barras (opcional pero único)
     table.string('description') // Descripción breve
     table.enu('unit_measurement', ['piece', 'kg', 'g', 'liter', 'ml', 'box', 'other']).notNullable() // Unidad de medida
     table.boolean('is_bulk').defaultTo(false) // Si es a granel

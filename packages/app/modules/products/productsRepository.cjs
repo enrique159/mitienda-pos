@@ -82,6 +82,13 @@ exports.getProductsByCategory = async function (categoryId) {
 
 exports.createProduct = async function (product) {
   product.taxes = JSON.stringify(product.taxes || [])
+  if (product.barcode) {
+    const existingProduct = await knex('products').select().where('barcode', product.barcode)
+    if (existingProduct.length) {
+      logger.error({ type: 'CREATE PRODUCT ERROR', message: 'Ya existe un producto con el mismo código de barras' })
+      return response(false, 'Ya existe un producto con el mismo código de barras')
+    }
+  }
   return await knex('products').insert(product).returning('*')
     .then((product) => {
       logger.info({ type: 'CREATE PRODUCT', message: 'Producto creado exitosamente', data: product })
