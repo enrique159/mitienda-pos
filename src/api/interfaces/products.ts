@@ -52,6 +52,7 @@ export interface ProductCart extends Product {
   quantity: number
   subtotal: number
   valid_discounts?: Discount[]
+  discount_amount?: number
 }
 
 export interface CreateProduct {

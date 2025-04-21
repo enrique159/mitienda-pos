@@ -90,6 +90,7 @@ export const useProduct = () => {
       return {
         ...product,
         valid_discounts: validDiscounts,
+        discount_amount: totalDiscountAmount,
         subtotal: product.selling_price * product.quantity - totalDiscountAmount,
       }
     })

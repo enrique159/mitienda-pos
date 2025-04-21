@@ -109,7 +109,7 @@
                 {{ formatCurrency(currentCartDiscount) }}
               </p>
 
-              <p>Impuestos (IVA)</p>
+              <p>Impuestos</p>
               <p class="text-end">
                 {{ formatCurrency(currentCartTax) }}
               </p>
@@ -161,10 +161,10 @@
           <div v-else class="flex flex-wrap gap-4 mb-6 items-center">
             <div
               v-for="method in paymentMethods"
-              :key="`payment-method-card-${method.payment_method}`"
+              :key="`payment-method-card-${method.id}`"
               class="bg-white min-w-[128px] rounded-lg py-1 px-3 relative border-4 transition-all cursor-pointer"
               :class="[
-                selectedPaymentMethodEdit && selectedPaymentMethodEdit.payment_method === method.payment_method
+                selectedPaymentMethodEdit && selectedPaymentMethodEdit.id === method.id
                   ? 'border-brand-blue shadow-lg' : 'border-white shadow-md'
               ]"
               @click="selectPaymentMethodEdit(method)"
@@ -173,7 +173,10 @@
                 {{ getPaymentMethodName(method.payment_method) }}
               </p>
               <span class="font-bold text-lg">{{ formatCurrency(method.amount) }}</span>
-              <button class="btn bg-black-3 text-black-1 hover:text-white hover:bg-red-500 hover:border-red-400 btn-circle btn-xs absolute -top-2 -right-2" @click="() => paymentMethods.splice(paymentMethods.indexOf(method), 1)">
+              <button
+                class="btn bg-black-3 text-black-1 hover:text-white hover:bg-red-500 hover:border-red-400 btn-circle btn-xs absolute -top-2 -right-2"
+                @click="removePaymentMethod(method)"
+              >
                 <IconX size="18" class="text-white" />
               </button>
             </div>
@@ -187,9 +190,13 @@
                   v-for="method in availablePaymentMethods"
                   :key="method.id"
                   @click.stop="() => {
-                    paymentMethods.push({ payment_method: method.id, amount: 0 });
+                    paymentMethods.push({ id: Math.random().toString(), payment_method: method.id, amount: 0 });
                     selectPaymentMethodEdit(paymentMethods[paymentMethods.length - 1])
-                    currencyInputRef.focus()
+                    nextTick(() => {
+                      if (multipleCurrencyInputRef.value) {
+                        multipleCurrencyInputRef.value.focus()
+                      }
+                    })
                   }"
                 >
                   <a>
@@ -221,7 +228,8 @@
           </div>
         </div>
         <div class="col-span-5 flex flex-col items-center justify-between">
-          <div class="grid grid-cols-1 gap-4 w-full place-items-center">
+          <!-- ONE TYPE PAYMENT -->
+          <div v-if="!multiplePaymentMethods" class="grid grid-cols-1 gap-4 w-full place-items-center">
             <div class="flex items-center">
               <currency-input
                 ref="currencyInputRef"
@@ -236,6 +244,23 @@
             <pin-input @input="editPaymentQuantity" />
             <span class="text-black-1 text-lg">
               Cambio: <strong> {{ formatCurrency(cashPaymentChange) }} </strong>
+            </span>
+          </div>
+          <!-- MULTIPLE PAYMENT METHODS -->
+          <div v-else class="grid grid-cols-1 gap-4 w-full place-items-center">
+            <div class="flex items-center">
+              <currency-input
+                ref="multipleCurrencyInputRef"
+                class-name="max-w-[180px]"
+                :value="selectedPaymentMethodEdit?.amount.toString()"
+                @add:value="editCurrentPaymentMethodAmount"
+                @backspace="removeCurrentPaymentMethodAmount"
+              />
+              <delete-button @click="removeCurrentPaymentMethodAmount" />
+            </div>
+            <pin-input @input="editCurrentPaymentMethodAmount" />
+            <span class="text-black-1 text-lg">
+              Cambio: <strong :class="{ 'text-brand-orange': cashPaymentChange > 0 }"> {{ formatCurrency(cashPaymentChange) }} </strong>
             </span>
           </div>
           <div class="w-full flex flex-col items-center">
@@ -315,7 +340,7 @@ import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVerti
 import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response, TaxDetail } from '@/api/interfaces'
 import { getPaymentMethodName } from '@/utils/Payments'
 import { createSale } from '@/api/electron'
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
 import { useCustomer } from '@/composables/useCustomer'
@@ -332,6 +357,7 @@ const {
   currentCartSubtotal,
   currentCartDiscount,
   currentCartTax,
+  currentCartProductsWithDiscount,
   currentCartTaxesPerProduct,
   clearCurrentCart,
 } = useProduct()
@@ -371,6 +397,7 @@ const paymentQuantity = ref('')
 const showPaymentModal = ref(false)
 const dialogPaymentSaleRef = ref()
 const currencyInputRef = ref()
+const multipleCurrencyInputRef = ref()
 const snackbarPayment = reactive<Snackbar>({
   show: false,
   message: '',
@@ -418,8 +445,9 @@ const onePaymentMethod = ref<PaymentPayload>({
   amount: 0,
 })
 
-const paymentMethods = ref<PaymentPayload[]>([
+const paymentMethods = ref<Array<PaymentPayload & { id: string }>>([
   {
+    id: Math.random().toString(),
     payment_method: PaymentMethods.CASH,
     amount: 0,
   },
@@ -429,6 +457,7 @@ watch(multiplePaymentMethods, () => {
   if (multiplePaymentMethods.value) {
     if (paymentMethods.value.length === 0) {
       paymentMethods.value.push({
+        id: Math.random().toString(),
         payment_method: PaymentMethods.CASH,
         amount: 0,
       })
@@ -442,31 +471,66 @@ watch(multiplePaymentMethods, () => {
 
 const availablePaymentMethods = computed(() => {
   return paymentMethodsOptions.filter((method) => {
-    return !paymentMethods.value.some((payment) => payment.payment_method === method.id)
+    return method.id !== PaymentMethods.CASH || !paymentMethods.value.some((payment) => payment.payment_method === PaymentMethods.CASH)
   })
 })
 
-const selectedPaymentMethodEdit = ref<PaymentPayload | null>(null)
+const selectedPaymentMethodEdit = ref<PaymentPayload & { id: string } | null>(null)
 
-const selectPaymentMethodEdit = (method: PaymentPayload) => {
+const selectPaymentMethodEdit = (method: PaymentPayload & { id: string }) => {
   selectedPaymentMethodEdit.value = method
-  currencyInputRef.value.focus()
+  nextTick(() => {
+    if (multipleCurrencyInputRef.value) {
+      multipleCurrencyInputRef.value.focus()
+    }
+  })
+}
+
+const editCurrentPaymentMethodAmount = (value: string) => {
+  if (!selectedPaymentMethodEdit.value) return
+  let currentAmount = selectedPaymentMethodEdit.value.amount.toString()
+  currentAmount += value
+  selectedPaymentMethodEdit.value.amount = parseAmount(currentAmount)
+  setAmountOnSelectedPaymentMethod(selectedPaymentMethodEdit.value.amount)
+}
+
+const removeCurrentPaymentMethodAmount = () => {
+  if (!selectedPaymentMethodEdit.value) return
+  let currentAmount = selectedPaymentMethodEdit.value.amount.toString()
+  currentAmount = currentAmount.slice(0, -1)
+  selectedPaymentMethodEdit.value.amount = parseAmount(currentAmount)
+  setAmountOnSelectedPaymentMethod(selectedPaymentMethodEdit.value.amount)
+}
+
+const setAmountOnSelectedPaymentMethod = (amount: number) => {
+  const findIndex = paymentMethods.value.findIndex((payment) => payment.id === selectedPaymentMethodEdit.value?.id)
+  if (findIndex !== -1) {
+    paymentMethods.value[findIndex].amount = amount
+  }
+}
+
+const removePaymentMethod = (method: PaymentPayload & { id: string }) => {
+  paymentMethods.value.splice(paymentMethods.value.indexOf(method), 1)
+  selectedPaymentMethodEdit.value = null
 }
 
 const resetPaymentMethods = () => {
   paymentMethods.value = [
     {
+      id: Math.random().toString(),
       payment_method: PaymentMethods.CASH,
       amount: 0,
     },
   ]
 }
 
-const selectPaymentMethod = (method: PaymentMethods) => {
+const selectPaymentMethod = async (method: PaymentMethods) => {
   switch (method) {
   case PaymentMethods.CASH:
     onePaymentMethod.value.payment_method = PaymentMethods.CASH
-    currencyInputRef.value.focus()
+    nextTick(() => {
+      currencyInputRef.value?.focus()
+    })
     break
   case PaymentMethods.CARD:
     onePaymentMethod.value.payment_method = PaymentMethods.CARD
@@ -487,6 +551,10 @@ const isCurrencyInputDisabled = computed(() => {
 })
 
 const cashPaymentChange = computed(() => {
+  if (multiplePaymentMethods.value) {
+    const total = paymentMethods.value.reduce((acc, payment) => acc + payment.amount, 0)
+    return Math.max(0, total - currentCartTotal.value)
+  }
   const payment = parseAmount(paymentQuantity.value)
   return !payment ? 0 : Math.max(0, payment - currentCartTotal.value)
 })
@@ -510,7 +578,12 @@ const createCurrentSale = () => {
     showSnackbarPaymentError('Debes asignar un cliente para realizar una venta a crédito')
     return
   }
+  if (multiplePaymentMethods.value && paymentMethods.value.every((payment) => payment.payment_method !== PaymentMethods.CASH)) {
+    showSnackbarPaymentError('La suma de los pagos no puede ser mayor a la cantidad total')
+    return
+  }
   const details: SaleDetailPayload[] = currentCart.value.map((product) => {
+    const productWithDiscount = currentCartProductsWithDiscount.value.find((p) => p.id === product.id)
     return {
       id_product: product.id,
       product_name: product.name,
@@ -526,12 +599,16 @@ const createCurrentSale = () => {
             : tax.type === 'cuota' ? tax.value! * 100 : 0,
         }
       }),
-      // TODO: Integrar los descuentos
-      discount: 0,
-      total: product.selling_price * product.quantity,
-      profit: (product.selling_price - product.purchase_price) * product.quantity,
+      discount: productWithDiscount?.discount_amount ?? 0,
+      total: product.selling_price * product.quantity - (productWithDiscount?.discount_amount ?? 0),
+      profit: (product.selling_price - product.purchase_price) * product.quantity - (productWithDiscount?.discount_amount ?? 0),
     }
   })
+  const payments: PaymentPayload[] = paymentMethods.value.map((payment) => ({
+    payment_method: payment.payment_method,
+    amount: payment.amount,
+    change: payment.payment_method === PaymentMethods.CASH ? cashPaymentChange.value : 0,
+  }))
   const payload: CreateSalePayload = {
     sale: {
       id_company: branch.value.id_company,
@@ -553,7 +630,7 @@ const createCurrentSale = () => {
       is_ticket_printed: printTicket.value,
     },
     details,
-    payments: [
+    payments: multiplePaymentMethods.value ? payments : [
       {
         payment_method: onePaymentMethod.value.payment_method,
         amount: parseAmount(paymentQuantity.value) - fixedAmount(cashPaymentChange.value),
@@ -578,7 +655,12 @@ const createCurrentSale = () => {
 const printTicket = ref(true)
 
 const getStatusSale = () => {
-  const paidAmount = parseAmount(paymentQuantity.value)
+  let paidAmount = 0
+  if (multiplePaymentMethods.value) {
+    paidAmount = paymentMethods.value.reduce((acc, payment) => acc + payment.amount, 0)
+  } else {
+    paidAmount = parseAmount(paymentQuantity.value)
+  }
 
   if (paidAmount >= currentCartTotal.value) return SaleStatus.PAID
   if (paidAmount === 0) return SaleStatus.PENDING
@@ -586,8 +668,10 @@ const getStatusSale = () => {
 }
 
 const isPaidAmountLowerThanTotal = computed(() => {
+  if (multiplePaymentMethods.value) {
+    const total = paymentMethods.value.reduce((acc, payment) => acc + payment.amount, 0)
+    return total < currentCartTotal.value
+  }
   return parseAmount(paymentQuantity.value) < currentCartTotal.value
 })
 </script>
-
-<style scoped></style>

@@ -1,6 +1,6 @@
 import { PaymentMethod, PaymentMethods } from '@/api/interfaces'
 
-export const getPaymentMethodName = (paymentMethod: PaymentMethod) => {
+export const getPaymentMethodName = (paymentMethod: PaymentMethod | undefined) => {
   switch (paymentMethod) {
   case PaymentMethods.CASH:
     return 'Efectivo'
@@ -10,6 +10,8 @@ export const getPaymentMethodName = (paymentMethod: PaymentMethod) => {
     return 'Transferencia'
   case PaymentMethods.OTHER:
     return 'Otro'
+  default:
+    return 'Ninguno'
   }
 }
 

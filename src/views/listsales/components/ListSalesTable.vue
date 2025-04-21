@@ -290,7 +290,7 @@ onMounted(() => {
 const getBadgeColors = (status: string) => {
   switch (status) {
   case 'pending':
-    return 'text-green-500 bg-success/20'
+    return 'text-orange-500 bg-orange-100'
   case 'partially_paid':
     return 'text-yellow-500 bg-warning/20'
   case 'paid':
