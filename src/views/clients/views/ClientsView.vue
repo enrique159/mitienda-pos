@@ -19,15 +19,13 @@
         <thead>
           <tr>
             <th class="w-12" />
-            <th class="w-48">
+            <th>
               Nombre
-            </th>
-            <th>RFC</th>
-            <th class="w-48">
-              Correo electrónico
             </th>
             <th>Teléfono</th>
             <th>Estado</th>
+            <th>Crédito</th>
+            <th>Crédito usado</th>
             <th>Fecha creación</th>
             <th />
           </tr>
@@ -40,10 +38,6 @@
             <td class="whitespace-nowrap max-w-[12rem] overflow-hidden overflow-ellipsis">
               {{ customer.name }}
             </td>
-            <td>{{ customer.rfc }}</td>
-            <td class="max-w-[12rem] overflow-hidden overflow-ellipsis">
-              {{ customer.email }}
-            </td>
             <td class="whitespace-nowrap">
               {{ formatPhone(customer.phone) }}
             </td>
@@ -53,6 +47,19 @@
                 :class="[customer.status === 'active' ? 'text-green-500 bg-success/20' : 'text-black-3 bg-white-2']"
               >
                 {{ customer.status === 'active' ? 'activo' : 'inactivo' }}
+              </div>
+            </td>
+            <td>
+              {{ formatCurrency(customer.credit_limit) }}
+            </td>
+            <td>
+              <div class="tooltip tooltip-bottom" :data-tip="formatCurrency(customer.used_credit)">
+                <progress
+                  class="progress w-24"
+                  :class="getProgressColorByCreditUsed(customer.used_credit, customer.credit_limit)"
+                  :value="customer.used_credit"
+                  :max="customer.credit_limit"
+                />
               </div>
             </td>
             <td>{{ formatDatetimeShort(customer.created_at) }}</td>
@@ -232,12 +239,14 @@ import { getCustomers, deleteCustomer, updateCustomer } from '@/api/electron'
 import { formatPhone } from '@/utils/Phone'
 import { Customer, Response } from '@/api/interfaces'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
+import { useCurrency } from '@/composables/useCurrency'
 import { useCustomer } from '@/composables/useCustomer'
 import { toast } from 'vue3-toastify'
 import { reactive, ref } from 'vue'
 import { computed } from 'vue'
 
 const { formatDatetimeShort } = useDate()
+const { formatCurrency } = useCurrency()
 
 const { customers, setCustomers } = useCustomer()
 
@@ -354,6 +363,17 @@ const handleSubmit = async () => {
     })
   } catch (error) {
     console.error('Error updating customer:', error)
+  }
+}
+
+const getProgressColorByCreditUsed = (creditUsed: number, creditLimit: number) => {
+  const percentage = (creditUsed / creditLimit) * 100
+  if (percentage < 50) {
+    return 'progress-success'
+  } else if (percentage < 75) {
+    return 'progress-warning'
+  } else {
+    return 'progress-error'
   }
 }
 </script>

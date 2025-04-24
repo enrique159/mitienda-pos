@@ -4,7 +4,7 @@
   >
     <div class="col-span-8 flex justify-between items-start pl-4 pr-8">
       <div class="flex items-center gap-2">
-        <div v-if="customerCurrentSale" class="border border-white-3 rounded-lg px-3 pr-1 h-10 text-sm max-w-48 overflow-x-hidden flex items-center gap-2">
+        <div v-if="customerCurrentSale" class="border border-white-3 rounded-lg px-3 pr-1 h-10 text-sm max-w-48 overflow-x-hidden flex justify-between items-center gap-2 min-w-36">
           <p class="truncate">
             {{ customerCurrentSale?.name }}
           </p>
@@ -210,10 +210,13 @@
           <!-- DIVIDER -->
           <div class="border-b border-gray-200 mb-4" />
 
-          <div v-if="customerCurrentSale" class="w-full border border-white-3 rounded-lg p-4 mb-4">
-            <p class="text-black-1 font-normal">
+          <div v-if="customerCurrentSale" class="flex justify-between items-center w-full border border-white-3 rounded-lg p-4 mb-4">
+            <span class="text-black-1 font-normal">
               Cliente: <span class="font-bold">{{ customerCurrentSale.name }}</span>
-            </p>
+            </span>
+            <span class="text-black-1 font-normal">
+              Disponible: {{ formatCurrency(customerCurrentSale.credit_limit - customerCurrentSale.used_credit) }}
+            </span>
           </div>
 
           <!-- SALE COMMENTS -->
@@ -347,6 +350,7 @@ import { useCustomer } from '@/composables/useCustomer'
 import { useUser } from '@/composables/useUser'
 import { toast } from 'vue3-toastify'
 import { Snackbar } from '@/types/Snackbar'
+import { getCustomers } from '@/api/electron'
 import { parseAmount, fixedAmount } from '@/utils/Payments'
 
 const { formatCurrency } = useCurrency()
@@ -365,7 +369,7 @@ const {
 const { saleFolio, branch, generateFolio } = useBranch()
 const { user } = useUser()
 const { cashRegister } = useCashRegister()
-const { getActiveCustomers, customerCurrentSale, setCustomerCurrentSale, clearCustomerCurrentSale } = useCustomer()
+const { getActiveCustomers, customerCurrentSale, setCustomerCurrentSale, clearCustomerCurrentSale, setCustomers } = useCustomer()
 
 /**
  * *************** Select client ***************
@@ -389,6 +393,15 @@ const filteredCustomers = computed(() => {
     return customer.name.toLowerCase().includes(searchClient.value.toLowerCase())
   })
 })
+
+const getAllCustomers = async () => {
+  const response = await getCustomers()
+  if (!response.success) {
+    toast.error('Error al obtener los clientes')
+    return
+  }
+  setCustomers(response.response)
+}
 
 /*
  * *************** Payment Sale ***************
@@ -562,9 +575,21 @@ const cashPaymentChange = computed(() => {
 const saleComments = ref('')
 
 // Show Dialog Payment Error Snackbar
-const showSnackbarPaymentError = (message: string) => {
+type SnackbarType = 'warning' | 'error' | 'success'
+const showSnackbarPaymentError = (message: string, type: SnackbarType = 'warning') => {
   snackbarPayment.message = message
+  snackbarPayment.type = type
   snackbarPayment.show = true
+}
+
+// Validate if customer has available credit
+const validateCustomerCredit = () => {
+  const availableCredit = (customerCurrentSale.value?.credit_limit ?? 0) - (customerCurrentSale.value?.used_credit ?? 0)
+  if (customerCurrentSale.value && availableCredit < currentCartTotal.value) {
+    showSnackbarPaymentError('El cliente no tiene crédito disponible')
+    return false
+  }
+  return true
 }
 
 /*
@@ -580,6 +605,10 @@ const createCurrentSale = () => {
   }
   if (multiplePaymentMethods.value && paymentMethods.value.every((payment) => payment.payment_method !== PaymentMethods.CASH)) {
     showSnackbarPaymentError('La suma de los pagos no puede ser mayor a la cantidad total')
+    return
+  }
+  if (isPaidAmountLowerThanTotal.value && !validateCustomerCredit()) {
+    showSnackbarPaymentError('El cliente no tiene crédito disponible')
     return
   }
   const details: SaleDetailPayload[] = currentCart.value.map((product) => {
@@ -646,8 +675,9 @@ const createCurrentSale = () => {
       generateFolio()
       clearCurrentCart()
       clearCustomerCurrentSale()
+      getAllCustomers()
     } else {
-      toast.error('Ha ocurrido un error al realizar la venta')
+      showSnackbarPaymentError('Ha ocurrido un error al realizar la venta', 'error')
     }
   })
 }

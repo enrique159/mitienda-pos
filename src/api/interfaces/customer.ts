@@ -6,6 +6,10 @@ export interface Customer {
   email?: string
   phone?: string
   address?: string
+  has_credit: boolean
+  credit_limit: number
+  used_credit: number
+  days_until_due: number
   status: 'active' | 'inactive'
   created_at: string
   updated_at: string
@@ -19,4 +23,7 @@ export interface CreateCustomer {
   email?: string
   phone?: string
   address?: string
+  has_credit?: boolean
+  credit_limit?: number
+  days_until_due?: number
 }
