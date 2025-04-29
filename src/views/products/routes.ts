@@ -4,6 +4,7 @@ import CreateProductView from './views/CreateProductView.vue'
 import TaxesView from './views/TaxesView.vue'
 import CategoriesView from './views/CategoriesView.vue'
 import DiscountsView from './views/DiscountsView.vue'
+import ProvidersView from './views/ProvidersView.vue'
 
 export const ProductsRoutes = [
   {
@@ -36,6 +37,11 @@ export const ProductsRoutes = [
         path: 'discounts',
         name: 'DiscountsView',
         component: DiscountsView,
+      },
+      {
+        path: 'providers',
+        name: 'ProvidersView',
+        component: ProvidersView,
       },
     ],
   },

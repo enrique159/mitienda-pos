@@ -86,6 +86,21 @@ exports.seed = async function(knex) {
     await knex('categories').del()
     await knex('categories').insert(categories)
 
+    // Providers
+    await knex('providers').del()
+    await knex('providers').insert({
+      id: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120020', // UUID generado
+      id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002', // ID de la empresa relacionada
+      name: 'Proveedor 1', // Nombre del proveedor
+      contact_name: 'Contacto 1', // Nombre del contacto
+      email: 'contacto1@mail.com', // Correo electrónico
+      phone: '5551234567', // Teléfono
+      address: 'Calle Principal #123, Centro', // Dirección
+      website: 'https://www.proveedor1.com', // Website
+      tax_id: 'PRO123456789', // RFC
+      notes: 'Notas del proveedor', // Notas
+    })
+
     // Products
     await knex('products').del()
     await knex('products').insert(products.map((product) => ({

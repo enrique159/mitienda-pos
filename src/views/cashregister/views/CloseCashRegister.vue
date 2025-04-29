@@ -1,5 +1,5 @@
 <template>
-  <div class="p-8 pt-4 h-full">
+  <div class="p-8 pt-4 h-full w-full max-w-[1080px] mx-auto">
     <section class="custom-grid gap-4 h-full">
       <header class="col-span-2 h-[40px]">
         <h6 class="text-2xl font-bold">

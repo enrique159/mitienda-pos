@@ -11,6 +11,7 @@ const { getTaxes, createTax, deleteTax } = require('./app/modules/taxes/taxesLis
 const { getConfiguration, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
 const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
 const { createCashMovement } = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
+const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
 
 ipcRenderer.setMaxListeners(100)
 
@@ -71,6 +72,12 @@ contextBridge.exposeInMainWorld('electron', {
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  // Providers
+  createProvider,
+  updateProvider,
+  deleteProvider,
+  getProviders,
+  getProviderById,
   // Cash Movements
   createCashMovement,
   // Cash Register Audits

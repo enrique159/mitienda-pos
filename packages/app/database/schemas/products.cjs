@@ -1,6 +1,14 @@
 const { logger } = require('../../helpers/index.cjs')
 
 /**
+ * TODO: Se requiere crear una tabla `purchase_orders` para los pedidos y una tabla `purchase_order_items` para los detalles de productos por pedido.
+ *
+ * - La tabla `purchase_orders` contendrá información general del pedido (empresa, proveedor, estatus, fechas, etc).
+ * - La tabla `purchase_order_items` relacionará productos con pedidos, indicando cantidades solicitadas y recibidas, así como notas por diferencias o daños.
+ * - Al recibir productos de un pedido, el campo `stock` de la tabla `products` debe incrementarse con la `quantity_received` registrada en `purchase_order_items`.
+ *
+ * No modificar el esquema de la tabla `products` aquí; el stock se debe actualizar mediante la lógica de recepción de pedidos.
+ *
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
@@ -9,6 +17,7 @@ exports.createTable = async function(knex) {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary()
     table.uuid('id_company').notNullable().references('company.id') // Relación con la empresa
     table.uuid('id_category').notNullable().references('categories.id') // Relación con la categoría
+    table.uuid('id_provider').notNullable().references('providers.id') // Relación con el proveedor
     table.string('name').notNullable() // Nombre del producto
     table.string('sku').unique().notNullable() // Código único (SKU)
     table.string('barcode') // Código de barras (opcional pero único)

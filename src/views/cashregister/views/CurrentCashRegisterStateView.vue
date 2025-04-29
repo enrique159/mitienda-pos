@@ -151,10 +151,15 @@ const cashRegisterState = ref<CashRegisterState>({
     transfer: 0,
     other: 0,
   },
+  movements: {
+    income: 0,
+    withdraw: 0,
+  },
   opening_amount: 0,
   total_amount_paid: 0,
   total_sales_amount: 0,
   total_sales: 0,
+  total_movements: 0,
 })
 
 const getCashRegisterState = async () => {

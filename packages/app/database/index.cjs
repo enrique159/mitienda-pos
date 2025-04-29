@@ -11,9 +11,12 @@ const company = require('./schemas/company.cjs')
 const branch = require('./schemas/branches.cjs')
 const sellers = require('./schemas/sellers.cjs')
 const branches_sellers = require('./schemas/branches_sellers.cjs')
+const providers = require('./schemas/providers.cjs')
 const products = require('./schemas/products.cjs')
 const discounts = require('./schemas/discounts.cjs')
 const productsDiscounts = require('./schemas/products_discounts.cjs')
+const purchaseOrders = require('./schemas/purchase_orders.cjs')
+const purchaseOrderItems = require('./schemas/purchase_order_items.cjs')
 const taxes = require('./schemas/taxes.cjs')
 const categories = require('./schemas/categories.cjs')
 const cashRegisters = require('./schemas/cash_registers.cjs')
@@ -44,9 +47,12 @@ const initDB = async() => {
         sellers.createTable(knex),
         branches_sellers.createTable(knex),
         categories.createTable(knex),
+        providers.createTable(knex),
         products.createTable(knex),
         discounts.createTable(knex),
         productsDiscounts.createTable(knex),
+        purchaseOrders.createTable(knex),
+        purchaseOrderItems.createTable(knex),
         taxes.createTable(knex),
         cashRegisters.createTable(knex),
         cashMovements.createTable(knex),

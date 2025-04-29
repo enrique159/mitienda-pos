@@ -4,6 +4,7 @@ import { Discount, CreateDiscount, UpdateDiscount, DiscountSchedule } from './di
 import { CashRegister, CashRegisterState, Denomination } from './cashRegisters'
 import { CashMovement, CreateCashMovement } from './cashMovements'
 import { Category, CreateCategory } from './categories'
+import { Provider, CreateProvider } from './providers'
 import { Customer, CreateCustomer } from './customer'
 import { Configuration } from './configuration'
 import { StartSessionParams } from './auth'
@@ -29,6 +30,7 @@ export type {
   Category,
   Discount,
   Customer,
+  Provider,
   TaxDetail,
   SaleDetail,
   ProductTax,
@@ -42,6 +44,7 @@ export type {
   CreateProduct,
   Configuration,
   CreateDiscount,
+  CreateProvider,
   CreateCategory,
   UpdateDiscount,
   GeneratedFolio,

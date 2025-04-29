@@ -4,6 +4,7 @@ export interface Product {
   id: string;
   id_company: string;
   id_category: string;
+  id_provider: string;
   name: string;
   sku: string;
   barcode?: string;
@@ -58,6 +59,7 @@ export interface ProductCart extends Product {
 export interface CreateProduct {
   id_company: string;
   id_category: string;
+  id_provider: string;
   name: string;
   sku: string;
   barcode?: string;

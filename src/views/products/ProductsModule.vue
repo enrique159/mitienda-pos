@@ -7,16 +7,18 @@
 
 <script setup lang="ts">
 import SideMenu from '@/components/menus/SideMenu.vue'
-import { IconBox, IconCategory, IconCirclePlus, IconCoins, IconDiscount } from '@tabler/icons-vue'
-import { getTaxes, getProducts, getCategories, getDiscounts } from '@/api/electron'
-import { Response, Product, Category, Discount } from '@/api/interfaces'
+import { IconBox, IconCategory, IconCirclePlus, IconCoins, IconDiscount, IconTruckLoading } from '@tabler/icons-vue'
+import { getTaxes, getProducts, getCategories, getDiscounts, getProviders } from '@/api/electron'
+import { Response, Product, Category, Discount, Provider } from '@/api/interfaces'
 import { useTax } from '@/composables/useTax'
 import { useProduct } from '@/composables/useProduct'
 import { onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
+import { useProvider } from '@/composables/useProvider'
 
 const { setTaxes } = useTax()
 const { setProducts, setCategories, setDiscounts } = useProduct()
+const { setProviders } = useProvider()
 
 const loadData = async () => {
   // Load Products
@@ -50,6 +52,14 @@ const loadData = async () => {
     }
     setDiscounts(response.response)
   })
+  // Load Providers
+  await getProviders((response: Response<Provider[]>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    setProviders(response.response)
+  })
 }
 
 onMounted(() => {
@@ -71,6 +81,11 @@ const productsMenu = [
     title: 'Categorías',
     path: '/main/products/categories',
     icon: IconCategory,
+  },
+  {
+    title: 'Proveedores',
+    path: '/main/products/providers',
+    icon: IconTruckLoading,
   },
   {
     title: 'Descuentos',

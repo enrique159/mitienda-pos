@@ -73,13 +73,10 @@
                 {{ category.name }}
               </option>
             </select>
-            <div v-for="(error, index) in v$.unit_measurement.$errors" :key="`error-unit-${index}`">
-              <span class="text-brand-pink text-sm">{{ error.$message }}</span>
-            </div>
           </label>
 
           <!-- Descripción -->
-          <label class="form-control w-full md:col-span-2">
+          <label class="form-control w-full">
             <div class="label">
               <span class="label-text text-black-1 font-medium">Descripción</span>
             </div>
@@ -90,6 +87,22 @@
               class="textarea textarea-bordered w-full"
               placeholder="Descripción del producto..."
             />
+          </label>
+
+          <!-- Proveedores -->
+          <label class="form-control w-full">
+            <div class="label">
+              <span class="label-text text-black-1 font-medium required">Proveedor</span>
+            </div>
+            <select
+              id="provider"
+              v-model="formData.id_provider"
+              class="select select-bordered w-full"
+            >
+              <option v-for="provider in providers" :key="`select-option-${provider.id}`" :value="provider.id">
+                {{ provider.name }}
+              </option>
+            </select>
           </label>
 
           <!-- HAS EXPIRATION DATE -->
@@ -122,7 +135,7 @@
               <div class="flex flex-col items-start ml-2">
                 <span class="font-semibold text-black-1 mr-2">Requiere cantidad</span>
                 <span class="text-sm text-black-2">
-                  Al agregar el producto, se le pedirá la cantidad
+                  Al agregar el producto a la venta, se solicita cantidad
                 </span>
               </div>
             </label>
@@ -406,10 +419,12 @@ import { useProduct } from '@/composables/useProduct'
 import { useDate } from '@/composables/useDate'
 import { Months } from '@/constants'
 import { toast } from 'vue3-toastify'
+import { useProvider } from '@/composables/useProvider'
 
 const { taxes } = useTax()
 const { branch } = useBranch()
 const { setProducts, availableCategories } = useProduct()
+const { providers } = useProvider()
 const { formatCurrencySimple } = useCurrency()
 const { formatDate } = useDate()
 
@@ -466,6 +481,7 @@ const expirationDate = ref({
 const formData = reactive({
   id_company: '',
   id_category: '',
+  id_provider: '',
   name: '',
   sku: '',
   barcode: '',
@@ -575,6 +591,7 @@ const handleSubmit = async () => {
 
 onMounted(() => {
   formData.id_category = availableCategories.value[0] ? availableCategories.value[0].id : ''
+  formData.id_provider = providers.value[0] ? providers.value[0].id : ''
   formData.stock = 0
   formData.stock_minimum = 0
 })
