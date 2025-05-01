@@ -6,10 +6,10 @@ exports.createProvider = function (provider, callback) {
   ipcRenderer.send('create_provider', provider)
 }
 
-exports.updateProvider = function (id, data, callback) {
+exports.updateProvider = function (data, callback) {
   ipcRenderer.removeAllListeners('update_provider')
   ipcRenderer.on('update_provider', (_, response) => callback(response))
-  ipcRenderer.send('update_provider', id, data)
+  ipcRenderer.send('update_provider', data)
 }
 
 exports.deleteProvider = function (id, callback) {

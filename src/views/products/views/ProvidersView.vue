@@ -26,19 +26,30 @@
       </div>
     </header>
 
-    <providers-table :search="search" />
+    <providers-table :search="search" @edit-provider="editProvider" />
 
     <create-provider-modal v-model="show" />
+
+    <edit-provider-modal v-model="edit" :provider="editProviderData" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import ProvidersTable from '../components/ProvidersTable.vue'
 import CreateProviderModal from '../components/CreateProviderModal.vue'
+import EditProviderModal from '../components/EditProviderModel.vue'
 import { IconPlus, IconSearch } from '@tabler/icons-vue'
 import { ref } from 'vue'
+import { Provider } from '@/api/interfaces'
 
 const show = ref(false)
+const edit = ref(false)
 
 const search = ref('')
+
+const editProviderData = ref<Provider | null>(null)
+const editProvider = (editProvider: Provider) => {
+  edit.value = true
+  editProviderData.value = editProvider
+}
 </script>

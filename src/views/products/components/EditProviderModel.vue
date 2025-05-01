@@ -1,12 +1,12 @@
 <template>
-  <dialog id="dialogCreateProvider" ref="dialogCreateProviderRef" class="modal" @keydown.escape="closeCreateProviderModal">
+  <dialog id="dialogEditProvider" ref="dialogEditProviderRef" class="modal" @keydown.escape="closeEditProviderModal">
     <div class="modal-box min-w-[700px] h-fit overflow-hidden">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-bold">
-          Crear proveedor
+          Editar proveedor
         </h3>
         <div class="modal-action mt-0">
-          <form method="dialog" @submit="closeCreateProviderModal">
+          <form method="dialog" @submit="closeEditProviderModal">
             <button class="close-btn">
               Cerrar
               <CustomKbd>ESC</CustomKbd>
@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <form @submit.prevent="handleSumbitCreate" class="w-full grid grid-cols-2 gap-x-4 gap-y-2">
+      <form @submit.prevent="handleSumbitEdit" class="w-full grid grid-cols-2 gap-x-4 gap-y-2">
         <!-- Nombre -->
         <label class="form-control w-full">
           <div class="label">
@@ -28,7 +28,7 @@
             placeholder="Ej. MiTienda"
             class="input input-bordered w-full"
           >
-          <div v-for="(error, index) in vCreate$.name.$errors" :key="`error-name-${index}`">
+          <div v-for="(error, index) in vEdit$.name.$errors" :key="`error-name-${index}`">
             <span class="text-brand-pink text-sm">{{ error.$message }}</span>
           </div>
         </label>
@@ -45,7 +45,7 @@
             placeholder="Ej. XXXX1122334X5"
             class="input input-bordered w-full"
           >
-          <div v-for="(error, index) in vCreate$.tax_id.$errors" :key="`error-tax_id-${index}`">
+          <div v-for="(error, index) in vEdit$.tax_id.$errors" :key="`error-tax_id-${index}`">
             <span class="text-brand-pink text-sm">{{ error.$message }}</span>
           </div>
         </label>
@@ -76,7 +76,7 @@
             placeholder="Ej. juan.perez@email.com"
             class="input input-bordered w-full"
           >
-          <div v-for="(error, index) in vCreate$.email.$errors" :key="`error-email-${index}`">
+          <div v-for="(error, index) in vEdit$.email.$errors" :key="`error-email-${index}`">
             <span class="text-brand-pink text-sm">{{ error.$message }}</span>
           </div>
         </label>
@@ -94,7 +94,7 @@
             @keypress="validateOnlyNumbers"
             class="input input-bordered w-full"
           >
-          <div v-for="(error, index) in vCreate$.phone.$errors" :key="`error-phone-${index}`">
+          <div v-for="(error, index) in vEdit$.phone.$errors" :key="`error-phone-${index}`">
             <span class="text-brand-pink text-sm">{{ error.$message }}</span>
           </div>
         </label>
@@ -143,7 +143,7 @@
 
         <!-- BUTTONS -->
         <div class="col-span-2 flex justify-end space-x-4">
-          <base-button type="button" @click="closeCreateProviderModal">
+          <base-button type="button" @click="closeEditProviderModal">
             Cancelar
           </base-button>
           <button
@@ -161,11 +161,11 @@
 <script lang="ts" setup>
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers, email, minLength } from '@vuelidate/validators'
-import { createProvider, getProviders } from '@/api/electron'
-import { ref, reactive, computed, watch } from 'vue'
+import { updateProvider, getProviders } from '@/api/electron'
+import { ref, reactive, computed, watch, toRaw } from 'vue'
 import { useBranch } from '@/composables/useBranch'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
-import { CreateProvider, Provider, Response } from '@/api/interfaces'
+import { Provider, Response } from '@/api/interfaces'
 import { useProviderStore } from '@/stores/providerStore'
 import { toast } from 'vue3-toastify'
 
@@ -177,6 +177,10 @@ const props = defineProps({
   modelValue: {
     type: Boolean,
     default: false,
+  },
+  provider: {
+    type: Object as () => Provider | null,
+    default: () => null,
   },
 })
 
@@ -190,21 +194,33 @@ const show = computed({
 
 watch(show, (value) => {
   if (value) {
-    openCreateProviderModal()
+    openEditProviderModal()
   }
 })
 
 // DIALOG
-const dialogCreateProviderRef = ref()
+const dialogEditProviderRef = ref()
 
-const openCreateProviderModal = () => {
-  dialogCreateProviderRef.value.showModal()
+const openEditProviderModal = () => {
+  dialogEditProviderRef.value.showModal()
+  setFormData()
 }
 
-const closeCreateProviderModal = () => {
+const setFormData = () => {
+  formData.name = props.provider?.name ?? ''
+  formData.contact_name = props.provider?.contact_name ?? ''
+  formData.email = props.provider?.email ?? ''
+  formData.phone = props.provider?.phone ?? ''
+  formData.address = props.provider?.address ?? ''
+  formData.website = props.provider?.website ?? ''
+  formData.tax_id = props.provider?.tax_id ?? ''
+  formData.notes = props.provider?.notes ?? ''
+}
+
+const closeEditProviderModal = () => {
   emit('update:modelValue', false)
-  dialogCreateProviderRef.value.close()
-  vCreate$.value.$reset()
+  dialogEditProviderRef.value.close()
+  vEdit$.value.$reset()
   clearFormData()
 }
 
@@ -239,13 +255,14 @@ const rules = {
   tax_id: { minLength: helpers.withMessage('El RFC debe tener al menos 12 caracteres', minLength(12)) },
 }
 
-const vCreate$ = useVuelidate(rules, formData)
+const vEdit$ = useVuelidate(rules, formData)
 
-const handleSumbitCreate = async () => {
-  const isFormValid = await vCreate$.value.$validate()
+const handleSumbitEdit = async () => {
+  const isFormValid = await vEdit$.value.$validate()
   if (!isFormValid) return
 
-  const newProvider: CreateProvider = {
+  const editProvider: Provider = {
+    id: props.provider?.id ?? '',
     id_company: branch.value.id_company,
     name: formData.name,
     contact_name: formData.contact_name,
@@ -255,15 +272,20 @@ const handleSumbitCreate = async () => {
     website: formData.website,
     tax_id: formData.tax_id,
     notes: formData.notes,
+    status: props.provider?.status ?? 'active',
+    created_at: props.provider?.created_at ?? new Date(),
+    updated_at: props.provider?.updated_at ?? new Date(),
   }
-  createProvider(newProvider, (response: Response<any>) => {
+
+  console.log('editProvider', editProvider)
+  updateProvider(editProvider, (response: Response<any>) => {
     if (!response.success) {
       toast.error(response.message)
       return
     }
     getAllProviders()
-    closeCreateProviderModal()
-    toast.success('Proveedor creado exitosamente')
+    closeEditProviderModal()
+    toast.success('Proveedor editado exitosamente')
   })
 }
 
@@ -278,7 +300,7 @@ const getAllProviders = () => {
 }
 
 defineExpose({
-  openCreateProviderModal,
-  closeCreateProviderModal,
+  openEditProviderModal,
+  closeEditProviderModal,
 })
 </script>

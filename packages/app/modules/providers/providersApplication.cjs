@@ -6,8 +6,8 @@ ipcMain.on('create_provider', async (event, provider) => {
   event.reply('create_provider', res)
 })
 
-ipcMain.on('update_provider', async (event, id, data) => {
-  const res = await providersRepository.updateProvider(id, data)
+ipcMain.on('update_provider', async (event, data) => {
+  const res = await providersRepository.updateProvider(data)
   event.reply('update_provider', res)
 })
 

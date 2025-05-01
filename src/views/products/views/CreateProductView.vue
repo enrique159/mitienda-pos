@@ -403,14 +403,38 @@
       </div>
     </form>
   </div>
+
+  <dialog id="dialogProviderAlert" ref="dialogProviderAlertRef" class="modal" @keydown.escape.prevent="() => {}">
+    <div class="modal-box min-w-[480px]">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">
+          No hay proveedores disponibles
+        </h3>
+      </div>
+
+      <div class="flex flex-col justify-center items-center mt-8">
+        <p class="text-center text-black-1 mb-4">
+          Para crear un producto, debes agregar al menos un proveedor. <br>¿Deseas agregar uno ahora?
+        </p>
+        <base-button
+          type="button"
+          class="flex items-center gap-2"
+          @click="$router.push('/main/products/providers')"
+        >
+          <IconTruckLoading :size="18" />
+          Ir a proveedores
+        </base-button>
+      </div>
+    </div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
-import { IconArrowRight, IconX } from '@tabler/icons-vue'
+import { IconArrowRight, IconX, IconTruckLoading } from '@tabler/icons-vue'
 import { required, helpers, minValue } from '@vuelidate/validators'
 import { CreateProduct, UnitMeasurement, Tax, Response, ProductTax, Product } from '@/api/interfaces'
 import { createProduct, getProducts } from '@/api/electron'
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { useCurrency } from '@/composables/useCurrency'
 import { useBranch } from '@/composables/useBranch'
@@ -427,6 +451,30 @@ const { setProducts, availableCategories } = useProduct()
 const { providers } = useProvider()
 const { formatCurrencySimple } = useCurrency()
 const { formatDate } = useDate()
+
+// Providers
+const dialogProviderAlertRef = ref()
+const emptyProviders = computed(() => providers.value.length === 0)
+
+const openProviderAlertModal = () => {
+  dialogProviderAlertRef.value?.showModal()
+}
+
+const closeProviderAlertModal = () => {
+  dialogProviderAlertRef.value?.close()
+}
+
+watch(emptyProviders, (value: boolean) => {
+  if (value) {
+    openProviderAlertModal()
+  }
+})
+
+onMounted(() => {
+  if (emptyProviders.value) {
+    openProviderAlertModal()
+  }
+})
 
 // Taxes
 const selectedTax = ref<string>(taxes.value[0].id)

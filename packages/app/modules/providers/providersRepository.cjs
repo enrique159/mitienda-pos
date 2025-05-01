@@ -11,7 +11,7 @@ exports.getProviders = async function () {
     .then((providers) => {
       if (!providers.length) {
         logger.error({ type: 'GET PROVIDERS', message: 'No se encontraron proveedores' })
-        return response(false, 'Proveedores no encontrados', [])
+        return response(true, 'Proveedores no encontrados', [])
       }
       return response(true, 'Proveedores encontrados', providers.map(normalizeProvider))
     })
@@ -53,10 +53,15 @@ exports.createProvider = async function (provider) {
     })
 }
 
-exports.updateProvider = async function (id, data) {
+exports.updateProvider = async function (data) {
+  const dataToUpdate = {
+    ...data,
+    updated_at: knex.fn.now(),
+    synced_at: null,
+  }
   return await knex('providers')
-    .where({ id })
-    .update(data)
+    .where({ id: data.id })
+    .update(dataToUpdate)
     .returning('*')
     .then((provider) => {
       logger.info({ type: 'UPDATE PROVIDER', message: 'Proveedor actualizado exitosamente', data: provider })
