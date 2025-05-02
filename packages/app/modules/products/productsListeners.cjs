@@ -12,6 +12,12 @@ exports.deleteProduct = function (productId, callback) {
   ipcRenderer.send('delete_product', productId)
 }
 
+exports.getProducts = function (callback) {
+  ipcRenderer.removeAllListeners('get_products')
+  ipcRenderer.on('get_products', (_, response) => callback(response))
+  ipcRenderer.send('get_products')
+}
+
 exports.getActiveProducts = function (callback) {
   ipcRenderer.removeAllListeners('get_active_products')
   ipcRenderer.on('get_active_products', (_, response) => callback(response))

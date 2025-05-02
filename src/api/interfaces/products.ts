@@ -9,7 +9,8 @@ export interface Product {
   sku: string;
   barcode?: string;
   description?: string;
-  category: string;
+  category?: string;
+  provider?: string;
   unit_measurement: UnitMeasurement;
   is_bulk: boolean;
   unlimited_stock: boolean;

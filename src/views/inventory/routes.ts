@@ -1,4 +1,4 @@
-import InventoryModule from './InventoryModule.vue';
+import InventoryModule from './InventoryModule.vue'
 
 export const InventoryRoutes = [
   {
@@ -6,4 +6,4 @@ export const InventoryRoutes = [
     name: 'Inventory',
     component: InventoryModule,
   },
-];
+]

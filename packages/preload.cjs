@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron')
 const { startSession, getSellers, closeSession } = require('./app/modules/sellers/sellersListeners.cjs')
-const { createProduct, deleteProduct, getActiveProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
+const { createProduct, deleteProduct, getActiveProducts, getProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
 const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, deleteDiscount, getDiscountProducts, createDiscountProduct } = require('./app/modules/discounts/discountsListeners.cjs')
 const { getCategories, createCategory, updateCategory, deleteCategory } = require('./app/modules/categories/categoriesListeners.cjs')
 const { getBranchInfo } = require('./app/modules/branches/branchesListeners.cjs')
@@ -12,6 +12,7 @@ const { getConfiguration, getVersion } = require('./app/modules/configuration/co
 const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
 const { createCashMovement } = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
 const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
+const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderItem, deletePurchaseOrder } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
 
 ipcRenderer.setMaxListeners(100)
 
@@ -35,6 +36,7 @@ contextBridge.exposeInMainWorld('electron', {
   createProduct,
   deleteProduct,
   getActiveProducts,
+  getProducts,
   getProductsByCategory,
   // Discounts
   getActiveDiscounts,
@@ -82,6 +84,12 @@ contextBridge.exposeInMainWorld('electron', {
   createCashMovement,
   // Cash Register Audits
   createCashRegisterAudit,
+  // Purchase Orders
+  getPurchaseOrders,
+  createPurchaseOrder,
+  updatePurchaseOrder,
+  updatePurchaseOrderItem,
+  deletePurchaseOrder,
   // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),

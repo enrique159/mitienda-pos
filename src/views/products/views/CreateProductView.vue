@@ -433,7 +433,7 @@
 import { IconArrowRight, IconX, IconTruckLoading } from '@tabler/icons-vue'
 import { required, helpers, minValue } from '@vuelidate/validators'
 import { CreateProduct, UnitMeasurement, Tax, Response, ProductTax, Product } from '@/api/interfaces'
-import { createProduct, getProducts } from '@/api/electron'
+import { createProduct, getAllProducts, getProducts } from '@/api/electron'
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { useCurrency } from '@/composables/useCurrency'
@@ -447,7 +447,7 @@ import { useProvider } from '@/composables/useProvider'
 
 const { taxes } = useTax()
 const { branch } = useBranch()
-const { setProducts, availableCategories } = useProduct()
+const { setAllProducts, setProducts, availableCategories } = useProduct()
 const { providers } = useProvider()
 const { formatCurrencySimple } = useCurrency()
 const { formatDate } = useDate()
@@ -622,19 +622,31 @@ const handleSubmit = async () => {
         toast.error(response.message)
         return
       }
-      getProducts((response: Response<Product[]>) => {
-        if (!response.success) {
-          toast.error(response.message)
-          return
-        }
-        setProducts(response.response)
-      })
+      reloadProducts()
       toast.success('Producto creado exitosamente')
     })
   } catch (error) {
     console.error('Error creating product:', error)
     toast.error('Error al crear el producto')
   }
+}
+
+const reloadProducts = () => {
+  getAllProducts((response: Response<Product[]>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    setAllProducts(response.response)
+  })
+
+  getProducts((response: Response<Product[]>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    setProducts(response.response)
+  })
 }
 
 onMounted(() => {

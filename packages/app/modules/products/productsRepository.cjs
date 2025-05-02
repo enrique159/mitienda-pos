@@ -23,14 +23,39 @@ function normalizeProduct(product) {
 }
 
 /**
+ * Obtiene todos los productos para la sección de products
+ */
+exports.getProducts = async function () {
+  return await knex('products')
+    .select('products.*', 'providers.name as provider', 'categories.name as category')
+    .leftJoin('providers', 'products.id_provider', 'providers.id')
+    .leftJoin('categories', 'products.id_category', 'categories.id')
+    .groupBy('products.id')
+    .then((products) => {
+      if (!products.length) {
+        logger.error({ type: 'GET PRODUCTS', message: 'No se encontraron productos' })
+        return response(false, 'Productos no encontrados', [])
+      }
+      return response(true, 'Productos encontrados', products.map(normalizeProduct))
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'GET PRODUCTS ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al traer los productos', err)
+    })
+}
+
+/**
  * Obtiene todos los productos activos
  */
 exports.getActiveProducts = async function () {
   return await knex('products')
-    .select('products.*')
+    .select('products.*', 'providers.name as provider', 'categories.name as category')
     .leftJoin('products_discounts', 'products.id', 'products_discounts.id_product')
     .leftJoin('discounts', 'products_discounts.id_discount', 'discounts.id')
-    .where('products.status', 'active')
+    .leftJoin('providers', 'products.id_provider', 'providers.id')
+    .leftJoin('categories', 'products.id_category', 'categories.id')
+    .where('products.is_active', true)
     .groupBy('products.id')
     .then(async (products) => {
       if (!products.length) {
@@ -65,13 +90,39 @@ exports.getActiveProducts = async function () {
 }
 
 exports.getProductsByCategory = async function (categoryId) {
-  return await knex('products').select().where('id_category', categoryId)
-    .then((products) => {
+  return await knex('products')
+    .select('products.*', 'providers.name as provider', 'categories.name as category')
+    .leftJoin('products_discounts', 'products.id', 'products_discounts.id_product')
+    .leftJoin('discounts', 'products_discounts.id_discount', 'discounts.id')
+    .leftJoin('providers', 'products.id_provider', 'providers.id')
+    .leftJoin('categories', 'products.id_category', 'categories.id')
+    .where('products.id_category', categoryId)
+    .andWhere('products.is_active', true)
+    .groupBy('products.id')
+    .then(async (products) => {
       if (!products.length) {
         logger.error({ type: 'GET PRODUCTS BY CATEGORY', message: 'No se encontraron productos' })
         return response(false, 'Productos no encontrados', [])
       }
-      return response(true, 'Productos encontrados', products.map(normalizeProduct))
+
+      // Get discounts for each product
+      const productsWithDiscounts = await Promise.all(
+        products.map(async (product) => {
+          const discounts = await knex('discounts')
+            .select('discounts.*')
+            .join('products_discounts', 'discounts.id', 'products_discounts.id_discount')
+            .where('products_discounts.id_product', product.id)
+          return {
+            ...normalizeProduct(product),
+            discounts: discounts ? discounts.map((discount) => ({
+              ...discount,
+              schedule: parseArrayJson(discount.schedule),
+            })) : [],
+          }
+        })
+      )
+
+      return response(true, 'Productos encontrados', productsWithDiscounts)
     })
     .catch((err) => {
       console.log(err)

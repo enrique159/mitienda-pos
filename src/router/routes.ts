@@ -7,6 +7,7 @@ import { InventoryRoutes } from "@/views/inventory/routes"
 import { ListSalesRoutes } from "@/views/listsales/routes"
 import { ProductsRoutes } from "@/views/products/routes"
 import { ReportsRoutes } from "@/views/reports/routes"
+import { OrdersRoutes } from "@/views/orders/routes"
 
 import MainModule from "@/views/MainModule.vue"
 import HomeView from "@/views/HomeView.vue"
@@ -48,6 +49,7 @@ const routes: RouteRecordRaw[] = [
       ...ListSalesRoutes,
       ...ProductsRoutes,
       ...ReportsRoutes,
+      ...OrdersRoutes,
     ],
   },
   ...AuthRoutes,

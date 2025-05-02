@@ -17,8 +17,7 @@ export const useProduct = () => {
   const productStore = useProductStore()
   const today = new Date()
 
-  const { products, currentCart, categories, discounts } =
-    storeToRefs(productStore)
+  const { products, allProducts, currentCart, categories, discounts } = storeToRefs(productStore)
 
   // Computed
   const availableCategories = computed(() => {
@@ -146,6 +145,10 @@ export const useProduct = () => {
     productStore.setProducts(products)
   }
 
+  const setAllProducts = (products: Product[]) => {
+    productStore.setAllProducts(products)
+  }
+
   const setCategories = (categories: Category[]) => {
     productStore.setCategories(categories)
   }
@@ -221,6 +224,8 @@ export const useProduct = () => {
     setProducts,
     getProductById,
     searchProductByCodeOrName,
+    allProducts,
+    setAllProducts,
 
     availableCategories,
     currentCart,

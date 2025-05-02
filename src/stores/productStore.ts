@@ -5,9 +5,14 @@ import { ref } from "vue"
 export const useProductStore = defineStore('product', () => {
   // PRODUCTS
   const products = ref<Product[]>([])
+  const allProducts = ref<Product[]>([])
 
   const setProducts = (newProducts: Product[]) => {
     products.value = newProducts
+  }
+
+  const setAllProducts = (newProducts: Product[]) => {
+    allProducts.value = newProducts
   }
 
   // CART
@@ -59,6 +64,8 @@ export const useProductStore = defineStore('product', () => {
     // Products
     products,
     setProducts,
+    allProducts,
+    setAllProducts,
 
     // Cart
     currentCart,

@@ -7,9 +7,11 @@
           <th class="w-12" />
           <th>Código de barra</th>
           <th>Producto</th>
-          <th>Descripción</th>
+          <th>Categoría</th>
+          <th>Proveedor</th>
           <th>Precio de venta</th>
           <th>Existencia</th>
+          <th>En venta</th>
           <th class="w-12" />
         </tr>
       </thead>
@@ -26,9 +28,28 @@
           </td>
           <td>{{ item.barcode }}</td>
           <td>{{ item.name }}</td>
-          <td>{{ item.description }}</td>
+          <td>{{ item.category }}</td>
+          <td>
+            <p class="text-nowrap">
+              {{ item.provider }}
+            </p>
+          </td>
           <td>{{ formatCurrency(item.selling_price) }}</td>
-          <td>{{ item.stock }}</td>
+          <td :class="item.stock < item.stock_minimum ? 'text-brand-pink' : 'text-black-1'">
+            {{ item.stock }}
+          </td>
+          <td>
+            <div class="form-control">
+              <label class="label cursor-pointer">
+                <input
+                  type="checkbox"
+                  class="toggle toggle-sm toggle-success"
+                  :checked="item.is_active"
+                  @change="toggleActive(item.id)"
+                >
+              </label>
+            </div>
+          </td>
           <td>
             <div class="dropdown dropdown-left">
               <div
@@ -67,7 +88,7 @@ import { toast } from 'vue3-toastify'
 import { computed } from 'vue'
 
 const { formatCurrency } = useCurrency()
-const { products, setProducts } = useProduct()
+const { allProducts: products, setAllProducts: setProducts } = useProduct()
 
 const props = defineProps<{
   search: String
@@ -76,8 +97,16 @@ const props = defineProps<{
 const filteredProducts = computed(() => {
   return products.value.filter((product) => {
     return product.name.toLowerCase().includes(props.search.toLowerCase())
+      || product.barcode?.toLowerCase().includes(props.search.toLowerCase())
+      || product.sku.toLowerCase().includes(props.search.toLowerCase())
+      || product.provider?.toLowerCase().includes(props.search.toLowerCase())
+      || product.category?.toLowerCase().includes(props.search.toLowerCase())
   })
 })
+
+const toggleActive = async (productId: string) => {
+  console.log(productId)
+}
 
 const deleteProductHandler = async (productId: string) => {
   // eslint-disable-next-line

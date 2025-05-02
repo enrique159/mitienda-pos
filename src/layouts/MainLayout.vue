@@ -63,7 +63,8 @@ import {
   IconCheckupList,
   IconReceipt,
   IconCashRegister,
-  IconChartBar
+  IconChartBar,
+  IconTruckDelivery
 } from '@tabler/icons-vue'
 import { ref, computed, watchEffect, onBeforeUnmount, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -93,11 +94,12 @@ const menuOptions = [
   { id: 1, icon: IconShoppingBag, label: 'Vender', route: '/main/sales', value: 'sales' },
   { id: 2, icon: IconUsersGroup, label: 'Clientes', route: '/main/clients', value: 'clients' },
   { id: 3, icon: IconPackage, label: 'Artículos', route: '/main/products', value: 'products' },
-  { id: 4, icon: IconCheckupList, label: 'Inventario', route: '/main/inventory', value: 'inventory' },
-  { id: 5, icon: IconReceipt, label: 'Ventas', route: '/main/listsales', value: 'listsales' },
-  { id: 6, icon: IconCashRegister, label: 'Caja', route: '/main/cashregister', value: 'cashregister' },
-  { id: 7, icon: IconChartBar, label: 'Reportes', route: '/main/reports', value: 'reports' },
-  { id: 8, icon: IconSettings, label: 'Ajustes', route: '/main/settings', value: 'settings' },
+  { id: 4, icon: IconTruckDelivery, label: 'Pedidos', route: '/main/orders', value: 'orders' },
+  { id: 5, icon: IconCheckupList, label: 'Inventario', route: '/main/inventory', value: 'inventory' },
+  { id: 6, icon: IconReceipt, label: 'Ventas', route: '/main/listsales', value: 'listsales' },
+  { id: 7, icon: IconCashRegister, label: 'Caja', route: '/main/cashregister', value: 'cashregister' },
+  { id: 8, icon: IconChartBar, label: 'Reportes', route: '/main/reports', value: 'reports' },
+  { id: 9, icon: IconSettings, label: 'Ajustes', route: '/main/settings', value: 'settings' },
 ]
 
 getProducts((response: Response<Product[]>) => {

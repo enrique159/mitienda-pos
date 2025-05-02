@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import SideMenu from '@/components/menus/SideMenu.vue'
 import { IconBox, IconCategory, IconCirclePlus, IconCoins, IconDiscount, IconTruckLoading } from '@tabler/icons-vue'
-import { getTaxes, getProducts, getCategories, getDiscounts, getProviders } from '@/api/electron'
+import { getTaxes, getProducts, getAllProducts, getCategories, getDiscounts, getProviders } from '@/api/electron'
 import { Response, Product, Category, Discount, Provider } from '@/api/interfaces'
 import { useTax } from '@/composables/useTax'
 import { useProduct } from '@/composables/useProduct'
@@ -17,7 +17,7 @@ import { toast } from 'vue3-toastify'
 import { useProvider } from '@/composables/useProvider'
 
 const { setTaxes } = useTax()
-const { setProducts, setCategories, setDiscounts } = useProduct()
+const { setProducts, setCategories, setDiscounts, setAllProducts } = useProduct()
 const { setProviders } = useProvider()
 
 const loadData = async () => {
@@ -28,6 +28,13 @@ const loadData = async () => {
       return
     }
     setProducts(response.response)
+  })
+  getAllProducts((response: Response<Product[]>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    setAllProducts(response.response)
   })
   // Load Categories
   getCategories((response: Response<Category[]>) => {
