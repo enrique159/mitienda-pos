@@ -1,4 +1,5 @@
 import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleStatus, PaymentMethods, SalePayload, PaymentPayload, SaleDetailPayload, PaymentMethod, TaxDetail } from './sale'
+import { PurchaseOrder, CreatePurchaseOrder, CreatePurchaseOrderItem, CreatePurchaseOrderPayload } from './purchase_orders'
 import { Product, ProductCart, UnitMeasurement, Unit, CreateProduct, ProductTax } from './products'
 import { Discount, CreateDiscount, UpdateDiscount, DiscountSchedule } from './discount'
 import { CashRegister, CashRegisterState, Denomination } from './cashRegisters'
@@ -43,6 +44,7 @@ export type {
   PaymentMethod,
   CreateProduct,
   Configuration,
+  PurchaseOrder,
   CreateDiscount,
   CreateProvider,
   CreateCategory,
@@ -55,7 +57,10 @@ export type {
   CreateSalePayload,
   CashRegisterState,
   StartSessionParams,
-  CreateCashMovement
+  CreateCashMovement,
+  CreatePurchaseOrder,
+  CreatePurchaseOrderItem,
+  CreatePurchaseOrderPayload
 }
 
 export { UnitMeasurement, SaleStatus, PaymentMethods }

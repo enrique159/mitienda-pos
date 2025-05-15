@@ -460,10 +460,6 @@ const openProviderAlertModal = () => {
   dialogProviderAlertRef.value?.showModal()
 }
 
-const closeProviderAlertModal = () => {
-  dialogProviderAlertRef.value?.close()
-}
-
 watch(emptyProviders, (value: boolean) => {
   if (value) {
     openProviderAlertModal()

@@ -58,7 +58,7 @@ exports.products = [
     is_bulk: false,
     unlimited_stock: false,
     stock: 50,
-    stock_minimum: 5,
+    stock_minimum: 60,
     purchase_price: 2800, // $28.00 MXN
     selling_price: 3500, // $35.00 MXN
     taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
@@ -80,7 +80,7 @@ exports.products = [
     is_bulk: false,
     unlimited_stock: false,
     stock: 60,
-    stock_minimum: 10,
+    stock_minimum: 100,
     purchase_price: 1600, // $16.00 MXN
     selling_price: 2000, // $20.00 MXN
     taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
@@ -102,7 +102,7 @@ exports.products = [
     is_bulk: false,
     unlimited_stock: false,
     stock: 120,
-    stock_minimum: 20,
+    stock_minimum: 100,
     purchase_price: 1000, // $10.00 MXN
     selling_price: 1500, // $15.00 MXN
     taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
@@ -124,7 +124,7 @@ exports.products = [
     is_bulk: false,
     unlimited_stock: false,
     stock: 40,
-    stock_minimum: 5,
+    stock_minimum: 50,
     purchase_price: 2700, // $27.00 MXN
     selling_price: 3500, // $35.00 MXN
     taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],

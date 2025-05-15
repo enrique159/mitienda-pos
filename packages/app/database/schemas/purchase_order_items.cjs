@@ -10,7 +10,7 @@ exports.createTable = async function(knex) {
     table.uuid('id_purchase_order').notNullable().references('purchase_orders.id')
     table.uuid('id_product').notNullable().references('products.id')
     table.integer('quantity_ordered').notNullable()
-    table.integer('quantity_received').defaultTo(0).notNullable()
+    table.integer('quantity_received').defaultTo(0)
     table.string('incidence').defaultTo('')
     table.text('note')
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable()

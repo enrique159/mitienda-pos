@@ -19,19 +19,21 @@ export interface PurchaseOrderItem {
   id_purchase_order: string;
   id_product: string;
   quantity_ordered: number;
-  quantity_received: number;
-  incidence: string;
+  quantity_received: number | null;
+  incidence: string | null;
   note: string | null;
   created_at: string;
   updated_at: string;
   synced_at: string | null;
 }
 
-export type CreatePurchaseOrder = Omit<PurchaseOrder, 'id' | 'created_at' | 'updated_at' | 'synced_at' | 'items'> & {
-  items: CreatePurchaseOrderItem[];
-};
-
+export type CreatePurchaseOrder = Omit<PurchaseOrder, 'id' | 'created_at' | 'updated_at' | 'synced_at' | 'items'>
 export type CreatePurchaseOrderItem = Omit<PurchaseOrderItem, 'id' | 'id_purchase_order' | 'created_at' | 'updated_at' | 'synced_at'>;
+export interface CreatePurchaseOrderPayload {
+  purchaseOrder: CreatePurchaseOrder;
+  items: CreatePurchaseOrderItem[];
+}
+
 
 export enum PurchaseOrderStatus {
   DRAFT = 'draft',

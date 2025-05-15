@@ -1,4 +1,4 @@
-import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount, UpdateDiscount, CreateCashMovement, Provider, CreateProvider } from '@/api/interfaces'
+import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount, UpdateDiscount, CreateCashMovement, Provider, CreateProvider, PurchaseOrder, CreatePurchaseOrder, CreatePurchaseOrderPayload } from '@/api/interfaces'
 import { CreateCashRegisterAudit } from '../interfaces/cashRegisterAudits'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
@@ -46,6 +46,12 @@ export const createProvider = async (data: CreateProvider, callback: any) => win
 export const updateProvider = async (data: Provider, callback: any) => window.electron.updateProvider(data, callback)
 export const deleteProvider = async (id: string, callback: any) => window.electron.deleteProvider(id, callback)
 export const getProviderById = async (id: string, callback: any) => window.electron.getProviderById(id, callback)
+
+/* Purchase Orders */
+export const getPurchaseOrders = async (callback: any): Promise<Response<PurchaseOrder[]>> => window.electron.getPurchaseOrders(callback)
+export const createPurchaseOrder = async (data: CreatePurchaseOrderPayload, callback: any) => window.electron.createPurchaseOrder(data, callback)
+export const updatePurchaseOrder = async (data: PurchaseOrder, callback: any) => window.electron.updatePurchaseOrder(data, callback)
+export const deletePurchaseOrder = async (id: string, callback: any) => window.electron.deletePurchaseOrder(id, callback)
 
 /* Branches */
 export const getBranchInfo = async (callback: any) => window.electron.getBranchInfo(callback)
