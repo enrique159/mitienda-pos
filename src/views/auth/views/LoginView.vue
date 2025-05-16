@@ -1,22 +1,14 @@
 <template>
   <div class="w-full h-full bg-brand-orange flex flex-col pt-12 pb-6 px-6 justify-between items-center">
     <div class="flex items-center gap-2">
-      <img src="@/assets/logo_white.svg" alt="Logo" class="w-24">
-      <div>
-        <h1 class="text-white font-medium text-[3rem] leading-10">
-          Mi Tienda
-        </h1>
-        <p class="text-white-1 text-lg font-medium pl-1">
-          El punto de venta ideal para ti
-        </p>
-      </div>
+      <img src="@/assets/logo_full_white.svg" alt="Logo" class="w-[198px]">
     </div>
 
     <div class="flex flex-col items-center justify-center gap-4">
       <h2 class="text-white mb-4 text-xl font-medium">
         Bienvenido
       </h2>
-      <button class="btn w-[280px] bg-brand-black hover:bg-brand-black border-none text-white">
+      <button class="btn w-[280px] bg-brand-black hover:bg-brand-black/50 border-none text-white">
         Ya tengo una cuenta
       </button>
 
