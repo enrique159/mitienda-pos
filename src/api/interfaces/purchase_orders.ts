@@ -4,6 +4,8 @@ export interface PurchaseOrder {
   id_branch: string;
   id_provider: string;
   id_seller: string;
+  provider_name: string;
+  seller_name: string;
   status: PurchaseOrderStatus;
   notes: string | null;
   ordered_at: string | null;
@@ -27,7 +29,7 @@ export interface PurchaseOrderItem {
   synced_at: string | null;
 }
 
-export type CreatePurchaseOrder = Omit<PurchaseOrder, 'id' | 'created_at' | 'updated_at' | 'synced_at' | 'items'>
+export type CreatePurchaseOrder = Omit<PurchaseOrder, 'id' | 'created_at' | 'updated_at' | 'synced_at' | 'items' | 'provider_name' | 'seller_name'>
 export type CreatePurchaseOrderItem = Omit<PurchaseOrderItem, 'id' | 'id_purchase_order' | 'created_at' | 'updated_at' | 'synced_at'>;
 export interface CreatePurchaseOrderPayload {
   purchaseOrder: CreatePurchaseOrder;

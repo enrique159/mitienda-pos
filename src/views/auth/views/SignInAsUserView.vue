@@ -5,15 +5,7 @@
       @click.self="userSelected = null"
     >
       <div class="flex items-center gap-2">
-        <img src="@/assets/logo_fill_orange.png" alt="Logo" class="w-16">
-        <div>
-          <h1 class="text-brand-orange font-medium text-[2.5rem] leading-10">
-            MiTienda
-          </h1>
-          <p class="text-brand-pink font-medium pl-1">
-            El punto de venta ideal para ti
-          </p>
-        </div>
+        <img src="@/assets/logo_full_orange.svg" alt="Logo" class="w-[198px]">
       </div>
 
       <div class="flex flex-col justify-center gap-2 w-2/3 max-w-[380px]">

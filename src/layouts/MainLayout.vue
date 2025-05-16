@@ -3,7 +3,7 @@
     <header
       class="bg-white w-full py-2 px-4 flex items-center border-b border-gray-200"
     >
-      <img src="@/assets/logo_fill_orange.png" class="w-6 mr-6">
+      <img src="@/assets/logo_orange.svg" class="w-6 mr-6">
 
       <div class="flex items-center gap-1 relative">
         <router-link

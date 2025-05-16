@@ -13,7 +13,7 @@ import { useConfiguration } from './composables/useConfiguration'
 const { setConfiguration } = useConfiguration()
 
 getVersion((response: string) => {
-  useTitle(`Mi Tienda POS - v${response}`)
+  useTitle(`mitienda - v${response}`)
 })
 
 getConfiguration((response: Response<Configuration>) => {
