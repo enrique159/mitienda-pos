@@ -11,7 +11,7 @@ exports.createTable = async function(knex) {
     table.uuid('id_branch').notNullable().references('branches.id')
     table.uuid('id_provider').notNullable().references('providers.id')
     table.uuid('id_seller').notNullable().references('sellers.id')
-    table.enu('status', ['draft', 'sent', 'received', 'cancelled']).defaultTo('draft')
+    table.enu('status', ['draft', 'sent', 'received', 'completed', 'cancelled', 'has_issues']).defaultTo('draft')
     table.text('notes')
     table.timestamp('ordered_at')
     table.timestamp('received_at')
@@ -25,3 +25,12 @@ exports.createTable = async function(knex) {
     console.error(err)
   })
 }
+
+/* STATUS
+ * draft: Borrador - Cuando el usuario guarda el pedido pero no lo envía
+ * sent: Enviado - Cuando el usuario envía el pedido (el pedido ya se hizo al proveedor)
+ * received: Recibido - Cuando el pedido se recibe en tienda o almacén
+ * completed: Completado - Cuando el pedido se completa (Se han confirmado todos los artículos)
+ * cancelled: Cancelado - Cuando el pedido se cancela (Se ha cancelado el pedido)
+ * has_issues: Con problemas - Cuando el pedido tiene problemas (los artículos no cumplen con lo pedido)
+ */

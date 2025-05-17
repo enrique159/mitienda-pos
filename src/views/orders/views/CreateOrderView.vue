@@ -18,14 +18,23 @@
           </option>
         </select>
       </label>
-      <button
-        class="btn bg-brand-orange text-white shadow-none hover:bg-brand-pink hover:border-brand-pink"
-        :disabled="itemsToSupply.length === 0"
-        @click="handleCreateOrder"
-      >
-        <icon-arrow-right class="w-4 h-4" />
-        Crear pedido
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          class="btn btn-ghost text-black-2"
+          @click="handleCreateOrder(PurchaseOrderStatus.DRAFT)"
+        >
+          <icon-device-desktop-down size="18" />
+          Guardar como borrador
+        </button>
+        <button
+          class="btn bg-brand-orange text-white shadow-none hover:bg-brand-pink hover:border-brand-pink"
+          :disabled="itemsToSupply.length === 0"
+          @click="handleCreateOrder(PurchaseOrderStatus.SENT)"
+        >
+          <icon-arrow-right class="w-4 h-4" />
+          Crear pedido
+        </button>
+      </div>
     </div>
 
     <div class="divider" />
@@ -199,7 +208,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowRight, IconPlus, IconX, IconSearch, IconTruckLoading } from '@tabler/icons-vue'
+import { IconArrowRight, IconPlus, IconX, IconSearch, IconTruckLoading, IconDeviceDesktopDown } from '@tabler/icons-vue'
 import { useBranch } from '@/composables/useBranch'
 import { useUser } from '@/composables/useUser'
 import { useProvider } from '@/composables/useProvider'
@@ -309,13 +318,13 @@ const clearValues = () => {
 
 
 // HANDLE CREATE ORDER
-const handleCreateOrder = () => {
+const handleCreateOrder = (status: PurchaseOrderStatus) => {
   const purchaseOrder: CreatePurchaseOrder = {
     id_company: branch.value.id_company,
     id_branch: branch.value.id,
     id_provider: selectedProviderId.value,
     id_seller: user.value.id,
-    status: PurchaseOrderStatus.SENT,
+    status: status,
     notes: null,
     ordered_at: null,
     received_at: null,
@@ -333,7 +342,6 @@ const handleCreateOrder = () => {
     }),
   }
   try {
-    console.log(payload)
     createPurchaseOrder(payload, (response: Response<PurchaseOrder>) => {
       if (!response.success) {
         toast.error(response.message)

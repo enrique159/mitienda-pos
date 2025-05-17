@@ -41,5 +41,7 @@ export enum PurchaseOrderStatus {
   DRAFT = 'draft',
   SENT = 'sent',
   RECEIVED = 'received',
+  COMPLETED = 'completed',
   CANCELLED = 'cancelled',
+  HAS_ISSUES = 'has_issues',
 }

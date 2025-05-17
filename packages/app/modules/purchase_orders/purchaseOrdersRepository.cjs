@@ -37,8 +37,13 @@ exports.getPurchaseOrders = async function () {
   ** ******** CREAR UNA ORDEN DE COMPRA ********
 */
 exports.createPurchaseOrder = async function (purchaseOrder, trx) {
+  const dataToInsert = {
+    ...purchaseOrder,
+    ordered_at: purchaseOrder.status === 'sent' ? knex.fn.now() : null,
+    synced_at: null,
+  }
   const queryBuilder = trx ? knex('purchase_orders').transacting(trx) : knex('purchase_orders')
-  return await queryBuilder.insert(purchaseOrder).returning('id')
+  return await queryBuilder.insert(dataToInsert).returning('id')
     .then((order) => {
       logger.info({ type: 'CREATE PURCHASE ORDER', message: 'Orden de compra creada', data: Array.isArray(order) ? order[0] : order })
       return response(true, 'Orden de compra creada', Array.isArray(order) ? order[0] : order)
@@ -67,8 +72,13 @@ exports.createPurchaseOrderItem = async function (purchaseOrderItem, trx) {
   ** ******** ACTUALIZAR UNA ORDEN DE COMPRA ********
 */
 exports.updatePurchaseOrder = async function (id, purchaseOrder) {
+  const dataToUpdate = {
+    ...purchaseOrder,
+    updated_at: knex.fn.now(),
+    synced_at: null,
+  }
   try {
-    const updated = await knex('purchase_orders').where('id', id).update(purchaseOrder)
+    const updated = await knex('purchase_orders').where('id', id).update(dataToUpdate)
     if (updated) {
       logger.info({ type: 'UPDATE PURCHASE ORDER', message: 'Orden de compra actualizada', data: { id, ...purchaseOrder } })
       return response(true, 'Orden de compra actualizada', { id, ...purchaseOrder })
@@ -84,11 +94,43 @@ exports.updatePurchaseOrder = async function (id, purchaseOrder) {
 }
 
 /*
+  ** ******** ACTUALIZAR EL ESTADO DE COMPRA ********
+*/
+exports.updatePurchaseOrderStatus = async function (id, status) {
+  const dataToUpdate = {
+    status,
+    updated_at: knex.fn.now(),
+    synced_at: null,
+    ...(status === 'sent' && { ordered_at: knex.fn.now() }),
+    ...(status === 'received' && { received_at: knex.fn.now() }),
+  }
+  try {
+    const updated = await knex('purchase_orders').where('id', id).update(dataToUpdate)
+    if (updated) {
+      logger.info({ type: 'UPDATE PURCHASE ORDER STATUS', message: 'Estado de orden de compra actualizado', data: { id, status } })
+      return response(true, 'Estado de orden de compra actualizado', { id, status })
+    } else {
+      logger.error({ type: 'UPDATE PURCHASE ORDER STATUS', message: 'Orden de compra no encontrada' })
+      return response(false, 'Orden de compra no encontrada', null)
+    }
+  } catch (err) {
+    console.log(err)
+    logger.error({ type: 'UPDATE PURCHASE ORDER STATUS ERROR', message: `${err}`, data: err })
+    return response(false, 'Error al actualizar el estado de la orden de compra', err)
+  }
+}
+
+/*
   ** ******** ACTUALIZAR UN ITEM DE ORDEN DE COMPRA ********
 */
 exports.updatePurchaseOrderItem = async function (id, purchaseOrderItem) {
+  const dataToUpdate = {
+    ...purchaseOrderItem,
+    updated_at: knex.fn.now(),
+    synced_at: null,
+  }
   try {
-    const updated = await knex('purchase_order_items').where('id', id).update(purchaseOrderItem)
+    const updated = await knex('purchase_order_items').where('id', id).update(dataToUpdate)
     if (updated) {
       logger.info({ type: 'UPDATE PURCHASE ORDER ITEM', message: 'Item de orden de compra actualizado', data: { id, ...purchaseOrderItem } })
       return response(true, 'Item de orden de compra actualizado', { id, ...purchaseOrderItem })

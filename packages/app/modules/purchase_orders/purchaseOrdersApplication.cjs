@@ -49,6 +49,15 @@ ipcMain.on('update_purchase_order', async (event, payload) => {
 })
 
 /*
+  ** ******** ACTUALIZAR EL ESTADO DE ORDEN DE COMPRA ********
+*/
+ipcMain.on('update_purchase_order_status', async (event, payload) => {
+  const { id, status } = payload
+  const response = await purchaseOrdersRepository.updatePurchaseOrderStatus(id, status)
+  event.reply('update_purchase_order_status', response)
+})
+
+/*
   ** ******** ACTUALIZAR UN ITEM DE ORDEN DE COMPRA ********
 */
 ipcMain.on('update_purchase_order_item', async (event, payload) => {

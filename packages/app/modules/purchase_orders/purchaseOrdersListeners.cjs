@@ -28,6 +28,15 @@ exports.updatePurchaseOrder = function (data, callback) {
 }
 
 /*
+  ** ******** ACTUALIZAR EL ESTADO DE ORDEN DE COMPRA ********
+*/
+exports.updatePurchaseOrderStatus = function (data, callback) {
+  ipcRenderer.removeAllListeners('update_purchase_order_status')
+  ipcRenderer.on('update_purchase_order_status', (_, response) => callback(response))
+  ipcRenderer.send('update_purchase_order_status', data)
+}
+
+/*
   ** ******** ACTUALIZAR UN ITEM DE ORDEN DE COMPRA ********
 */
 exports.updatePurchaseOrderItem = function (data, callback) {

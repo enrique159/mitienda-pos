@@ -12,7 +12,7 @@ const { getConfiguration, getVersion } = require('./app/modules/configuration/co
 const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
 const { createCashMovement } = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
 const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
-const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderItem, deletePurchaseOrder } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
+const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderStatus, updatePurchaseOrderItem, deletePurchaseOrder } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
 
 ipcRenderer.setMaxListeners(100)
 
@@ -90,6 +90,7 @@ contextBridge.exposeInMainWorld('electron', {
   updatePurchaseOrder,
   updatePurchaseOrderItem,
   deletePurchaseOrder,
+  updatePurchaseOrderStatus,
   // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),
