@@ -23,7 +23,7 @@
     "migrate:make": "knex migrate:make"
   },
   "dependencies": {
-    "@google/genai": "^0.8.0",
+    "@google/genai": "0.14.1",
     "@tabler/icons-vue": "^3.26.0",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
@@ -66,8 +66,8 @@
     "wait-on": "^7.2.0"
   },
   "build": {
-    "appId": "com.mitiendapos.app",
-    "productName": "MiTiendaPos",
+    "appId": "net.mitiendapos.app",
+    "productName": "Mitienda",
     "directories": {
       "output": "build"
     },
@@ -77,6 +77,16 @@
     ],
     "win": {
       "icon": "./public/icon.png"
-    }
+    },
+    "mac": {
+      "icon": "./public/icon.png",
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "entitlements": null,
+      "entitlementsInherit": null
+    },
+    "afterSign": null,
+    "afterAllArtifactBuild": null
   }
 }

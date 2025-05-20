@@ -45,3 +45,15 @@ export enum PurchaseOrderStatus {
   CANCELLED = 'cancelled',
   HAS_ISSUES = 'has_issues',
 }
+
+export const PurchaseOrderItemIncidenceOptions = Object.freeze([
+  { value: 'missing', label: 'Faltante' }, // No se recibió el producto
+  { value: 'damaged', label: 'Dañado' }, // Producto roto o defectuoso
+  { value: 'expired', label: 'Caducado' }, // Fecha de caducidad expirada (para alimentos/medicina)
+  { value: 'wrong_product', label: 'Producto incorrecto' }, // Se recibió un producto diferente
+  { value: 'extra', label: 'Producto extra' }, // Se recibió más de lo solicitado
+  { value: 'partial', label: 'Entrega parcial' }, // Se recibió solo parte de la cantidad
+  { value: 'wrong_quantity', label: 'Cantidad incorrecta' }, // Se recibió una cantidad diferente
+  { value: 'packaging_issue', label: 'Problemas de empaque' }, // Embalaje dañado, mojado, etc.
+  { value: 'other', label: 'Otro' }, // Para incidentes no contemplados
+])

@@ -28,14 +28,18 @@
           <td>{{ purchaseOrder.seller_name }}</td>
           <td>{{ purchaseOrder.items?.length || 0 }}</td>
           <td>{{ formatDatetimeShort(purchaseOrder.created_at) }}</td>
-          <td>{{ formatDatetimeShort(purchaseOrder.ordered_at || undefined) }}</td>
-          <td>{{ formatDatetimeShort(purchaseOrder.received_at || undefined) }}</td>
+          <td>
+            {{ formatDatetimeShort(purchaseOrder.ordered_at || undefined) }}
+          </td>
+          <td>
+            {{ formatDatetimeShort(purchaseOrder.received_at || undefined) }}
+          </td>
           <td>
             <div
               class="badge font-medium border-none"
-              :class="getStatusBadge(purchaseOrder.status).class"
+              :class="getPurchaseOrderStatusBadge(purchaseOrder.status).class"
             >
-              {{ getStatusBadge(purchaseOrder.status).text }}
+              {{ getPurchaseOrderStatusBadge(purchaseOrder.status).text }}
             </div>
           </td>
           <td>
@@ -51,7 +55,7 @@
                 tabindex="0"
                 class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow"
               >
-                <li>
+                <li @click.stop="goToOrderDetails(purchaseOrder)">
                   <a>
                     <icon-packages class="w-4 h-4" />
                     Ver detalles
@@ -63,7 +67,7 @@
                     Cambiar estado
                   </a>
                 </li>
-                <li>
+                <li @click.stop="openCancelOrderModal(purchaseOrder)">
                   <a class="text-brand-pink">
                     <icon-cancel class="w-4 h-4" />
                     Cancelar pedido
@@ -94,8 +98,15 @@
       </div>
 
       <div class="flex items-center justify-center mb-8">
-        <select class="select select-bordered w-full max-w-xs" v-model="newStatus">
-          <option v-for="option in PURCHASE_ORDER_OPTIONS" :key="option.value" :value="option.value">
+        <select
+          class="select select-bordered w-full max-w-xs"
+          v-model="newStatus"
+        >
+          <option
+            v-for="option in PURCHASE_ORDER_OPTIONS"
+            :key="option.value"
+            :value="option.value"
+          >
             {{ option.label }}
           </option>
         </select>
@@ -119,17 +130,62 @@
       </div>
     </div>
   </dialog>
+
+  <!-- DIALOG CANCEL ORDER -->
+  <dialog id="dialogCancelOrder" ref="dialogCancelOrderRef" class="modal">
+    <div class="modal-box">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">
+          Cancelar pedido
+        </h3>
+        <div class="modal-action mt-0">
+          <form method="dialog" @submit="closeCancelOrderModal">
+            <button class="close-btn">
+              Cerrar
+              <CustomKbd>ESC</CustomKbd>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-4">
+        <p class="text-black-1 font-medium text-center text-lg mb-4">
+          ¿Estás seguro de cancelar el pedido?
+        </p>
+        <div class="grid grid-cols-2 gap-4 w-full">
+          <button
+            class="btn btn-ghost btn-outline border-white-3 hover:bg-white-3 hover:border-white-3 hover:text-brand-black"
+            @click="closeCancelOrderModal"
+          >
+            No, regresar
+          </button>
+          <button
+            class="btn bg-brand-pink hover:bg-brand-orange text-white"
+            @click="handleSubmitCancelOrder"
+          >
+            Sí, cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { IconPackages, IconCancel, IconDotsVertical, IconProgressAlert } from '@tabler/icons-vue'
+import {
+  IconPackages,
+  IconCancel,
+  IconDotsVertical,
+  IconProgressAlert
+} from '@tabler/icons-vue'
 import { PurchaseOrder, Response } from '@/api/interfaces'
 import { getPurchaseOrders, updatePurchaseOrderStatus } from '@/api/electron'
 import { usePurchaseOrder } from '@/composables/usePurchaseOrder'
 import { PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
+import { getPurchaseOrderStatusBadge } from '@/utils/PurchaseOrders'
 import { useDate } from '@/composables/useDate'
 import { toast } from 'vue3-toastify'
+import { useRouter } from 'vue-router'
 
 const { formatDatetimeShort } = useDate()
 const { purchaseOrders, setPurchaseOrders } = usePurchaseOrder()
@@ -161,43 +217,7 @@ const getAllPurchaseOrders = () => {
   })
 }
 
-const getStatusBadge = (status: PurchaseOrderStatus) => {
-  switch (status) {
-  case PurchaseOrderStatus.DRAFT:
-    return {
-      text: 'Borrador',
-      class: 'bg-black-2/10 text-black-2',
-    }
-  case PurchaseOrderStatus.SENT:
-    return {
-      text: 'Enviado',
-      class: 'bg-green-500/10 text-green-500',
-    }
-  case PurchaseOrderStatus.RECEIVED:
-    return {
-      text: 'Recibido',
-      class: 'bg-warning/10 text-warning',
-    }
-  case PurchaseOrderStatus.COMPLETED:
-    return {
-      text: 'Completado',
-      class: 'bg-green-500/10 text-green-500',
-    }
-  case PurchaseOrderStatus.HAS_ISSUES:
-    return {
-      text: 'Con problemas',
-      class: 'bg-red-500/10 text-red-500',
-    }
-  default:
-    return {
-      text: 'Pendiente',
-      class: 'bg-info/10 text-info',
-    }
-  }
-}
-
 getAllPurchaseOrders()
-
 
 // CHANGE STATUS
 const dialogChangeStatusRef = ref()
@@ -224,14 +244,56 @@ const closeChangeStatusModal = () => {
 
 const handleSubmitChangeStatus = () => {
   if (!selectedPurchaseOrder.value || !newStatus.value) return
-  updatePurchaseOrderStatus({ id: selectedPurchaseOrder.value.id, status: newStatus.value }, (response: Response<PurchaseOrder>) => {
-    if (!response.success) {
-      toast.error(response.message)
-      return
+  updatePurchaseOrderStatus(
+    { id: selectedPurchaseOrder.value.id, status: newStatus.value },
+    (response: Response<PurchaseOrder>) => {
+      if (!response.success) {
+        toast.error(response.message)
+        return
+      }
+      toast.success('Estado actualizado exitosamente')
+      closeChangeStatusModal()
+      getAllPurchaseOrders()
     }
-    toast.success('Estado actualizado exitosamente')
-    closeChangeStatusModal()
-    getAllPurchaseOrders()
-  })
+  )
+}
+
+// CANCEL ORDER
+const dialogCancelOrderRef = ref()
+const selectedPurchaseOrderCancel = ref<PurchaseOrder | null>(null)
+
+const openCancelOrderModal = (purchaseOrder: PurchaseOrder) => {
+  selectedPurchaseOrderCancel.value = purchaseOrder
+  dialogCancelOrderRef.value?.showModal()
+}
+
+const closeCancelOrderModal = () => {
+  dialogCancelOrderRef.value?.close()
+  selectedPurchaseOrderCancel.value = null
+}
+
+const handleSubmitCancelOrder = () => {
+  if (!selectedPurchaseOrderCancel.value) return
+  updatePurchaseOrderStatus(
+    {
+      id: selectedPurchaseOrderCancel.value.id,
+      status: PurchaseOrderStatus.CANCELLED,
+    },
+    (response: Response<PurchaseOrder>) => {
+      if (!response.success) {
+        toast.error(response.message)
+        return
+      }
+      toast.success('Pedido cancelado exitosamente')
+      closeCancelOrderModal()
+      getAllPurchaseOrders()
+    }
+  )
+}
+
+// ORDER DETAILS
+const router = useRouter()
+const goToOrderDetails = (purchaseOrder: PurchaseOrder) => {
+  router.push({ name: 'OrderDetailsView', params: { id: purchaseOrder.id } })
 }
 </script>

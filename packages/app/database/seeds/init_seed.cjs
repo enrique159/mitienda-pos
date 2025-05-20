@@ -132,7 +132,7 @@ exports.seed = async function(knex) {
       phone: '5551234567',
       address: 'Calle Principal #123, Centro',
       has_credit: true,
-      credit_limit: 1000,
+      credit_limit: 100000,
       days_until_due: 20,
     })
 

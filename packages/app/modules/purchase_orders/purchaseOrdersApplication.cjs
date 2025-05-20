@@ -67,6 +67,14 @@ ipcMain.on('update_purchase_order_item', async (event, payload) => {
 })
 
 /*
+  ** ******** ACTUALIZAR TODOS LOS ITEMS DE UNA ORDEN DE COMPRA ********
+*/
+ipcMain.on('update_purchase_order_items', async (event, items) => {
+  const response = await purchaseOrdersRepository.updatePurchaseOrderItems(items)
+  event.reply('update_purchase_order_items', response)
+})
+
+/*
   ** ******** ELIMINAR UNA ORDEN DE COMPRA ********
 */
 ipcMain.on('delete_purchase_order', async (event, id) => {

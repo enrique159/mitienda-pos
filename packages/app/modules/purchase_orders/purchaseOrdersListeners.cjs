@@ -46,6 +46,15 @@ exports.updatePurchaseOrderItem = function (data, callback) {
 }
 
 /*
+  ** ******** ACTUALIZAR TODOS LOS ITEMS DE UNA ORDEN DE COMPRA ********
+*/
+exports.updatePurchaseOrderItems = function (data, callback) {
+  ipcRenderer.removeAllListeners('update_purchase_order_items')
+  ipcRenderer.on('update_purchase_order_items', (_, response) => callback(response))
+  ipcRenderer.send('update_purchase_order_items', data)
+}
+
+/*
   ** ******** ELIMINAR UNA ORDEN DE COMPRA ********
 */
 exports.deletePurchaseOrder = function (id, callback) {

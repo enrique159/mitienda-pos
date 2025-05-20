@@ -144,6 +144,48 @@ exports.updatePurchaseOrderItem = async function (id, purchaseOrderItem) {
     return response(false, 'Error al actualizar el item de la orden de compra', err)
   }
 }
+/*
+  ** ******** ACTUALIZAR TODOS LOS ITEMS DE UNA ORDEN DE COMPRA ********
+*/
+exports.updatePurchaseOrderItems = async function (items) {
+  try {
+    // Use a transaction to ensure all updates succeed or fail together
+    const result = await knex.transaction(async (trx) => {
+      const updatePromises = items.map(async (item) => {
+        const dataToUpdate = {
+          quantity_received: item.quantity_received,
+          incidence: item.incidence,
+          note: item.note,
+          updated_at: trx.fn.now(),
+          synced_at: null,
+        }
+
+        // Update each item individually by its ID
+        return await trx('purchase_order_items')
+          .where('id', item.id)
+          .update(dataToUpdate)
+      })
+
+      // Execute all updates in parallel
+      return await Promise.all(updatePromises)
+    })
+
+    logger.info({
+      type: 'UPDATE PURCHASE ORDER ITEMS',
+      message: 'Items de orden de compra actualizados',
+      data: { itemsCount: items.length },
+    })
+    return response(true, 'Items de orden de compra actualizados', items)
+  } catch (err) {
+    console.log(err)
+    logger.error({
+      type: 'UPDATE PURCHASE ORDER ITEMS ERROR',
+      message: `${err}`,
+      data: err,
+    })
+    return response(false, 'Error al actualizar los items de la orden de compra', err)
+  }
+}
 
 /*
   ** ******** ELIMINAR UNA ORDEN DE COMPRA ********
