@@ -15,6 +15,7 @@
 
       <button
         class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink flex items-center gap-2"
+        @click="openChangeStatusModal(purchaseOrder)"
       >
         <IconProgressAlert size="18" />
         Cambiar estado
@@ -190,6 +191,58 @@
       </div>
     </section>
   </div>
+
+
+  <!-- DIALOG CHANGE STATUS -->
+  <dialog id="dialogChangeStatus" ref="dialogChangeStatusRef" class="modal">
+    <div class="modal-box w-[320px]">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">
+          Cambiar estado
+        </h3>
+        <div class="modal-action mt-0">
+          <form method="dialog" @submit="closeChangeStatusModal">
+            <button class="close-btn">
+              Cerrar
+              <CustomKbd>ESC</CustomKbd>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center mb-8">
+        <select
+          class="select select-bordered w-full max-w-xs"
+          v-model="newStatus"
+        >
+          <option
+            v-for="option in PURCHASE_ORDER_OPTIONS"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="flex justify-center space-x-4 w-full">
+        <base-button
+          type="button"
+          class="w-full"
+          @click="closeChangeStatusModal"
+        >
+          Cancelar
+        </base-button>
+        <button
+          class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink w-full"
+          @click="handleSubmitChangeStatus"
+        >
+          Cambiar
+        </button>
+      </div>
+    </div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
@@ -198,7 +251,8 @@ import { IconProgressAlert, IconChevronDown, IconInfoCircle, IconDeviceDesktopDo
 import { IconArrowLeft } from '@tabler/icons-vue'
 import { usePurchaseOrder } from '@/composables/usePurchaseOrder'
 import { getPurchaseOrderStatusBadge } from '@/utils/PurchaseOrders'
-import { PurchaseOrder, PurchaseOrderItem } from '@/api/interfaces/purchase_orders'
+import { PurchaseOrder, PurchaseOrderItem, PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
+import { updatePurchaseOrder, updatePurchaseOrderItems, updatePurchaseOrderStatus } from '@/api/electron'
 import { PurchaseOrderItemIncidenceOptions } from '@/api/interfaces/purchase_orders'
 import { useProduct } from '@/composables/useProduct'
 import { useDate } from '@/composables/useDate'
@@ -206,7 +260,6 @@ import { useRoute } from 'vue-router'
 import { Product, Response } from '@/api/interfaces'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
 import { toast } from 'vue3-toastify'
-import { updatePurchaseOrder, updatePurchaseOrderItems } from '@/api/electron'
 
 const route = useRoute()
 const isAdditionalInfoOpen = ref(false)
@@ -239,6 +292,44 @@ onMounted(() => {
 
 const resetPurchaseOrderProducts = () => {
   purchaseOrderProducts.value = [...originalPurchaseOrderProducts]
+}
+
+// CHANGE STATUS
+// CHANGE STATUS
+const dialogChangeStatusRef = ref()
+const newStatus = ref<PurchaseOrderStatus | null>(null)
+const PURCHASE_ORDER_OPTIONS = [
+  { value: PurchaseOrderStatus.DRAFT, label: 'Borrador' },
+  { value: PurchaseOrderStatus.SENT, label: 'Enviado' },
+  { value: PurchaseOrderStatus.RECEIVED, label: 'Recibido' },
+  { value: PurchaseOrderStatus.COMPLETED, label: 'Completado' },
+  { value: PurchaseOrderStatus.HAS_ISSUES, label: 'Con problemas' },
+]
+
+const openChangeStatusModal = (purchaseOrder: PurchaseOrder | null) => {
+  if (!purchaseOrder) return
+  newStatus.value = purchaseOrder.status
+  dialogChangeStatusRef.value?.showModal()
+}
+
+const closeChangeStatusModal = () => {
+  dialogChangeStatusRef.value?.close()
+}
+
+const handleSubmitChangeStatus = () => {
+  if (!purchaseOrder.value || !newStatus.value) return
+  updatePurchaseOrderStatus(
+    { id: purchaseOrder.value.id, status: newStatus.value },
+    (response: Response<PurchaseOrder>) => {
+      if (!response.success) {
+        toast.error(response.message)
+        return
+      }
+      purchaseOrder.value!.status = newStatus.value!
+      toast.success('Estado actualizado exitosamente')
+      closeChangeStatusModal()
+    }
+  )
 }
 
 // NOTES
@@ -297,7 +388,3 @@ const handleSaveChanges = () => {
   })
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

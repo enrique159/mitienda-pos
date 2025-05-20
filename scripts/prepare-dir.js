@@ -1,9 +1,9 @@
-import fs from 'fs';
+import fs from 'fs'
 
 if (fs.existsSync('dist')) {
-  fs.rmdirSync('dist', { recursive: true });
+  fs.rmdirSync('dist', { recursive: true })
 }
 
 if (fs.existsSync('build')) {
-  fs.rmdirSync('build', { recursive: true });
+  fs.rmdirSync('build', { recursive: true })
 }

@@ -61,12 +61,6 @@
                     Ver detalles
                   </a>
                 </li>
-                <li @click.stop="openChangeStatusModal(purchaseOrder)">
-                  <a>
-                    <icon-progress-alert class="w-4 h-4" />
-                    Cambiar estado
-                  </a>
-                </li>
                 <li @click.stop="openCancelOrderModal(purchaseOrder)">
                   <a class="text-brand-pink">
                     <icon-cancel class="w-4 h-4" />
@@ -80,56 +74,6 @@
       </tbody>
     </table>
   </div>
-
-  <dialog id="dialogChangeStatus" ref="dialogChangeStatusRef" class="modal">
-    <div class="modal-box w-[320px]">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">
-          Cambiar estado
-        </h3>
-        <div class="modal-action mt-0">
-          <form method="dialog" @submit="closeChangeStatusModal">
-            <button class="close-btn">
-              Cerrar
-              <CustomKbd>ESC</CustomKbd>
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-center mb-8">
-        <select
-          class="select select-bordered w-full max-w-xs"
-          v-model="newStatus"
-        >
-          <option
-            v-for="option in PURCHASE_ORDER_OPTIONS"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
-
-      <!-- BUTTONS -->
-      <div class="flex justify-center space-x-4 w-full">
-        <base-button
-          type="button"
-          class="w-full"
-          @click="closeChangeStatusModal"
-        >
-          Cancelar
-        </base-button>
-        <button
-          class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink w-full"
-          @click="handleSubmitChangeStatus"
-        >
-          Cambiar
-        </button>
-      </div>
-    </div>
-  </dialog>
 
   <!-- DIALOG CANCEL ORDER -->
   <dialog id="dialogCancelOrder" ref="dialogCancelOrderRef" class="modal">
@@ -218,45 +162,6 @@ const getAllPurchaseOrders = () => {
 }
 
 getAllPurchaseOrders()
-
-// CHANGE STATUS
-const dialogChangeStatusRef = ref()
-const selectedPurchaseOrder = ref<PurchaseOrder | null>(null)
-const newStatus = ref<PurchaseOrderStatus | null>(null)
-const PURCHASE_ORDER_OPTIONS = [
-  { value: PurchaseOrderStatus.DRAFT, label: 'Borrador' },
-  { value: PurchaseOrderStatus.SENT, label: 'Enviado' },
-  { value: PurchaseOrderStatus.RECEIVED, label: 'Recibido' },
-  { value: PurchaseOrderStatus.COMPLETED, label: 'Completado' },
-  { value: PurchaseOrderStatus.HAS_ISSUES, label: 'Con problemas' },
-]
-
-const openChangeStatusModal = (purchaseOrder: PurchaseOrder) => {
-  selectedPurchaseOrder.value = purchaseOrder
-  newStatus.value = purchaseOrder.status
-  dialogChangeStatusRef.value?.showModal()
-}
-
-const closeChangeStatusModal = () => {
-  dialogChangeStatusRef.value?.close()
-  selectedPurchaseOrder.value = null
-}
-
-const handleSubmitChangeStatus = () => {
-  if (!selectedPurchaseOrder.value || !newStatus.value) return
-  updatePurchaseOrderStatus(
-    { id: selectedPurchaseOrder.value.id, status: newStatus.value },
-    (response: Response<PurchaseOrder>) => {
-      if (!response.success) {
-        toast.error(response.message)
-        return
-      }
-      toast.success('Estado actualizado exitosamente')
-      closeChangeStatusModal()
-      getAllPurchaseOrders()
-    }
-  )
-}
 
 // CANCEL ORDER
 const dialogCancelOrderRef = ref()
