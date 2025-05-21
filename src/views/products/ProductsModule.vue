@@ -104,6 +104,11 @@ const productsMenu = [
     path: '/main/products/taxes',
     icon: IconCoins,
   },
+  {
+    title: 'Gemini',
+    path: '/main/products/example_gemini',
+    icon: IconCoins,
+  },
 ]
 </script>
 

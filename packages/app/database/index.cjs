@@ -26,6 +26,7 @@ const customers = require('./schemas/customers.cjs')
 const sales = require('./schemas/sales.cjs')
 const saleDetails = require('./schemas/sale_details.cjs')
 const salePayments = require('./schemas/sale_payments.cjs')
+const aiModels = require('./schemas/ai_models.cjs')
 
 const initDB = async() => {
   const destinationPath = path.join(os.homedir(), '.db')
@@ -61,6 +62,7 @@ const initDB = async() => {
         sales.createTable(knex),
         saleDetails.createTable(knex),
         salePayments.createTable(knex),
+        aiModels.createTable(knex),
       ])
     } catch (error) {
       logger.error({ type: 'DB', message: `${error}`, error })

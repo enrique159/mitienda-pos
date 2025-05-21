@@ -16,7 +16,8 @@ import {
   IconCashRegister,
   IconLaurelWreath,
   IconHelp,
-  IconInfoCircle
+  IconInfoCircle,
+  IconSparkles
 } from '@tabler/icons-vue'
 
 const settingsMenu = [
@@ -54,6 +55,11 @@ const settingsMenu = [
     title: 'Cuenta y suscripciones',
     path: '/main/settings/account',
     icon: IconLaurelWreath,
+  },
+  {
+    title: 'Modelos AI',
+    path: '/main/settings/ai',
+    icon: IconSparkles,
   },
   {
     title: 'Ayuda y soporte',

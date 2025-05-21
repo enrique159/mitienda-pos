@@ -2,11 +2,13 @@ import { GeneratedFolio, Sale, SaleDetail, SalePayment, CreateSalePayload, SaleS
 import { PurchaseOrder, CreatePurchaseOrder, CreatePurchaseOrderItem, CreatePurchaseOrderPayload } from './purchase_orders'
 import { Product, ProductCart, UnitMeasurement, Unit, CreateProduct, ProductTax } from './products'
 import { Discount, CreateDiscount, UpdateDiscount, DiscountSchedule } from './discount'
+import { AiModel, AiModelStatus, CreateAiModel, UpdateAiModel } from './aiModels'
 import { CashRegister, CashRegisterState, Denomination } from './cashRegisters'
 import { CashMovement, CreateCashMovement } from './cashMovements'
 import { Category, CreateCategory } from './categories'
 import { Provider, CreateProvider } from './providers'
 import { Customer, CreateCustomer } from './customer'
+import { Company, BusinessType } from './company'
 import { Configuration } from './configuration'
 import { StartSessionParams } from './auth'
 import { User, Seller } from './users'
@@ -27,6 +29,8 @@ export type {
   Seller,
   Branch,
   Product,
+  Company,
+  AiModel,
   Response,
   Category,
   Discount,
@@ -39,8 +43,11 @@ export type {
   ProductCart,
   SalePayload,
   CashRegister,
+  BusinessType,
   CashMovement,
   Denomination,
+  CreateAiModel,
+  UpdateAiModel,
   PaymentMethod,
   CreateProduct,
   Configuration,
@@ -64,3 +71,4 @@ export type {
 }
 
 export { UnitMeasurement, SaleStatus, PaymentMethods }
+export type { AiModelStatus }

@@ -71,11 +71,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { useProduct } from '@/composables/useProduct'
 import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
-import { getProducts, getCategories, getBranchInfo, getCashRegisterActive, getCustomers } from '@/api/electron'
-import { Category, Product, Response, Branch } from '@/api/interfaces'
+import { getProducts, getCategories, getBranchInfo, getCashRegisterActive, getCustomers, getCompany, getAiModels } from '@/api/electron'
+import { Category, Product, Response, Branch, Company, AiModel } from '@/api/interfaces'
+import { useConfiguration } from '@/composables/useConfiguration'
 import { useDate } from '@/composables/useDate'
 import { useCustomer } from '@/composables/useCustomer'
+import { useCompany } from '@/composables/useCompany'
 import { useUser } from '@/composables/useUser'
+import { useAI } from '@/composables/useAI'
 import { toast } from 'vue3-toastify'
 
 const { setProducts, setCategories } = useProduct()
@@ -83,7 +86,10 @@ const { setBranch, branch } = useBranch()
 const { setCashRegister } = useCashRegister()
 const { getCurrentDate } = useDate()
 const { setCustomers } = useCustomer()
+const { setCompany } = useCompany()
+const { setAiModels, defaultAiModel, aiModels } = useConfiguration()
 const { logout } = useUser()
+const { isInitialized, initializeModel, reset: resetAI } = useAI()
 const route = useRoute()
 const router = useRouter()
 
@@ -102,55 +108,87 @@ const menuOptions = [
   { id: 9, icon: IconSettings, label: 'Ajustes', route: '/main/settings', value: 'settings' },
 ]
 
-getProducts((response: Response<Product[]>) => {
-  if (!response.success) {
-    toast.error('Error al obtener los productos')
-    return
-  }
-  setProducts(response.response)
-})
+const getAllData = async() => {
+  // Get company info
+  getCompany((response: Response<Company>) => {
+    if (!response.success) {
+      toast.error('Error al obtener la información de la empresa')
+      return
+    }
+    setCompany(response.response)
+    if (response.response.ai_enabled) {
+      getAllAiModels()
+    }
+  })
 
-getCategories((response: Response<Category[]>) => {
-  if (!response.success) {
-    toast.error('Error al obtener las categorías de los productos')
-    return
-  }
-  // Add Todos category
-  setCategories(response.response)
-})
+  // Get products
+  getProducts((response: Response<Product[]>) => {
+    if (!response.success) {
+      toast.error('Error al obtener los productos')
+      return
+    }
+    setProducts(response.response)
+  })
 
-getBranchInfo((response: Response<Branch>) => {
-  if (!response.success) {
-    toast.error('Error al obtener la información de la sucursal')
-    return
-  }
-  setBranch(response.response)
-})
+  // Get categories
+  getCategories((response: Response<Category[]>) => {
+    if (!response.success) {
+      toast.error('Error al obtener las categorías de los productos')
+      return
+    }
+    // Add Todos category
+    setCategories(response.response)
+  })
 
-const getCashRegisterOpened = async () => {
-  const response = await getCashRegisterActive()
-  if (!response.success) {
-    toast.error('Error al obtener la información de la caja')
-    return
-  }
-  if (!response.response) {
-    router.push('/main/open-cash-register')
-  }
-  setCashRegister(response.response)
-}
+  // Get branch info
+  getBranchInfo((response: Response<Branch>) => {
+    if (!response.success) {
+      toast.error('Error al obtener la información de la sucursal')
+      return
+    }
+    setBranch(response.response)
+  })
 
-getCashRegisterOpened()
-
-const getAllCustomers = async () => {
-  const response = await getCustomers()
-  if (!response.success) {
+  // Get customers
+  const customersResponse = await getCustomers()
+  if (!customersResponse.success) {
     toast.error('Error al obtener los clientes')
     return
   }
-  setCustomers(response.response)
+  setCustomers(customersResponse.response)
+
+  // Get cash register opened
+  const cashRegisterActive = await getCashRegisterActive()
+  if (!cashRegisterActive.success) {
+    toast.error('Error al obtener la información de la caja')
+    return
+  }
+  if (!cashRegisterActive.response) {
+    router.push('/main/open-cash-register')
+  }
+  setCashRegister(cashRegisterActive.response)
 }
 
-getAllCustomers()
+getAllData()
+
+// Get ai models
+const getAllAiModels = () => {
+  getAiModels((response: Response<AiModel[]>) => {
+    if (!response.success) {
+      toast.error('Error al obtener los modelos de IA')
+      return
+    }
+    setAiModels(response.response)
+    if (aiModels.value.length > 0) {
+      if (defaultAiModel.value) {
+        initializeModel(defaultAiModel.value.name, {
+          modelName: defaultAiModel.value.model,
+          apiKey: defaultAiModel.value.api_key,
+        })
+      }
+    }
+  })
+}
 
 // Get real time hour
 const time = ref(getCurrentDate())
@@ -190,5 +228,8 @@ cleanupFunctions.push(
 // Cleanup on component unmount
 onUnmounted(() => {
   cleanupFunctions.forEach((cleanup) => cleanup?.())
+  if (isInitialized.value) {
+    resetAI()
+  }
 })
 </script>

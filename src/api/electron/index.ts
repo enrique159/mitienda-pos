@@ -1,8 +1,11 @@
-import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount, UpdateDiscount, CreateCashMovement, Provider, CreateProvider, PurchaseOrder, CreatePurchaseOrder, CreatePurchaseOrderPayload } from '@/api/interfaces'
+import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount, UpdateDiscount, CreateCashMovement, Provider, CreateProvider, PurchaseOrder, CreatePurchaseOrder, CreatePurchaseOrderPayload, AiModel, CreateAiModel, UpdateAiModel } from '@/api/interfaces'
 import { CreateCashRegisterAudit } from '../interfaces/cashRegisterAudits'
 import { PurchaseOrderItem, PurchaseOrderStatus } from '../interfaces/purchase_orders'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
+
+/* Company */
+export const getCompany = async (callback: any) => window.electron.getCompany(callback)
 
 /* Sellers */
 export const getSellers = async (callback: any) => window.electron.getSellers(callback)
@@ -81,3 +84,12 @@ export const getCustomers = async (): Promise<Response<Customer[]>> => window.el
 export const createCustomer = async (customer: CreateCustomer, callback: any): Promise<Response<Customer>> => window.electron.createCustomer(customer, callback)
 export const updateCustomer = async (customer: Customer, callback: any): Promise<Response<Customer>> => window.electron.updateCustomer(customer, callback)
 export const deleteCustomer = async (customerId: string, callback: any): Promise<Response<Customer>> => window.electron.deleteCustomer(customerId, callback)
+
+/* AI Models */
+export const getAiModels = async (callback: any): Promise<Response<AiModel[]>> => window.electron.getAiModels(callback)
+export const getAiModelById = async (id: string, callback: any): Promise<Response<AiModel>> => window.electron.getAiModelById(id, callback)
+export const createAiModel = async (aiModel: CreateAiModel, callback: any): Promise<Response<AiModel>> => window.electron.createAiModel(aiModel, callback)
+export const updateAiModel = async (data: { id: string, aiModel: UpdateAiModel }, callback: any): Promise<Response<AiModel>> => window.electron.updateAiModel(data, callback)
+export const deleteAiModel = async (id: string, callback: any): Promise<Response<AiModel>> => window.electron.deleteAiModel(id, callback)
+export const updateAiModelStatus = async (data: { id: string, status: 'active' | 'inactive' }, callback: any): Promise<Response<AiModel>> => window.electron.updateAiModelStatus(data, callback)
+export const setDefaultAiModel = async (data: { id: string, companyId: string }, callback: any): Promise<Response<AiModel>> => window.electron.setDefaultAiModel(data, callback)

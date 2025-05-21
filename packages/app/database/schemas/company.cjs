@@ -40,11 +40,12 @@ exports.createTable = async function(knex) {
     table.string('voucher_type').defaultTo('Ingreso').notNullable() // Tipo de ticket fiscal
     table.string('default_payment_method').defaultTo('PUE').notNullable() // Método de pago SAT
     table.string('default_payment_form').defaultTo('01').notNullable() // Forma de pago SAT
+    table.boolean('ai_enabled').defaultTo(false).notNullable() // Habilitar IA
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable() // Fecha de creación
     table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable() // Fecha de edición
     table.timestamp('synced_at') // Fecha de sincronización
   }).then(() => {
-    console.log("Table 'configuration' created.")
+    console.log("Table 'company' created.")
   }).catch((err) => {
     logger.error({ type: 'DB', error: err })
     console.error(err)

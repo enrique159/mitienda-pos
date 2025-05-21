@@ -23,6 +23,7 @@ import DeleteButton from './components/buttons/DeleteButton.vue'
 import PinInput from './components/inputs/PinInput.vue'
 import CurrencyInput from './components/inputs/CurrencyInput.vue'
 import CustomKbd from './components/CustomKbd.vue'
+import InputErrors from './components/InputErrors.vue'
 
 
 const app = createApp(App)
@@ -40,5 +41,6 @@ app.component('PinInput', PinInput)
 app.component('CurrencyInput', CurrencyInput)
 app.component('CustomKbd', CustomKbd)
 app.component('DatePicker', VueDatePicker)
+app.component('InputErrors', InputErrors)
 
 app.mount('#app')

@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron')
+const { getCompany } = require('./app/modules/company/companyListeners.cjs')
 const { startSession, getSellers, closeSession } = require('./app/modules/sellers/sellersListeners.cjs')
 const { createProduct, deleteProduct, getActiveProducts, getProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
 const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, deleteDiscount, getDiscountProducts, createDiscountProduct } = require('./app/modules/discounts/discountsListeners.cjs')
@@ -13,6 +14,7 @@ const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require
 const { createCashMovement } = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
 const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
 const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderStatus, updatePurchaseOrderItem, updatePurchaseOrderItems, deletePurchaseOrder } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
+const { getAiModels, getAiModelById, createAiModel, updateAiModel, deleteAiModel, updateAiModelStatus, setDefaultAiModel } = require('./app/modules/ai_models/aiModelsListeners.cjs')
 
 ipcRenderer.setMaxListeners(100)
 
@@ -28,6 +30,8 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 contextBridge.exposeInMainWorld('electron', {
+  // Company
+  getCompany,
   // Sellers
   getSellers,
   startSession,
@@ -92,6 +96,14 @@ contextBridge.exposeInMainWorld('electron', {
   updatePurchaseOrderItems,
   deletePurchaseOrder,
   updatePurchaseOrderStatus,
+  // AI Models
+  getAiModels,
+  getAiModelById,
+  createAiModel,
+  updateAiModel,
+  deleteAiModel,
+  updateAiModelStatus,
+  setDefaultAiModel,
   // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),

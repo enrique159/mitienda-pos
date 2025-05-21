@@ -3,7 +3,6 @@ const path = require('path')
 const env = require('./env.json')
 const initDB = require('./app/database/index.cjs')
 const dev = env.NODE_ENV === 'development'
-const { main } = require('./app/plugins/gemini_plugin.cjs')
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 function createWindow() {
@@ -91,3 +90,5 @@ require('./app/modules/cash_movements/cashMovementsApplication.cjs')
 require('./app/modules/cash_register_audits/cashRegisterAuditsApplication.cjs')
 require('./app/modules/providers/providersApplication.cjs')
 require('./app/modules/purchase_orders/purchaseOrdersApplication.cjs')
+require('./app/modules/company/companyApplication.cjs')
+require('./app/modules/ai_models/aiModelsApplication.cjs')
