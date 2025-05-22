@@ -11,13 +11,16 @@
         </span>
 
         <div class="dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn btn-sm capitalize font-medium" :disabled="noConfiguredModels">
+          <button tabindex="0" class="btn btn-sm capitalize font-medium" :disabled="noConfiguredModels">
             {{ defaultAiModelName }}
             <IconChevronDown size="18" />
-          </div>
+          </button>
           <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-            <li><a>Item 1</a></li>
-            <li><a>Item 2</a></li>
+            <li v-for="model in aiModels" :key="`ai-model-dropdown-${model.id}`" @click.stop="setDefaultModel(model.id)">
+              <a class="text-black-2 font-medium capitalize">
+                {{ model.name }}
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -25,7 +28,7 @@
       <div
         v-for="model in availableModels"
         :key="`ai-model-card-${model.type}`"
-        class="flex items-center justify-between px-2 py-4 pl-4 bg-white rounded-xl"
+        class="flex items-center justify-between py-4 px-4 bg-white rounded-xl"
       >
         <div class="flex items-center gap-2">
           <img
@@ -34,8 +37,13 @@
             class="w-7"
           >
           <div>
-            <h6 class="font-medium text-black-2">
+            <h6 class="font-medium text-black-2 flex items-center gap-2">
               {{ model.name }}
+              <input
+                type="checkbox"
+                class="toggle toggle-success toggle-sm"
+                :checked="model.isConfigured"
+              >
             </h6>
             <p class="text-sm text-black-3" v-html="model.description" />
           </div>
@@ -73,7 +81,7 @@
         </div>
       </div>
 
-      <form @submit.prevent="handleSubmitModel" class="w-full space-y-2">
+      <form @submit.prevent="handleSubmit" class="w-full space-y-2">
         <!-- SELECT MODEL -->
         <label class="form-control w-full">
           <div class="label">
@@ -110,7 +118,11 @@
               class="input input-bordered w-full"
               v-model="formData.api_key"
             >
-            <button class="w-8 h-8 rounded-full hover:bg-gray-100 text-sm text-black-2 grid place-items-center absolute right-2 top-1/2 -translate-y-1/2" @click="showApiKey = !showApiKey">
+            <button
+              type="button"
+              class="w-8 h-8 rounded-full hover:bg-gray-100 text-sm text-black-2 grid place-items-center absolute right-2 top-1/2 -translate-y-1/2"
+              @click="showApiKey = !showApiKey"
+            >
               <IconEye v-if="showApiKey" />
               <IconEyeClosed v-else />
             </button>
@@ -122,19 +134,29 @@
         </label>
 
         <!-- BUTTONS -->
-        <div class="flex justify-end space-x-4">
+        <div class="flex justify-between">
           <base-button
+            v-if="currentModelConfigured?.isConfigured"
             type="button"
-            @click="closeConfigModelModal"
+            @click="deleteCurrentModel(currentAiModelToConfigure?.id || '')"
           >
-            Cancelar
+            Descartar
           </base-button>
-          <button
-            type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
-          >
-            Guardar
-          </button>
+          <div v-else />
+          <div class="flex items-center gap-4">
+            <base-button
+              type="button"
+              @click="closeConfigModelModal"
+            >
+              Cancelar
+            </base-button>
+            <button
+              type="submit"
+              class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+            >
+              Guardar
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -142,23 +164,28 @@
 </template>
 
 <script setup lang="ts">
-import { IconSettings, IconChevronDown, IconEye, IconEyeClosed } from '@tabler/icons-vue'
-import { useConfiguration } from '@/composables/useConfiguration'
-import { computed, reactive, ref } from 'vue'
-import { AiModelType } from '@/api/interfaces/aiModels'
 import useVuelidate from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
+import { IconSettings, IconChevronDown, IconEye, IconEyeClosed } from '@tabler/icons-vue'
+import { useConfiguration } from '@/composables/useConfiguration'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { AiModel, AiModelType, CreateAiModel } from '@/api/interfaces/aiModels'
+import { useBranch } from '@/composables/useBranch'
+import { createAiModel, deleteAiModel, getAiModels, setDefaultAiModel, updateAiModel } from '@/api/electron'
+import { Response } from '@/api/interfaces'
+import { toast } from 'vue3-toastify'
 
+const { branch } = useBranch()
 const { aiModels } = useConfiguration()
-
-const geminiConfigured = computed(() => {
-  return aiModels.value.find((model) => model.default)?.name === AiModelType.GEMINI
-})
 
 const selectedModelToConfigure = ref<AiModelType | null>(null)
 const currentModelConfigured = computed(() => {
   return availableModels.find((model) => model.type === selectedModelToConfigure.value) || null
 })
+const currentAiModelToConfigure = computed(() => {
+  return aiModels.value.find((model) => model.name === selectedModelToConfigure.value)
+})
+
 const availableModels = reactive([
   {
     name: 'Google Gemini',
@@ -172,7 +199,9 @@ const availableModels = reactive([
       'gemini-1.5-flash',
       'gemini-1.5-flash-lite',
     ],
-    isConfigured: geminiConfigured.value,
+    isConfigured: computed(() => {
+      return aiModels.value.some((model) => model.name === AiModelType.GEMINI)
+    }),
   },
 ])
 
@@ -200,18 +229,115 @@ const v$ = useVuelidate(formDataRules, formData)
 
 const openConfigModelModal = (model: AiModelType) => {
   selectedModelToConfigure.value = model
+  if (currentModelConfigured.value?.isConfigured) {
+    formData.model = currentAiModelToConfigure.value?.model || ''
+    formData.api_key = currentAiModelToConfigure.value?.api_key || ''
+  }
   dialogConfigModelRef.value?.showModal()
 }
 
 const closeConfigModelModal = () => {
-  selectedModelToConfigure.value = null
   dialogConfigModelRef.value?.close()
+  selectedModelToConfigure.value = null
+  formData.model = ''
+  formData.api_key = ''
+  showApiKey.value = false
+  v$.value.$reset()
+}
+
+const handleSubmit = async () => {
+  if (currentModelConfigured.value?.isConfigured) {
+    handleEditModel()
+    return
+  }
+  handleSubmitModel()
 }
 
 const handleSubmitModel = async () => {
   const isFormValid = await v$.value.$validate()
   if (!isFormValid) return
+
+  const newAiModel: CreateAiModel = {
+    id_company: branch.value.id_company,
+    name: selectedModelToConfigure.value!,
+    model: formData.model,
+    api_key: formData.api_key,
+    status: 'active',
+    default: false,
+  }
+  createAiModel(newAiModel, (response: Response<AiModel>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    getAllAiModels()
+    closeConfigModelModal()
+    toast.success('Modelo configurado exitosamente')
+  })
 }
 
+const handleEditModel = async () => {
+  const isFormValid = await v$.value.$validate()
+  if (!isFormValid) return
+  if (!currentAiModelToConfigure.value) return
+
+  const updatedAiModel: AiModel = {
+    ...currentAiModelToConfigure.value,
+    model: formData.model,
+    api_key: formData.api_key,
+  }
+
+  const payload = {
+    id: currentAiModelToConfigure.value.id,
+    aiModel: updatedAiModel,
+  }
+
+  updateAiModel(payload, (response: Response<AiModel>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    getAllAiModels()
+    closeConfigModelModal()
+    toast.success('Modelo editado exitosamente')
+  })
+}
+
+const deleteCurrentModel = (id: string) => {
+  deleteAiModel(id, (response: Response<AiModel>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    getAllAiModels()
+    closeConfigModelModal()
+    toast.success('Modelo descartado exitosamente')
+  })
+}
+
+const setDefaultModel = (id: string) => {
+  setDefaultAiModel({ id, companyId: branch.value.id_company }, (response: Response<AiModel>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    getAllAiModels()
+    toast.success('Modelo configurado exitosamente')
+  })
+}
+
+const getAllAiModels = () => {
+  getAiModels((response: Response<AiModel[]>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    aiModels.value = response.response
+  })
+}
+
+onMounted(() => {
+  getAllAiModels()
+})
 </script>
 
