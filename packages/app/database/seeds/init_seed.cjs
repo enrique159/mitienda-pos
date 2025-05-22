@@ -41,7 +41,7 @@ exports.seed = async function(knex) {
       country: 'México', // País
       business_type: 'convenience_store', // Tipo de negocio
       business_description: 'Una tienda de abarrotes local con productos básicos.', // Descripción
-      ai_enabled: false,
+      ai_enabled: true,
       // ai_models: JSON.stringify([
       //   {
       //     name: 'gemini',

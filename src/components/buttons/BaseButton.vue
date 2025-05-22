@@ -2,6 +2,7 @@
   <button
     class="px-4 h-10 rounded-md active:scale-95 transition-all text-sm"
     :class="buttonClass"
+    :disabled="disabled"
   >
     <slot />
   </button>
@@ -10,12 +11,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const { buttonType = 'base' } = defineProps<{
+const props = defineProps<{
   buttonType?: 'primary' | 'secondary' | 'base'
+  disabled?: boolean
 }>()
 
 const buttonClass = computed(() => {
-  switch (buttonType) {
+  switch (props.buttonType) {
   case 'primary':
     return 'bg-brand-orange hover:bg-brand-orange/80 text-white'
   case 'secondary':

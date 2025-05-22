@@ -3,6 +3,7 @@ import { CreateCashRegisterAudit } from '../interfaces/cashRegisterAudits'
 import { PurchaseOrderItem, PurchaseOrderStatus } from '../interfaces/purchase_orders'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
+export const openExternalLink = async (url: string) => window.electron.openExternalLink(url)
 
 /* Company */
 export const getCompany = async (callback: any) => window.electron.getCompany(callback)

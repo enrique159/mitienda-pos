@@ -1,27 +1,29 @@
 import { ref, computed } from 'vue'
 import Gemini from '@/plugins/gemini.plugin'
+import Openai from '@/plugins/openai.plugin'
 import { AIError, AIModelConfig, AiModelType, AIResponse } from '@/api/interfaces/aiModels'
 
 /**
  * Composable para interactuar con modelos de IA
  * Actualmente soporta Google Gemini, pero está diseñado para ser extensible
  */
+const isInitialized = ref(false)
+const currentModel = ref<AiModelType | null>(null)
+const lastResponse = ref<AIResponse | null>(null)
+const isLoading = ref(false)
+const error = ref<AIError | null>(null)
+
+// Instancias de los modelos
+const geminiInstance = ref<Gemini | null>(null)
+const openaiInstance = ref<Openai | null>(null)
+
 export function useAI() {
-  // Estado
-  const isInitialized = ref(false)
-  const currentModel = ref<AiModelType | null>(null)
-  const isLoading = ref(false)
-  const error = ref<AIError | null>(null)
-  const lastResponse = ref<AIResponse | null>(null)
-
-  // Instancias de los modelos
-  const geminiInstance = ref<Gemini | null>(null)
-
   /**
    * Inicializa un modelo de IA específico
    */
   const initializeModel = async (type: AiModelType, config: AIModelConfig) => {
     isLoading.value = true
+    isInitialized.value = false
     error.value = null
 
     try {
@@ -38,7 +40,18 @@ export function useAI() {
         isInitialized.value = true
         break
 
-      // Aquí puedes añadir más modelos en el futuro
+      case AiModelType.OPENAI:
+        openaiInstance.value = new Openai({ defaultModel: config.modelName })
+        openaiInstance.value.setApiKey(config.apiKey)
+
+        if (!openaiInstance.value.isApiKeySet()) {
+          throw new Error('No se pudo inicializar el modelo OpenAI. Verifica la API key.')
+        }
+
+        currentModel.value = AiModelType.OPENAI
+        isInitialized.value = true
+        break
+
       default:
         throw new Error(`Modelo de IA no soportado: ${type}`)
       }
@@ -80,7 +93,13 @@ export function useAI() {
         response = await geminiInstance.value.generateContent(prompt)
         break
 
-      // Aquí puedes añadir más modelos en el futuro
+      case AiModelType.OPENAI:
+        if (!openaiInstance.value) {
+          throw new Error('Instancia de OpenAI no inicializada')
+        }
+        response = await openaiInstance.value.generateContent(prompt)
+        break
+
       default:
         throw new Error(`Modelo no soportado: ${currentModel.value}`)
       }
@@ -108,6 +127,7 @@ export function useAI() {
     error.value = null
     lastResponse.value = null
     geminiInstance.value = null
+    openaiInstance.value = null
   }
 
   return {

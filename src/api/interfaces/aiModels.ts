@@ -4,7 +4,6 @@ export interface AiModel {
   name: AiModelType
   model: string
   api_key: string
-  config: any | null
   status: AiModelStatus
   default: boolean
   created_at: string
@@ -24,7 +23,6 @@ export interface CreateAiModel {
   name: AiModelType
   model: string
   api_key: string
-  config?: any
   status?: AiModelStatus
   default?: boolean
 }
@@ -33,7 +31,6 @@ export interface UpdateAiModel {
   name?: AiModelType
   model?: string
   api_key?: string
-  config?: any
   status?: AiModelStatus
   default?: boolean
 }
@@ -52,4 +49,14 @@ export interface AIError {
   message: string
   code?: string
   raw?: any
+}
+
+export interface AIOptions {
+  defaultModel?: string
+}
+
+export interface AIInstance {
+  generateContent: (prompt: string) => Promise<string>
+  isApiKeySet: () => boolean
+  setApiKey: (apiKey: string) => void
 }

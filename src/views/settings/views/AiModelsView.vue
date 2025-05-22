@@ -5,23 +5,27 @@
     </h6>
 
     <section class="space-y-4">
-      <div class="flex items-center justify-between mb-4 bg-white p-4 rounded-xl">
+      <div class="flex items-center justify-between mb-4 bg-white p-4 pr-8 rounded-xl">
         <span class="text-black-2 font-semibold">
           Configura y selecciona tus modelos de IA
         </span>
 
-        <div class="dropdown dropdown-end">
-          <button tabindex="0" class="btn btn-sm capitalize font-medium" :disabled="noConfiguredModels">
-            {{ defaultAiModelName }}
-            <IconChevronDown size="18" />
-          </button>
-          <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-            <li v-for="model in aiModels" :key="`ai-model-dropdown-${model.id}`" @click.stop="setDefaultModel(model.id)">
-              <a class="text-black-2 font-medium capitalize">
-                {{ model.name }}
-              </a>
-            </li>
-          </ul>
+        <div class="flex flex-col text-end">
+          <span class="text-xs text-black-3">
+            Modelo activo:
+          </span>
+          <div v-if="isLoading">
+            <span class="loading loading-infinity text-brand-blue" />
+          </div>
+          <div v-else-if="defaultAiModel" class="flex items-center gap-2">
+            <img :src="defaultAiModel?.image" alt="logo" class="w-4 h-4 aspect-square">
+            <span class="text-black-1 font-bold capitalize">
+              {{ defaultAiModel?.name }}
+            </span>
+          </div>
+          <span v-else class="text-black-1 font-bold text-sm">
+            No hay un modelo activo
+          </span>
         </div>
       </div>
 
@@ -37,31 +41,52 @@
             class="w-7"
           >
           <div>
-            <h6 class="font-medium text-black-2 flex items-center gap-2">
+            <h6 class="font-medium text-black-2 flex items-center gap-2 mb-2">
               {{ model.name }}
-              <input
-                type="checkbox"
-                class="toggle toggle-success toggle-sm"
-                :checked="model.isConfigured"
+              <span
+                class="badge badge-lg text-sm"
+                :class="model.isConfigured ? 'bg-green-600/10 text-green-600' : 'bg-gray-600/10 text-gray-600'"
               >
+                {{ model.isConfigured ? 'configurado' : 'no configurado' }}
+              </span>
             </h6>
-            <p class="text-sm text-black-3" v-html="model.description" />
+            <p class="text-sm text-black-3 w-2/3">
+              {{ model.description }}
+              Más info.
+              <a
+                href="#"
+                @click.prevent="openExternalLink(model.url)"
+                class="text-brand-blue"
+              >
+                {{ model.url }}
+              </a>
+            </p>
           </div>
         </div>
 
         <!-- CONFIG -->
         <div class="flex items-center gap-2">
-          <span
-            class="badge badge-lg text-sm"
-            :class="model.isConfigured ? 'bg-green-600/10 text-green-600' : 'bg-gray-600/10 text-gray-600'"
+          <button
+            v-if="model.isConfigured"
+            class="btn btn-sm"
+            :class="!getAiModelByType(model.type)?.default ? 'bg-brand-orange hover:bg-brand-orange/80 text-white' : null"
+            :disabled="getAiModelByType(model.type)?.default"
+            @click="setDefaultModel(getAiModelByType(model.type)?.id || '')"
           >
-            {{ model.isConfigured ? 'configurado' : 'no configurado' }}
-          </span>
+            {{ getAiModelByType(model.type)?.default ? 'Activo' : 'Activar' }}
+          </button>
           <button class="btn btn-sm btn-circle btn-ghost text-black-2" @click="openConfigModelModal(model.type)">
             <IconSettings size="21" />
           </button>
         </div>
       </div>
+
+      <p class="text-xs text-black-3 text-center w-[90%] mx-auto py-8">
+        El uso de los modelos de IA está vinculado a la cuenta personal del usuario.
+        MiTienda POS no se hace responsable del uso que se dé a estos servicios ni de los costos asociados.
+        Los <strong>cargos por utilización</strong> de las APIs de IA son responsabilidad exclusiva del usuario según las tarifas establecidas por los proveedores de IA.
+        Recomendamos revisar los términos de servicio y políticas de precios de cada proveedor.
+      </p>
     </section>
   </div>
 
@@ -166,17 +191,20 @@
 <script setup lang="ts">
 import useVuelidate from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
-import { IconSettings, IconChevronDown, IconEye, IconEyeClosed } from '@tabler/icons-vue'
+import { IconSettings, IconEye, IconEyeClosed } from '@tabler/icons-vue'
 import { useConfiguration } from '@/composables/useConfiguration'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { AiModel, AiModelType, CreateAiModel } from '@/api/interfaces/aiModels'
 import { useBranch } from '@/composables/useBranch'
 import { createAiModel, deleteAiModel, getAiModels, setDefaultAiModel, updateAiModel } from '@/api/electron'
 import { Response } from '@/api/interfaces'
+import { openExternalLink } from '@/api/electron'
+import { useAI } from '@/composables/useAI'
 import { toast } from 'vue3-toastify'
 
 const { branch } = useBranch()
 const { aiModels } = useConfiguration()
+const { isLoading, isInitialized, initializeModel, reset } = useAI()
 
 const selectedModelToConfigure = ref<AiModelType | null>(null)
 const currentModelConfigured = computed(() => {
@@ -189,7 +217,8 @@ const currentAiModelToConfigure = computed(() => {
 const availableModels = reactive([
   {
     name: 'Google Gemini',
-    description: 'Modelo IA de Google, más info. <a href="https://ai.google.dev/" target="_blank" class="text-brand-blue">https://ai.google.dev/</a>',
+    description: 'Modelos de IA de Google con capacidades multimodales. Gemini 2.0 para tareas complejas y versiones Flash para respuestas rápidas.',
+    url: 'https://ai.google.dev/',
     type: AiModelType.GEMINI,
     image: new URL('@/assets/google-gemini-icon.svg', import.meta.url).href,
     models: [
@@ -203,15 +232,35 @@ const availableModels = reactive([
       return aiModels.value.some((model) => model.name === AiModelType.GEMINI)
     }),
   },
+  {
+    name: 'OpenAI',
+    description: 'Modelos de IA de OpenAI con procesamiento de lenguaje avanzado. GPT-4o ofrece máximo rendimiento y GPT-4o-mini mayor eficiencia.',
+    url: 'https://openai.com/',
+    type: AiModelType.OPENAI,
+    image: new URL('@/assets/openai-icon.svg', import.meta.url).href,
+    models: [
+      'gpt-4o',
+      'gpt-4o-mini',
+      'gpt-3.5-turbo',
+    ],
+    isConfigured: computed(() => {
+      return aiModels.value.some((model) => model.name === AiModelType.OPENAI)
+    }),
+  },
 ])
 
-const noConfiguredModels = computed(() => {
-  return aiModels.value.length === 0
+const defaultAiModel = computed(() => {
+  return aiModels.value.find((model) => model.default)
+    ? {
+      ...aiModels.value.find((model) => model.default),
+      image: availableModels.find((m) => m.type === aiModels.value.find((model) => model.default)?.name)?.image,
+    }
+    : null
 })
 
-const defaultAiModelName = computed(() => {
-  return aiModels.value.find((model) => model.default)?.name || 'Selecciona un modelo'
-})
+const getAiModelByType = (type: AiModelType) => {
+  return aiModels.value.find((model) => model.name === type)
+}
 
 // DIALOG SETTINGS
 const dialogConfigModelRef = ref()
@@ -299,6 +348,10 @@ const handleEditModel = async () => {
     }
     getAllAiModels()
     closeConfigModelModal()
+    if (updatedAiModel.default) {
+      reset()
+      initializeDefaultModel(updatedAiModel)
+    }
     toast.success('Modelo editado exitosamente')
   })
 }
@@ -322,7 +375,9 @@ const setDefaultModel = (id: string) => {
       return
     }
     getAllAiModels()
-    toast.success('Modelo configurado exitosamente')
+    const selectedModel = aiModels.value.find((model) => model.id === id)
+    if (!selectedModel) return
+    initializeDefaultModel(selectedModel)
   })
 }
 
@@ -336,8 +391,23 @@ const getAllAiModels = () => {
   })
 }
 
+const initializeDefaultModel = async (model: AiModel) => {
+  initializeModel(model.name, {
+    apiKey: model.api_key,
+    modelName: model.model,
+  })
+}
+
 onMounted(() => {
   getAllAiModels()
+})
+
+watch(isInitialized, () => {
+  if (isInitialized.value) {
+    toast.info('Modelo inicializado', {
+      theme: 'colored',
+    })
+  }
 })
 </script>
 

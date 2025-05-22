@@ -1,22 +1,13 @@
 import { App, Plugin } from 'vue'
 import { GoogleGenAI } from '@google/genai'
+import { AIInstance, AIOptions } from '@/api/interfaces/aiModels'
 
-export interface GeminiOptions {
-  defaultModel?: string
-}
-
-export interface GeminiInstance {
-  generateContent: (prompt: string) => Promise<string>
-  isApiKeySet: () => boolean
-  setApiKey: (apiKey: string) => void
-}
-
-class Gemini implements GeminiInstance {
+class Gemini implements AIInstance {
   private apiKey: string | null = null
-  private genAI: GoogleGenAI | null = null
+  private instance: GoogleGenAI | null = null
   private defaultModel: string
 
-  constructor(options: GeminiOptions = {}) {
+  constructor(options: AIOptions = {}) {
     this.defaultModel = options.defaultModel || 'gemini-2.5-flash'
   }
 
@@ -32,12 +23,12 @@ class Gemini implements GeminiInstance {
 
     try {
       this.apiKey = apiKey
-      this.genAI = new GoogleGenAI({ apiKey: this.apiKey })
+      this.instance = new GoogleGenAI({ apiKey: this.apiKey })
       console.log('Gemini API initialized successfully')
     } catch (error) {
       console.error('Error initializing Gemini API:', error)
       this.apiKey = null
-      this.genAI = null
+      this.instance = null
     }
   }
 
@@ -45,7 +36,7 @@ class Gemini implements GeminiInstance {
    * Check if the API key has been set
    */
   isApiKeySet(): boolean {
-    return !!this.apiKey && !!this.genAI
+    return !!this.apiKey && !!this.instance
   }
 
   /**
@@ -60,7 +51,7 @@ class Gemini implements GeminiInstance {
 
     try {
       // Usar la librería directamente en el frontend según la API de @google/genai
-      const response = await this.genAI!.models.generateContent({
+      const response = await this.instance!.models.generateContent({
         model: this.defaultModel,
         contents: prompt,
       })

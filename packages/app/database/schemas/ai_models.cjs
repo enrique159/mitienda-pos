@@ -10,7 +10,6 @@ exports.createTable = async function(knex) {
     table.string('name').notNullable() // Nombre del modelo
     table.string('model').notNullable() // Modelo específico de IA
     table.string('api_key').notNullable() // Clave de API
-    table.jsonb('config').defaultTo(null) // Configuración adicional
     table.enu('status', ['active', 'inactive']).defaultTo('active').notNullable() // Estado del modelo
     table.boolean('default').defaultTo(false).notNullable() // Modelo por defecto
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable()

@@ -1,6 +1,12 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
+const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
 
+function normalizeAiModel(aiModel) {
+  return {
+    ...aiModel,
+    default: parseBoolean(aiModel.default),
+  }
+}
 /*
   ** ******** OBTENER MODELOS DE IA ********
 */
@@ -12,7 +18,7 @@ exports.getAiModels = async function () {
       return response(true, 'Modelos de IA no encontrados', [])
     }
 
-    return response(true, 'Modelos de IA encontrados', aiModels)
+    return response(true, 'Modelos de IA encontrados', aiModels.map(normalizeAiModel))
   } catch (err) {
     console.log(err)
     logger.error({ type: 'GET AI MODELS ERROR', message: `${err}`, data: err })
@@ -31,7 +37,7 @@ exports.getAiModelById = async function (id) {
       return response(false, 'Modelo de IA no encontrado', null)
     }
 
-    return response(true, 'Modelo de IA encontrado', aiModel)
+    return response(true, 'Modelo de IA encontrado', normalizeAiModel(aiModel))
   } catch (err) {
     console.log(err)
     logger.error({ type: 'GET AI MODEL BY ID ERROR', message: `${err}`, data: err })
@@ -60,7 +66,7 @@ exports.createAiModel = async function (aiModel) {
     const [id] = await knex('ai_models').insert(dataToInsert).returning('id')
 
     logger.info({ type: 'CREATE AI MODEL', message: 'Modelo de IA creado', data: { id } })
-    return response(true, 'Modelo de IA creado', { id, ...aiModel })
+    return response(true, 'Modelo de IA creado', normalizeAiModel({ id, ...aiModel }))
   } catch (err) {
     console.log(err)
     logger.error({ type: 'CREATE AI MODEL ERROR', message: `${err}`, data: err })
@@ -90,7 +96,7 @@ exports.updateAiModel = async function (id, aiModel) {
     const updated = await knex('ai_models').where('id', id).update(dataToUpdate)
     if (updated) {
       logger.info({ type: 'UPDATE AI MODEL', message: 'Modelo de IA actualizado', data: { id, ...aiModel } })
-      return response(true, 'Modelo de IA actualizado', { id, ...aiModel })
+      return response(true, 'Modelo de IA actualizado', normalizeAiModel({ id, ...aiModel }))
     } else {
       logger.error({ type: 'UPDATE AI MODEL', message: 'Modelo de IA no encontrado' })
       return response(false, 'Modelo de IA no encontrado', null)
