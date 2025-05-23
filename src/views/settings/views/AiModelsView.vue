@@ -203,7 +203,7 @@ import { useAI } from '@/composables/useAI'
 import { toast } from 'vue3-toastify'
 
 const { branch } = useBranch()
-const { aiModels } = useConfiguration()
+const { aiModels, setAiModels } = useConfiguration()
 const { isLoading, isInitialized, initializeModel, reset } = useAI()
 
 const selectedModelToConfigure = ref<AiModelType | null>(null)
@@ -387,7 +387,8 @@ const getAllAiModels = () => {
       toast.error(response.message)
       return
     }
-    aiModels.value = response.response
+    console.log('response.response', response.response)
+    setAiModels(response.response)
   })
 }
 

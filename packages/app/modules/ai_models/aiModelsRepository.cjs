@@ -17,8 +17,9 @@ exports.getAiModels = async function () {
       logger.error({ type: 'GET AI MODELS', message: 'No se encontraron modelos de IA' })
       return response(true, 'Modelos de IA no encontrados', [])
     }
+    const normalizedModels = aiModels.map(normalizeAiModel)
 
-    return response(true, 'Modelos de IA encontrados', aiModels.map(normalizeAiModel))
+    return response(true, 'Modelos de IA encontrados', normalizedModels)
   } catch (err) {
     console.log(err)
     logger.error({ type: 'GET AI MODELS ERROR', message: `${err}`, data: err })

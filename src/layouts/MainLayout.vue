@@ -66,7 +66,7 @@ import {
   IconChartBar,
   IconTruckDelivery
 } from '@tabler/icons-vue'
-import { ref, computed, watchEffect, onBeforeUnmount, onUnmounted } from 'vue'
+import { ref, computed, watchEffect, onBeforeUnmount, onUnmounted, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProduct } from '@/composables/useProduct'
 import { useBranch } from '@/composables/useBranch'
@@ -116,9 +116,6 @@ const getAllData = async() => {
       return
     }
     setCompany(response.response)
-    if (response.response.ai_enabled) {
-      getAllAiModels()
-    }
   })
 
   // Get products
@@ -167,28 +164,26 @@ const getAllData = async() => {
     router.push('/main/open-cash-register')
   }
   setCashRegister(cashRegisterActive.response)
-}
 
-getAllData()
-
-// Get ai models
-const getAllAiModels = () => {
+  // Get ai models
   getAiModels((response: Response<AiModel[]>) => {
     if (!response.success) {
       toast.error('Error al obtener los modelos de IA')
       return
     }
     setAiModels(response.response)
-    if (aiModels.value.length > 0) {
-      if (defaultAiModel.value) {
-        initializeModel(defaultAiModel.value.name, {
-          modelName: defaultAiModel.value.model,
-          apiKey: defaultAiModel.value.api_key,
-        })
-      }
+    if (aiModels.value.length > 0 && defaultAiModel.value) {
+      initializeModel(defaultAiModel.value.name, {
+        modelName: defaultAiModel.value.model,
+        apiKey: defaultAiModel.value.api_key,
+      })
     }
   })
 }
+
+onMounted(() => {
+  getAllData()
+})
 
 // Get real time hour
 const time = ref(getCurrentDate())

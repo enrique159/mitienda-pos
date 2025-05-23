@@ -11,9 +11,8 @@ export const useConfigurationStore = defineStore('configuration', () => {
     configuration.value = config
   }
 
-  const setAiModels = (aiModels: AiModel[]) => {
-    // @ts-ignore
-    aiModels.value = aiModels
+  const setAiModels = (models: AiModel[]) => {
+    aiModels.value = models
   }
 
   return {

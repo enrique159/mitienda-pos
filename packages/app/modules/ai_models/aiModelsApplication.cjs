@@ -1,6 +1,5 @@
 const { ipcMain } = require('electron')
 const aiModelsRepository = require('./aiModelsRepository.cjs')
-const { response, logger } = require('../../helpers/index.cjs')
 
 /*
   ** ******** OBTENER TODOS LOS MODELOS DE IA ********
