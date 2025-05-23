@@ -44,11 +44,6 @@ export const ProductsRoutes = [
         name: 'ProvidersView',
         component: ProvidersView,
       },
-      {
-        path: 'example_gemini',
-        name: 'ExampleGeminiView',
-        component: ExampleGeminiView,
-      },
     ],
   },
 ]
