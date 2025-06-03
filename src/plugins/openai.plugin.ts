@@ -23,7 +23,6 @@ class Openai implements AIInstance {
     try {
       this.apiKey = apiKey
       this.instance = new OpenAI({ apiKey: this.apiKey, dangerouslyAllowBrowser: true })
-      console.log('OpenAI API initialized successfully')
     } catch (error) {
       console.error('Error initializing OpenAI API:', error)
       this.apiKey = null

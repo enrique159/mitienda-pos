@@ -14,7 +14,6 @@ exports.getAiModels = async function () {
   try {
     const aiModels = await knex('ai_models').select().orderBy('created_at', 'desc')
     if (!aiModels.length) {
-      logger.error({ type: 'GET AI MODELS', message: 'No se encontraron modelos de IA' })
       return response(true, 'Modelos de IA no encontrados', [])
     }
     const normalizedModels = aiModels.map(normalizeAiModel)

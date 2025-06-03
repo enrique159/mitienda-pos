@@ -11,3 +11,9 @@ exports.getVersion = function (callback) {
   ipcRenderer.on('get_version', (_, response) => callback(response))
   ipcRenderer.send('get_version')
 }
+
+exports.setDefaultPrinter = function (printerName, callback) {
+  ipcRenderer.removeAllListeners('set_default_printer')
+  ipcRenderer.on('set_default_printer', (_, response) => callback(response))
+  ipcRenderer.send('set_default_printer', printerName)
+}

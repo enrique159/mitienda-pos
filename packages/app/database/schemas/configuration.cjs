@@ -9,6 +9,7 @@ exports.createTable = async function (knex) {
     table.increments('id').primary()
     table.boolean('configured').defaultTo(false)
     table.enu('mode', ['offline', 'business']).defaultTo('offline')
+    table.string('default_printer').defaultTo(null)
     table.boolean('enable_sync').defaultTo(false)
     table.timestamp('last_sync')
   })

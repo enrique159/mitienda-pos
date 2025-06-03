@@ -24,7 +24,6 @@ class Gemini implements AIInstance {
     try {
       this.apiKey = apiKey
       this.instance = new GoogleGenAI({ apiKey: this.apiKey })
-      console.log('Gemini API initialized successfully')
     } catch (error) {
       console.error('Error initializing Gemini API:', error)
       this.apiKey = null

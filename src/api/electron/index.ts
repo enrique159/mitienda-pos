@@ -5,6 +5,10 @@ import { PurchaseOrderItem, PurchaseOrderStatus } from '../interfaces/purchase_o
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 export const openExternalLink = async (url: string) => window.electron.openExternalLink(url)
 
+/* Printer */
+export const getPrinters = async (callback: any) => window.electron.getPrinters(callback)
+export const printTicket = async (printerName: string, callback: any) => window.electron.printTicket(printerName, callback)
+
 /* Company */
 export const getCompany = async (callback: any) => window.electron.getCompany(callback)
 
@@ -79,6 +83,7 @@ export const updateConfiguration = async (configuration: Configuration, callback
 export const createConfiguration = async (configuration: Configuration, callback: any) => window.electron.createConfiguration(configuration, callback)
 export const exportDatabase = async (callback: any) => window.electron.exportDatabase(callback)
 export const importDatabase = async (data: any, callback: any) => window.electron.importDatabase(data, callback)
+export const setDefaultPrinter = async (printerName: string | null, callback: any) => window.electron.setDefaultPrinter(printerName, callback)
 
 /* Customers */
 export const getCustomers = async (): Promise<Response<Customer[]>> => window.electron.getCustomers()

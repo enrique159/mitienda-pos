@@ -76,6 +76,7 @@ ipcMain.on('get_version', (event) => {
   event.reply('get_version', app.getVersion())
 })
 
+require('./app/utils/printer/printerApplication.cjs')
 require('./app/modules/sellers/sellersApplication.cjs')
 require('./app/modules/products/productsApplication.cjs')
 require('./app/modules/discounts/discountsApplication.cjs')

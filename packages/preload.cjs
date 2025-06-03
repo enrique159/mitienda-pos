@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer, shell } = require('electron')
+const { getConfiguration, getVersion, setDefaultPrinter } = require('./app/modules/configuration/configurationListeners.cjs')
 const { getCompany } = require('./app/modules/company/companyListeners.cjs')
 const { startSession, getSellers, closeSession } = require('./app/modules/sellers/sellersListeners.cjs')
 const { createProduct, deleteProduct, getActiveProducts, getProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
@@ -9,12 +10,12 @@ const { getCashRegisterActive, createCashRegister, getCurrentCashRegisterState }
 const { createCashRegisterAudit } = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
 const { createSale, getSales, getSalesInTurn, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
 const { getTaxes, createTax, deleteTax } = require('./app/modules/taxes/taxesListeners.cjs')
-const { getConfiguration, getVersion } = require('./app/modules/configuration/configurationListeners.cjs')
 const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
 const { createCashMovement } = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
 const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
 const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderStatus, updatePurchaseOrderItem, updatePurchaseOrderItems, deletePurchaseOrder } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
 const { getAiModels, getAiModelById, createAiModel, updateAiModel, deleteAiModel, updateAiModelStatus, setDefaultAiModel } = require('./app/modules/ai_models/aiModelsListeners.cjs')
+const { getPrinters, printTicket } = require('./app/utils/printer/printerListeners.cjs')
 
 ipcRenderer.setMaxListeners(100)
 
@@ -73,6 +74,7 @@ contextBridge.exposeInMainWorld('electron', {
   // Configuration
   getVersion,
   getConfiguration,
+  setDefaultPrinter,
   // Customers
   getCustomers,
   createCustomer,
@@ -104,6 +106,9 @@ contextBridge.exposeInMainWorld('electron', {
   deleteAiModel,
   updateAiModelStatus,
   setDefaultAiModel,
+  // Printer
+  getPrinters,
+  printTicket,
   // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),

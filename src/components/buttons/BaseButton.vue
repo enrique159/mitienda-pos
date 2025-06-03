@@ -1,7 +1,10 @@
 <template>
   <button
     class="px-4 h-10 rounded-md active:scale-95 transition-all text-sm"
-    :class="buttonClass"
+    :class="[
+      buttonClass,
+      disabled && 'disabled:opacity-50 disabled:cursor-default disabled:active:scale-100',
+    ]"
     :disabled="disabled"
   >
     <slot />

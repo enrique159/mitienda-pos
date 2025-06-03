@@ -387,7 +387,6 @@ const getAllAiModels = () => {
       toast.error(response.message)
       return
     }
-    console.log('response.response', response.response)
     setAiModels(response.response)
   })
 }
