@@ -209,6 +209,9 @@ exports.deletePurchaseOrder = async function (id, trx) {
     })
 }
 
+/*
+  ** ******** ELIMINAR TODOS LOS ITEMS DE UNA ORDEN DE COMPRA ********
+*/
 exports.deletePurchaseOrderItems = async function (purchaseOrderId, trx) {
   const queryBuilder = trx ? knex('purchase_order_items').transacting(trx) : knex('purchase_order_items')
   return await queryBuilder.where('id_purchase_order', purchaseOrderId).del()

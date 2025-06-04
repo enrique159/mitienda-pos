@@ -61,6 +61,12 @@
                     Ver detalles
                   </a>
                 </li>
+                <li v-if="purchaseOrder.status === PurchaseOrderStatus.DRAFT" @click.stop="goToEditDraftOrder(purchaseOrder.id)">
+                  <a>
+                    <icon-edit class="w-4 h-4" />
+                    Editar pedido
+                  </a>
+                </li>
                 <li @click.stop="openCancelOrderModal(purchaseOrder)">
                   <a class="text-brand-pink">
                     <icon-cancel class="w-4 h-4" />
@@ -120,7 +126,7 @@ import {
   IconPackages,
   IconCancel,
   IconDotsVertical,
-  IconProgressAlert
+  IconEdit
 } from '@tabler/icons-vue'
 import { PurchaseOrder, Response } from '@/api/interfaces'
 import { getPurchaseOrders, updatePurchaseOrderStatus } from '@/api/electron'
@@ -200,5 +206,9 @@ const handleSubmitCancelOrder = () => {
 const router = useRouter()
 const goToOrderDetails = (purchaseOrder: PurchaseOrder) => {
   router.push({ name: 'OrderDetailsView', params: { id: purchaseOrder.id } })
+}
+
+const goToEditDraftOrder = (purchaseOrderId: string) => {
+  router.push({ name: 'EditDraftOrderView', params: { id: purchaseOrderId } })
 }
 </script>

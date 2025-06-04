@@ -13,7 +13,7 @@ const { getTaxes, createTax, deleteTax } = require('./app/modules/taxes/taxesLis
 const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
 const { createCashMovement } = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
 const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
-const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderStatus, updatePurchaseOrderItem, updatePurchaseOrderItems, deletePurchaseOrder } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
+const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderStatus, updatePurchaseOrderItem, updatePurchaseOrderItems, deletePurchaseOrder, updatePurchaseOrderDraftItems } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
 const { getAiModels, getAiModelById, createAiModel, updateAiModel, deleteAiModel, updateAiModelStatus, setDefaultAiModel } = require('./app/modules/ai_models/aiModelsListeners.cjs')
 const { getPrinters, printTicket } = require('./app/utils/printer/printerListeners.cjs')
 
@@ -98,6 +98,7 @@ contextBridge.exposeInMainWorld('electron', {
   updatePurchaseOrderItems,
   deletePurchaseOrder,
   updatePurchaseOrderStatus,
+  updatePurchaseOrderDraftItems,
   // AI Models
   getAiModels,
   getAiModelById,

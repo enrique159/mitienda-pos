@@ -303,7 +303,7 @@ exports.printTicket = async (printerName, data = { items: [], total: 0 }) => {
       printWindow.webContents.print(
         {
           copies: 1,
-          silent: false,
+          silent: true,
           printBackground: true,
           deviceName: printerName,
           color: false,
@@ -313,10 +313,6 @@ exports.printTicket = async (printerName, data = { items: [], total: 0 }) => {
             bottom: 0,
             right: 0,
             left: 0,
-          },
-          dpi: {
-            horizontal: 203,
-            vertical: 203,
           },
         },
         (success, error) => {

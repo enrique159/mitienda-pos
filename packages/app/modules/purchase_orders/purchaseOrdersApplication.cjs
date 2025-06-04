@@ -105,3 +105,35 @@ ipcMain.on('delete_purchase_order', async (event, id) => {
 
   event.reply('delete_purchase_order', responseValue)
 })
+
+/*
+  ** ******** ACTUALIZAR ITEMS DE UNA ORDEN DE COMPRA EN DRAFT ********
+*/
+ipcMain.on('update_purchase_order_draft_items', async (event, params) => {
+  const { purchaseOrderId, items } = params
+  let responseValue = null
+  const trx = await knex.transaction()
+
+  try {
+    // First delete all items associated with the purchase order
+    const itemsResponse = await purchaseOrdersRepository.deletePurchaseOrderItems(purchaseOrderId, trx)
+    if (itemsResponse.success) {
+      // Then create the new items
+      for (const item of items) {
+        item.id_purchase_order = purchaseOrderId
+        await purchaseOrdersRepository.createPurchaseOrderItem(item, trx)
+      }
+      await trx.commit()
+      responseValue = response(true, 'Items de orden de compra actualizados', items)
+    } else {
+      await trx.rollback()
+      responseValue = response(false, 'Error al eliminar los items de la orden de compra', null)
+    }
+  } catch (error) {
+    await trx.rollback()
+    logger.error({ type: 'DELETE PURCHASE ORDER ITEMS ERROR', message: `${error}`, data: error })
+    responseValue = response(false, 'Error al eliminar los items de la orden de compra', null)
+  }
+
+  event.reply('update_purchase_order_draft_items', responseValue)
+})

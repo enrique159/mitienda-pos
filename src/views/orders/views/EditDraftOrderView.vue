@@ -1,35 +1,27 @@
 <template>
   <div class="p-8 pt-4 w-full overflow-y-auto max-w-[1080px] mx-auto space-y-4">
     <h6 class="text-2xl font-bold mb-4">
-      Crear nuevo pedido
+      Editar pedido
     </h6>
+
     <div class="flex justify-between items-end gap-4">
-      <label class="form-control">
-        <div class="label">
-          <span class="label-text text-black-1 font-medium">Seleccione un proveedor</span>
-        </div>
-        <select
-          id="provider"
-          v-model="selectedProviderId"
-          class="select select-bordered w-[200px]"
-        >
-          <option v-for="provider in providers" :key="`select-option-${provider.id}`" :value="provider.id">
-            {{ provider.name }}
-          </option>
-        </select>
-      </label>
+      <div class="flex flex-col">
+        <span class="text-black-2 font-medium text-sm">Proveedor:</span>
+        <h6 class="text-black-1 font-bold text-lg">
+          {{ purchaseOrder?.provider_name }}
+        </h6>
+      </div>
       <div class="flex items-center gap-2">
         <button
           class="btn btn-ghost text-black-2"
-          @click="handleCreateOrder(PurchaseOrderStatus.DRAFT)"
+          @click="handleEditOrder(PurchaseOrderStatus.DRAFT)"
         >
           <icon-device-desktop-down size="18" />
           Guardar como borrador
         </button>
         <button
           class="btn bg-brand-orange text-white shadow-none hover:bg-brand-pink hover:border-brand-pink"
-          :disabled="itemsToSupply.length === 0"
-          @click="handleCreateOrder(PurchaseOrderStatus.SENT)"
+          @click="handleEditOrder(PurchaseOrderStatus.SENT)"
         >
           <icon-arrow-right class="w-4 h-4" />
           Crear pedido
@@ -180,46 +172,28 @@
       </div>
     </div>
   </dialog>
-
-  <!-- PROVIDER ALERT -->
-  <dialog id="dialogProviderAlert" ref="dialogProviderAlertRef" class="modal" @keydown.escape.prevent="() => {}">
-    <div class="modal-box min-w-[480px]">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">
-          No hay proveedores disponibles
-        </h3>
-      </div>
-
-      <div class="flex flex-col justify-center items-center gap-4 mt-8">
-        <p class="text-center text-black-1 mb-4">
-          Para crear un producto, debes agregar al menos un proveedor. <br>¿Deseas agregar uno ahora?
-        </p>
-        <base-button
-          type="button"
-          class="flex items-center gap-2"
-          @click="$router.push('/main/products/providers')"
-        >
-          <IconTruckLoading :size="18" />
-          Ir a proveedores
-        </base-button>
-      </div>
-    </div>
-  </dialog>
 </template>
 
 <script setup lang="ts">
-import { IconArrowRight, IconPlus, IconX, IconSearch, IconTruckLoading, IconDeviceDesktopDown } from '@tabler/icons-vue'
-import { useBranch } from '@/composables/useBranch'
-import { useUser } from '@/composables/useUser'
-import { useProvider } from '@/composables/useProvider'
+import { IconArrowRight, IconDeviceDesktopDown, IconSearch, IconPlus, IconX } from '@tabler/icons-vue'
+import { useRoute, useRouter } from 'vue-router'
+import { usePurchaseOrder } from '@/composables/usePurchaseOrder'
+import { computed, onMounted, ref, watch } from 'vue'
+import { CreatePurchaseOrderItem, Product, PurchaseOrder, Response } from '@/api/interfaces'
+import { updatePurchaseOrderDraftItems, updatePurchaseOrderStatus } from '@/api/electron'
 import { useProduct } from '@/composables/useProduct'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { createPurchaseOrder } from '@/api/electron'
-import { CreatePurchaseOrder, CreatePurchaseOrderItem, Product, Response } from '@/api/interfaces'
+import { useProvider } from '@/composables/useProvider'
+import { useUser } from '@/composables/useUser'
+import { useBranch } from '@/composables/useBranch'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
-import { CreatePurchaseOrderPayload, PurchaseOrder, PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
-import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
+import { PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
+
+const route = useRoute()
+const orderId = route.params.id
+
+const { purchaseOrders } = usePurchaseOrder()
+const purchaseOrder = ref<PurchaseOrder | null>(null)
 
 const { branch } = useBranch()
 const { user } = useUser()
@@ -249,13 +223,12 @@ onMounted(() => {
 })
 
 
-// NEW PURCHASE ORDER
+// EDIT DRAFT PURCHASE ORDER
 const search = ref('')
-const selectedProviderId = ref('')
 const showLowStockProducts = ref(false)
 const providerProducts = computed(() => {
-  return allProducts.value.filter((product) => {
-    return product.id_provider === selectedProviderId.value
+  return allProducts.value.filter((product: Product) => {
+    return product.id_provider === purchaseOrder.value?.id_provider
       && product.name.toLowerCase().includes(search.value.toLowerCase())
       && (showLowStockProducts.value ? product.stock < product.stock_minimum : true)
   })
@@ -316,21 +289,10 @@ const clearValues = () => {
   productToRequest.value = null
 }
 
-
-// HANDLE CREATE ORDER
-const handleCreateOrder = (status: PurchaseOrderStatus) => {
-  const purchaseOrder: CreatePurchaseOrder = {
-    id_company: branch.value.id_company,
-    id_branch: branch.value.id,
-    id_provider: selectedProviderId.value,
-    id_seller: user.value.id,
-    status: status,
-    notes: null,
-    ordered_at: null,
-    received_at: null,
-  }
-  const payload: CreatePurchaseOrderPayload = {
-    purchaseOrder,
+// HANDLE EDIT ORDER
+const handleEditOrder = (status: PurchaseOrderStatus) => {
+  const payload: { purchaseOrderId: string, items: Array<CreatePurchaseOrderItem> } = {
+    purchaseOrderId: purchaseOrder.value?.id!,
     items: itemsToSupply.value.map((item: CreatePurchaseOrderItem) => {
       return {
         id_product: item.id_product,
@@ -341,19 +303,46 @@ const handleCreateOrder = (status: PurchaseOrderStatus) => {
       }
     }),
   }
-  createPurchaseOrder(payload, (response: Response<PurchaseOrder>) => {
+  updatePurchaseOrderDraftItems(payload, (response: Response<CreatePurchaseOrderItem>) => {
     if (!response.success) {
       toast.error(response.message)
       return
     }
+    handleUpdatePurchaseOrderStatus(status)
     toast.success('Orden de compra creada exitosamente')
-    router.push({ name: 'Orders' })
+    status === PurchaseOrderStatus.SENT && router.push({ name: 'Orders' })
+  })
+}
+
+const handleUpdatePurchaseOrderStatus = (status: PurchaseOrderStatus) => {
+  const payload = {
+    id: purchaseOrder.value?.id!,
+    status,
+  }
+  updatePurchaseOrderStatus(payload, (response: Response<PurchaseOrder>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
   })
 }
 
 onMounted(() => {
-  if (providers.value.length > 0) {
-    selectedProviderId.value = providers.value[0].id
+  purchaseOrder.value =
+    purchaseOrders.value.find(
+      (purchaseOrder) => purchaseOrder.id === orderId
+    ) || null
+
+  if (purchaseOrder.value && purchaseOrder.value.items) {
+    itemsToSupply.value = purchaseOrder.value.items.map((item: CreatePurchaseOrderItem) => {
+      return {
+        id_product: item.id_product,
+        quantity_ordered: item.quantity_ordered,
+        quantity_received: null,
+        incidence: null,
+        note: null,
+      }
+    })
   }
 })
 </script>

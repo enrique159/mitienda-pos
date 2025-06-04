@@ -1,6 +1,6 @@
 import { Configuration, Response, StartSessionParams, CashRegister, GeneratedFolio, CashRegisterState, Customer, CreateCustomer, Tax, CreateProduct, CreateDiscount, Discount, UpdateDiscount, CreateCashMovement, Provider, CreateProvider, PurchaseOrder, CreatePurchaseOrder, CreatePurchaseOrderPayload, AiModel, CreateAiModel, UpdateAiModel } from '@/api/interfaces'
 import { CreateCashRegisterAudit } from '../interfaces/cashRegisterAudits'
-import { PurchaseOrderItem, PurchaseOrderStatus } from '../interfaces/purchase_orders'
+import { CreatePurchaseOrderItem, PurchaseOrderItem, PurchaseOrderStatus } from '../interfaces/purchase_orders'
 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 export const openExternalLink = async (url: string) => window.electron.openExternalLink(url)
@@ -63,6 +63,7 @@ export const updatePurchaseOrder = async (data: { id: string, purchaseOrder: Par
 export const updatePurchaseOrderItem = async (data: { id: string, purchaseOrderItem: Partial<PurchaseOrderItem> }, callback: any) => window.electron.updatePurchaseOrderItem(data, callback)
 export const updatePurchaseOrderItems = async (items: Array<Partial<PurchaseOrderItem>>, callback: any) => window.electron.updatePurchaseOrderItems(items, callback)
 export const updatePurchaseOrderStatus = async (data: { id: string, status: PurchaseOrderStatus }, callback: any) => window.electron.updatePurchaseOrderStatus(data, callback)
+export const updatePurchaseOrderDraftItems = async (data: { purchaseOrderId: string, items: Array<CreatePurchaseOrderItem> }, callback: any) => window.electron.updatePurchaseOrderDraftItems(data, callback)
 export const deletePurchaseOrder = async (id: string, callback: any) => window.electron.deletePurchaseOrder(id, callback)
 
 /* Branches */

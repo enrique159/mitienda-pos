@@ -55,6 +55,15 @@ exports.updatePurchaseOrderItems = function (data, callback) {
 }
 
 /*
+  ** ******** ACTUALIZAR ITEMS DE UNA ORDEN DE COMPRA EN DRAFT ********
+*/
+exports.updatePurchaseOrderDraftItems = function (data, callback) {
+  ipcRenderer.removeAllListeners('update_purchase_order_draft_items')
+  ipcRenderer.on('update_purchase_order_draft_items', (_, response) => callback(response))
+  ipcRenderer.send('update_purchase_order_draft_items', data)
+}
+
+/*
   ** ******** ELIMINAR UNA ORDEN DE COMPRA ********
 */
 exports.deletePurchaseOrder = function (id, callback) {

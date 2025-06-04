@@ -2,6 +2,7 @@ import OrdersModule from './OrdersModule.vue'
 import OrdersView from './views/OrdersView.vue'
 import CreateOrderView from './views/CreateOrderView.vue'
 import OrderDetailsView from './views/OrderDetailsView.vue'
+import EditDraftOrderView from './views/EditDraftOrderView.vue'
 
 export const OrdersRoutes = [
   {
@@ -19,6 +20,11 @@ export const OrdersRoutes = [
         path: 'create',
         name: 'CreateOrderView',
         component: CreateOrderView,
+      },
+      {
+        path: 'edit/:id',
+        name: 'EditDraftOrderView',
+        component: EditDraftOrderView,
       },
       {
         path: 'details/:id',

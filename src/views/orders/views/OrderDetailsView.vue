@@ -304,6 +304,7 @@ const PURCHASE_ORDER_OPTIONS = [
   { value: PurchaseOrderStatus.RECEIVED, label: 'Recibido' },
   { value: PurchaseOrderStatus.COMPLETED, label: 'Completado' },
   { value: PurchaseOrderStatus.HAS_ISSUES, label: 'Con problemas' },
+  { value: PurchaseOrderStatus.CANCELLED, label: 'Cancelado' },
 ]
 
 const openChangeStatusModal = (purchaseOrder: PurchaseOrder | null) => {
