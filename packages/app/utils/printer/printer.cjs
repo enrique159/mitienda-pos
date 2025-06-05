@@ -307,13 +307,20 @@ exports.printTicket = async (printerName, data = { items: [], total: 0 }) => {
           printBackground: true,
           deviceName: printerName,
           color: false,
+          scaleFactor: 100,
+          dpi: {
+            horizontal: 203,
+            vertical: 203,
+          },
           margins: {
             marginType: "custom",
             top: 0,
             bottom: 0,
             right: 0,
             left: 0,
+
           },
+          pageSize: { width: 72000, height: 297000 },
         },
         (success, error) => {
           if (!success) {
