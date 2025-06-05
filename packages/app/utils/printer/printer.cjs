@@ -1,5 +1,4 @@
 const electron = require('electron')
-const { PosPrinter } = require('electron-pos-printer')
 const { logger, response } = require('../../helpers/index.cjs')
 
 exports.getPrinters = () => {
@@ -59,87 +58,6 @@ function getStatusText(printer) {
 
   return 'Desconocido'
 }
-
-/*
- *************** IMPRIMIR TICKET ***************
- */
-/* exports.printTicket = (printerName) => {
-  const options = {
-    preview: false, // Preview in window or print
-    margin: '0 0 0 0', // margin of content body
-    copies: 1, // Number of copies to print
-    printerName: printerName, // printerName: string, check it at webContent.getPrinters()
-    timeOutPerLine: 400,
-    silent: true,
-    pageSize: '80mm',
-  }
-
-  const data = [
-    {
-      type: 'text', // 'text' | 'barCode' | 'qrCode' | 'image' | 'table
-      value: 'HEADER',
-      style: { fontSize: '18px', textAlign: 'center' },
-    },
-    {
-      type: 'text', // 'text' | 'barCode' | 'qrCode' | 'image' | 'table'
-      value: 'Secondary text',
-      style: {
-        textDecoration: 'underline',
-        fontSize: '10px',
-        textAlign: 'center',
-        color: 'black',
-      },
-    },
-    {
-      type: 'table',
-      // style the table
-      style: { border: '1px solid #ddd' },
-      // list of the columns to be rendered in the table header
-      tableHeader: ['Animal', 'Age'],
-      // multi dimensional array depicting the rows and columns of the table body
-      tableBody: [
-        ['Cat', 2],
-        ['Dog', 4],
-        ['Horse', 12],
-        ['Pig', 4],
-      ],
-      // list of columns to be rendered in the table footer
-      tableFooter: ['Animal', 'Age'],
-      // custom style for the table header
-      tableHeaderStyle: { backgroundColor: '#fff', color: 'black' },
-      // custom style for the table body
-      tableBodyStyle: { border: '0.5px solid #ddd' },
-      // custom style for the table footer
-      tableFooterStyle: { backgroundColor: '#fff', color: 'black' },
-    },
-    {
-      type: 'barCode',
-      value: '023456789010',
-      height: 40, // height of barcode, applicable only to bar and QR codes
-      width: 2, // width of barcode, applicable only to bar and QR codes
-      displayValue: true, // Display value below barcode
-      fontsize: 12,
-    },
-    {
-      type: 'text', // 'text' | 'barCode' | 'qrCode' | 'image' | 'table
-      value: '************************',
-      style: { fontSize: '10px', textAlign: 'center', marginBottom: '10px' },
-    },
-  ]
-
-  return PosPrinter.print(data, options)
-    .then(() => {
-      return response(true, 'Ticket impreso', null)
-    })
-    .catch((error) => {
-      logger.error({
-        type: 'PRINT TICKET ERROR',
-        message: `${error}`,
-        data: error,
-      })
-      return response(false, 'Error al imprimir el ticket', error)
-    })
-} */
 
 exports.printTicket = async (printerName, data = { items: [], total: 0 }) => {
   return await new Promise((resolve, reject) => {

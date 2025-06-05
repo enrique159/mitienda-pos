@@ -23,7 +23,6 @@ module.exports ={
   rules: {
     "indent": ["error", 2],
     "arrow-parens": ["error", "always"],
-    "linebreak-style": ["error", "unix"],
     semi: [2, "never"],
     "no-console": "off",
     "no-debugger": "warn",
