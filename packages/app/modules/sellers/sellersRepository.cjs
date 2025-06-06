@@ -27,12 +27,12 @@ exports.startSession = async function (data) {
     logger.error({
       type: 'START SESSION',
       message: 'Vendedor no encontrado',
-      data,
+      data: { seller_id: data.id },
     })
     return response(false, 'Vendedor no encontrado', data)
   }
   if (seller.pin !== data.pin) {
-    logger.error({ type: 'START SESSION', message: 'PIN incorrecto', data })
+    logger.error({ type: 'START SESSION', message: 'PIN incorrecto', data: { seller_id: data.id } })
     return response(false, 'PIN incorrecto', data)
   }
   logger.info({ type: 'START SESSION', seller: { name: seller.name }})
@@ -43,13 +43,13 @@ exports.closeSession = async function (sellerId) {
   try {
     const seller = await knex('sellers').select().where('id', sellerId).first()
     if (!seller) {
-      logger.error({ type: 'CLOSE SESSION', message: 'Vendedor no encontrado', sellerId })
+      logger.error({ type: 'CLOSE SESSION', message: 'Vendedor no encontrado', data: { seller_id: sellerId } })
       return response(false, 'Vendedor no encontrado', seller)
     }
     logger.info({ type: 'CLOSE SESSION', seller: { name: seller.name }})
     return response(true, 'Vendedor cerrado exitosamente', seller)
   } catch (error) {
-    logger.error({ type: 'CLOSE SESSION', message: `${error}`, sellerId })
+    logger.error({ type: 'CLOSE SESSION', message: `${error}`, data: { seller_id: sellerId } })
     return response(false, 'Error al cerrar sesión', error)
   }
 }

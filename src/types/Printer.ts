@@ -30,3 +30,77 @@ export interface Printer {
     "system_driverinfo": string;
   };
 }
+
+export interface BusinessInfo {
+  businessName: string;
+  legalName: string;
+  address: string;
+  location: string;
+  rfc: string;
+  branchInfo?: string;
+}
+
+export interface TicketInfo {
+  ticketId: string;
+  cashier: string;
+  attendedBy: string;
+  date: string | Date;
+}
+
+export interface PaymentMethod {
+  name: string;
+  amount: number;
+}
+
+export interface PaymentInfo {
+  total: number;
+  tax: number;
+  paymentMethods: PaymentMethod[];
+  amountGiven?: number;
+  change?: number;
+}
+
+export interface CustomerInfo {
+  // Add specific customer info properties based on your application's needs
+  // For example:
+  name?: string;
+  email?: string;
+  phone?: string;
+  rfc?: string;
+  address?: string;
+  // Add other customer-related fields as needed
+}
+
+export interface InvoiceInfo {
+  invoiceInstructions: string;
+  invoiceUrl: string;
+  qrCode: string;
+}
+
+export interface FooterInfo {
+  thankYouMessage: string;
+  businessUrl: string;
+}
+
+export interface SaleTicketItem {
+  quantity: number;
+  name: string;
+  price: number;
+  subtotal: number;
+  discount?: number;
+  discountLabel?: string;
+}
+
+export interface SaleTicketBuilderOptions {
+  businessInfo?: Partial<BusinessInfo>;
+  ticketInfo?: Partial<TicketInfo>;
+  items?: SaleTicketItem[];
+  paymentInfo?: Partial<PaymentInfo>;
+  customerInfo?: CustomerInfo | null;
+  invoiceInstructions?: string;
+  invoiceUrl?: string;
+  qrCode?: string;
+  thankYouMessage?: string;
+  businessUrl?: string;
+  logoPath?: string;
+}

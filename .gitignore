@@ -11,8 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
-resources
 build
+resources/images/*
+!resources/images/default.*
 
 database.sqlite
 

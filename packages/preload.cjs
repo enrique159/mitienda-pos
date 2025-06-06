@@ -5,7 +5,7 @@ const { startSession, getSellers, closeSession } = require('./app/modules/seller
 const { createProduct, deleteProduct, getActiveProducts, getProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
 const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, deleteDiscount, getDiscountProducts, createDiscountProduct } = require('./app/modules/discounts/discountsListeners.cjs')
 const { getCategories, createCategory, updateCategory, deleteCategory } = require('./app/modules/categories/categoriesListeners.cjs')
-const { getBranchInfo } = require('./app/modules/branches/branchesListeners.cjs')
+const { getBranchInfo, setBranchLogo } = require('./app/modules/branches/branchesListeners.cjs')
 const { getCashRegisterActive, createCashRegister, getCurrentCashRegisterState } = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
 const { createCashRegisterAudit } = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
 const { createSale, getSales, getSalesInTurn, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
@@ -15,7 +15,7 @@ const { createCashMovement } = require('./app/modules/cash_movements/cashMovemen
 const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
 const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderStatus, updatePurchaseOrderItem, updatePurchaseOrderItems, deletePurchaseOrder, updatePurchaseOrderDraftItems } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
 const { getAiModels, getAiModelById, createAiModel, updateAiModel, deleteAiModel, updateAiModelStatus, setDefaultAiModel } = require('./app/modules/ai_models/aiModelsListeners.cjs')
-const { getPrinters, printTicket } = require('./app/utils/printer/printerListeners.cjs')
+const { getPrinters, printTestTicket, printSaleTicket } = require('./app/utils/printer/printerListeners.cjs')
 
 ipcRenderer.setMaxListeners(100)
 
@@ -62,6 +62,7 @@ contextBridge.exposeInMainWorld('electron', {
   deleteCategory,
   // Branches
   getBranchInfo,
+  setBranchLogo,
   // Cash Registers
   getCashRegisterActive,
   createCashRegister,
@@ -109,7 +110,8 @@ contextBridge.exposeInMainWorld('electron', {
   setDefaultAiModel,
   // Printer
   getPrinters,
-  printTicket,
+  printTestTicket,
+  printSaleTicket,
   // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),

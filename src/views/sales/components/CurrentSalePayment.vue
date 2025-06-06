@@ -17,7 +17,9 @@
           <IconUserPlus class="text-brand-black" size="18" />
         </base-button>
 
-        <base-button> Cuenta pendiente </base-button>
+        <base-button @click="selectImage">
+          Cuenta pendiente
+        </base-button>
       </div>
 
       <button
@@ -342,12 +344,14 @@ import { useCurrency } from '@/composables/useCurrency'
 import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical, IconSearch, IconUser, IconX, IconPlus } from '@tabler/icons-vue'
 import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response, TaxDetail } from '@/api/interfaces'
 import { getPaymentMethodName } from '@/utils/Payments'
-import { createSale } from '@/api/electron'
+import { createSale, printSaleTicket, setBranchLogo } from '@/api/electron'
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
 import { useCustomer } from '@/composables/useCustomer'
 import { useUser } from '@/composables/useUser'
+import { useCompany } from '@/composables/useCompany'
+import { useConfiguration } from '@/composables/useConfiguration'
 import { toast } from 'vue3-toastify'
 import { Snackbar } from '@/types/Snackbar'
 import { getCustomers } from '@/api/electron'
@@ -366,6 +370,8 @@ const {
   clearCurrentCart,
 } = useProduct()
 
+const { company } = useCompany()
+const { configuration } = useConfiguration()
 const { saleFolio, branch, generateFolio } = useBranch()
 const { user } = useUser()
 const { cashRegister } = useCashRegister()
@@ -671,6 +677,7 @@ const createCurrentSale = () => {
   createSale(payload, (response: Response<any>) => {
     if (response.success) {
       toast.success('Venta realizada con éxito')
+      handlePrintTicket()
       closePaymentModal()
       generateFolio()
       clearCurrentCart()
@@ -704,4 +711,64 @@ const isPaidAmountLowerThanTotal = computed(() => {
   }
   return parseAmount(paymentQuantity.value) < currentCartTotal.value
 })
+
+
+// PRINT TICKET
+const handlePrintTicket = () => {
+  const saleTicketPayload = {
+    businessInfo: {
+      businessName: company.value.trade_name,
+      legalName: company.value.legal_name,
+      address: company.value.fiscal_address,
+      location: company.value.municipality,
+      rfc: company.value.tax_id,
+      branchInfo: branch.value.branch_name,
+    },
+    ticketInfo: {
+      ticketId: saleFolio.value,
+      cashier: branch.value.branch_alias,
+      attendedBy: user.value.name,
+      date: new Date(),
+    },
+    items: currentCart.value.map((product) => ({
+      name: product.name,
+      quantity: product.quantity,
+      price: product.selling_price,
+      subtotal: product.selling_price * product.quantity,
+    })),
+    paymentInfo: {
+      total: currentCartTotal.value,
+      tax: currentCartTax.value,
+      paymentMethods: paymentMethods.value.map((payment) => ({
+        name: payment.payment_method,
+        amount: payment.amount,
+      })),
+      amountGiven: parseAmount(paymentQuantity.value),
+      change: cashPaymentChange.value,
+    },
+    invoiceInstructions: 'SIN INSTRUCCIONES',
+    invoiceUrl: 'https://mitienda.app',
+    qrCode: 'https://mitienda.app',
+    thankYouMessage: 'Gracias por su compra',
+    businessUrl: 'https://mitienda.app',
+  }
+
+  const printer = printTicket.value ? configuration.value.default_printer : null
+  printSaleTicket(printer, saleTicketPayload, (response: Response<any>) => {
+    if (!response.success) {
+      toast.error('Error al imprimir el ticket')
+    }
+  })
+}
+
+const selectImage = () => {
+  setBranchLogo((response: Response<any>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    toast.success('Logo actualizado')
+  })
+}
+
 </script>

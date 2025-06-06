@@ -4,12 +4,7 @@
       Impresoras y tickets
     </h6>
 
-    <div v-if="isEmptyPrinters && !loadingPrinters" role="alert" class="alert alert-warning text-white">
-      <IconAlertCircle />
-      <span>No se encontraron impresoras disponibles</span>
-    </div>
-
-    <section v-else class="space-y-4">
+    <section class="space-y-4">
       <div class="flex items-start justify-between mb-4 bg-white p-4 pr-8 rounded-xl">
         <div class="flex flex-col">
           <span class="text-black-2 font-semibold">
@@ -31,7 +26,6 @@
           </span>
 
           <button
-            v-if="selectedPrinter"
             class="btn bg-white-1 mt-4 w-fit"
             @click="handlePrintTicket"
           >
@@ -75,7 +69,7 @@
 
 <script setup lang="ts">
 import { IconAlertCircle, IconCircleCheck, IconDeviceDesktopDown, IconPrinter } from '@tabler/icons-vue'
-import { getPrinters, setDefaultPrinter, getConfiguration, printTicket } from '@/api/electron'
+import { getPrinters, setDefaultPrinter, getConfiguration, printTestTicket } from '@/api/electron'
 import { Printer } from '@/types/Printer'
 import { Configuration, Response } from '@/api/interfaces'
 import { toast } from 'vue3-toastify'
@@ -127,7 +121,7 @@ const handleSaveChanges = () => {
 }
 
 const handlePrintTicket = () => {
-  printTicket(selectedPrinter.value?.name || '', (response: Response<any>) => {
+  printTestTicket(selectedPrinter.value?.name || '', (response: Response<any>) => {
     if (!response.success) {
       toast.error(response.message)
       return

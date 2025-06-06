@@ -7,7 +7,8 @@ export const openExternalLink = async (url: string) => window.electron.openExter
 
 /* Printer */
 export const getPrinters = async (callback: any) => window.electron.getPrinters(callback)
-export const printTicket = async (printerName: string, callback: any) => window.electron.printTicket(printerName, callback)
+export const printTestTicket = async (printerName: string, callback: any) => window.electron.printTestTicket(printerName, callback)
+export const printSaleTicket = async (printerName: string | null, payload: any, callback: any) => window.electron.printSaleTicket(printerName, payload, callback)
 
 /* Company */
 export const getCompany = async (callback: any) => window.electron.getCompany(callback)
@@ -68,6 +69,7 @@ export const deletePurchaseOrder = async (id: string, callback: any) => window.e
 
 /* Branches */
 export const getBranchInfo = async (callback: any) => window.electron.getBranchInfo(callback)
+export const setBranchLogo = async (setDefaultLogo: boolean = false, callback: any) => window.electron.setBranchLogo(setDefaultLogo, callback)
 
 /* Cash Register */
 export const getCashRegisterActive = async (): Promise<Response<any>> => window.electron.getCashRegisterActive()
