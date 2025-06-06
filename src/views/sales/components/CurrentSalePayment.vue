@@ -357,7 +357,7 @@ import { Snackbar } from '@/types/Snackbar'
 import { getCustomers } from '@/api/electron'
 import { parseAmount, fixedAmount } from '@/utils/Payments'
 
-const { formatCurrency } = useCurrency()
+const { formatCurrency, formatWithoutSymbol } = useCurrency()
 
 const {
   currentCart,
@@ -733,18 +733,18 @@ const handlePrintTicket = () => {
     items: currentCart.value.map((product) => ({
       name: product.name,
       quantity: product.quantity,
-      price: product.selling_price,
-      subtotal: product.selling_price * product.quantity,
+      price: formatWithoutSymbol(product.selling_price),
+      subtotal: formatWithoutSymbol(product.selling_price * product.quantity),
     })),
     paymentInfo: {
-      total: currentCartTotal.value,
-      tax: currentCartTax.value,
+      total: formatWithoutSymbol(currentCartTotal.value),
+      tax: formatWithoutSymbol(currentCartTax.value),
       paymentMethods: paymentMethods.value.map((payment) => ({
         name: payment.payment_method,
-        amount: payment.amount,
+        amount: formatWithoutSymbol(payment.amount),
       })),
-      amountGiven: parseAmount(paymentQuantity.value),
-      change: cashPaymentChange.value,
+      amountGiven: formatWithoutSymbol(parseAmount(paymentQuantity.value)),
+      change: formatWithoutSymbol(cashPaymentChange.value),
     },
     invoiceInstructions: 'SIN INSTRUCCIONES',
     invoiceUrl: 'https://mitienda.app',
@@ -752,6 +752,8 @@ const handlePrintTicket = () => {
     thankYouMessage: 'Gracias por su compra',
     businessUrl: 'https://mitienda.app',
   }
+
+  console.log(saleTicketPayload)
 
   const printer = printTicket.value ? configuration.value.default_printer : null
   printSaleTicket(printer, saleTicketPayload, (response: Response<any>) => {
@@ -761,8 +763,8 @@ const handlePrintTicket = () => {
   })
 }
 
-const selectImage = () => {
-  setBranchLogo((response: Response<any>) => {
+const selectImage = (setDefaultImage = false) => {
+  setBranchLogo(setDefaultImage, (response: Response<any>) => {
     if (!response.success) {
       toast.error(response.message)
       return

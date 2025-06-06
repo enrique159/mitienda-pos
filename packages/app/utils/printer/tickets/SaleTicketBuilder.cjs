@@ -1,5 +1,27 @@
-const { generateQRCode } = require('../../../helpers/index.cjs')
-const { getFontFaceCSS } = require('./extra/loadFonts.cjs')
+const { generateQRCode, logger } = require('../../../helpers/index.cjs')
+const { getFontFaceCSS } = require('../extra/loadFonts.cjs')
+const { getImageDataUrl } = require('../extra/loadImage.cjs')
+const branchesRepository = require('../../../modules/branches/branchesRepository.cjs')
+const { ToWords } = require('to-words')
+
+const toWords = new ToWords({
+  localeCode: 'es-MX',
+  converterOptions: {
+    currency: true,
+    ignoreDecimal: false,
+    ignoreZeroCurrency: false,
+    doNotAddOnly: false,
+    currencyOptions: {
+      name: 'Peso',
+      plural: 'Pesos',
+      symbol: '$',
+      fractionalUnit: {
+        name: 'Centavo',
+        plural: 'Centavos',
+      },
+    },
+  },
+})
 
 module.exports = class SaleTicketBuilder {
   businessInfo = {}
@@ -73,6 +95,16 @@ module.exports = class SaleTicketBuilder {
   async createQRCode() {
     const qrCode = await generateQRCode(this.invoiceInfo.invoiceUrl)
     this.invoiceInfo.qrCode = qrCode
+  }
+
+  async setLogoPath() {
+    const response = await branchesRepository.getBranchInfo()
+    if (!response.success) {
+      logger.error({ type: 'GET BRANCH INFO IN SALE TICKET BUILDER', message: 'Error al traer la sucursal en la creación del ticket', data: response })
+      this.logoPath = await getImageDataUrl('default.jpg')
+      return
+    }
+    this.logoPath = await getImageDataUrl(response.response.logo || 'default.jpg')
   }
 
   buildHeader() {
@@ -151,7 +183,7 @@ module.exports = class SaleTicketBuilder {
           <td colspan="3" class="right">- ${
   item.discountLabel || 'Descuento'
 }</td>
-          <td class="right">-${item.discount.toFixed(2)}</td>
+          <td class="right">-${item.discount}</td>
         </tr>
       `
         : ''
@@ -160,8 +192,8 @@ module.exports = class SaleTicketBuilder {
         <tr>
           <td>${item.quantity}</td>
           <td>${item.name}</td>
-          <td class="right">${item.price.toFixed(2)}</td>
-          <td class="right">${item.subtotal.toFixed(2)}</td>
+          <td class="right">${item.price}</td>
+          <td class="right">${item.subtotal}</td>
         </tr>
         ${discount}
       `
@@ -178,16 +210,12 @@ module.exports = class SaleTicketBuilder {
     this.ticket += `
       <div class="total">
         <hr>
-        <p style="margin: 2px 0; text-align: right;"><strong>Total: $ ${this.paymentInfo.total.toFixed(
-    2
-  )}</strong></p>
-        <p style="margin: 2px 0; font-size: 10px;">
+        <p style="margin: 2px 0; text-align: right; font-size: 18px; font-weight: 700;">Total: $ ${this.paymentInfo.total}</p>
+        <p style="margin: 2px 0; font-size: 12px;">
           (${this.amountToWords(this.paymentInfo.total)})
         </p>
-        <p style="margin: 2px 0; font-size: 10px;">Precios con IVA incluido</p>
-        <p style="margin: 2px 0; font-size: 10px;">IVA: $ ${this.paymentInfo.tax.toFixed(
-    2
-  )}</p>
+        <p style="margin: 2px 0; font-size: 12px;">Precios con IVA incluido</p>
+        <p style="margin: 2px 0; font-size: 12px;">IVA: $ ${this.paymentInfo.tax}</p>
       </div>
     `
     return this
@@ -202,20 +230,14 @@ module.exports = class SaleTicketBuilder {
 
     this.paymentInfo.paymentMethods.forEach((method) => {
       this.ticket += `
-        <p style="margin: 2px 0;">${method.name}: $ ${method.amount.toFixed(
-  2
-)}</p>
+        <p style="margin: 2px 0;">${method.name}: $ ${method.amount}</p>
       `
     })
 
     if (this.paymentInfo.amountGiven > 0) {
       this.ticket += `
-        <p style="margin: 2px 0;">Entregado: $ ${this.paymentInfo.amountGiven.toFixed(
-    2
-  )}</p>
-        <p style="margin: 2px 0;">Cambio: $ ${this.paymentInfo.change.toFixed(
-    2
-  )}</p>
+        <p style="margin: 2px 0;">Entregado: $ ${this.paymentInfo.amountGiven}</p>
+        <p style="margin: 2px 0;">Cambio: $ ${this.paymentInfo.change}</p>
       `
     }
 
@@ -231,24 +253,12 @@ module.exports = class SaleTicketBuilder {
         <hr>
         <p style="margin: 2px 0;"><strong>Cliente</strong></p>
         <p style="margin: 2px 0;">Nombre: ${this.customerInfo.name}</p>
-        <p style="margin: 2px 0;">Límite de crédito: $ ${this.customerInfo.creditLimit.toFixed(
-    2
-  )}</p>
-        <p style="margin: 2px 0;">Saldo anterior: $ ${this.customerInfo.previousBalance.toFixed(
-    2
-  )}</p>
-        <p style="margin: 2px 0;">Usado en esta compra: $ ${this.customerInfo.currentPurchase.toFixed(
-    2
-  )}</p>
-        <p style="margin: 2px 0;">Saldo final: $ ${this.customerInfo.finalBalance.toFixed(
-    2
-  )}</p>
-        <p style="margin: 2px 0;">FECHA LIMITE PAGO: ${
-  this.customerInfo.paymentDueDate
-}</p>
-        <p style="margin: 2px 0;"><strong>Monto a pagar: $ ${this.customerInfo.amountToPay.toFixed(
-    2
-  )}</strong></p>
+        <p style="margin: 2px 0;">Límite de crédito: $ ${this.customerInfo.creditLimit}</p>
+        <p style="margin: 2px 0;">Saldo anterior: $ ${this.customerInfo.previousBalance}</p>
+        <p style="margin: 2px 0;">Usado en esta compra: $ ${this.customerInfo.currentPurchase}</p>
+        <p style="margin: 2px 0;">Saldo final: $ ${this.customerInfo.finalBalance}</p>
+        <p style="margin: 2px 0;">FECHA LIMITE PAGO: ${this.customerInfo.paymentDueDate}</p>
+        <p style="margin: 2px 0;"><strong>Monto a pagar: $ ${this.customerInfo.amountToPay}</strong></p>
       </div>
     `
     return this
@@ -299,9 +309,7 @@ module.exports = class SaleTicketBuilder {
   }
 
   amountToWords(amount) {
-    return `${amount.toFixed(2)} Pesos con ${Math.round(
-      (amount % 1) * 100
-    )} Centavos`
+    return `${toWords.convert(Number(amount))} 00/100 M.N.`
   }
 
   async build() {
@@ -318,7 +326,7 @@ module.exports = class SaleTicketBuilder {
           margin: 0;
           padding: 0;
           font-family: 'Barlow Semi Condensed', monospace;
-          font-size: 12px;
+          font-size: 14px;
           width: 80mm;
         }
         hr {
@@ -395,6 +403,7 @@ module.exports = class SaleTicketBuilder {
 
   async generateTicket() {
     await this.createQRCode()
+    await this.setLogoPath()
 
     this.buildHeader()
       .buildTicketInfo()

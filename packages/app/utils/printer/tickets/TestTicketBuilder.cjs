@@ -1,5 +1,14 @@
+const { getFontFaceCSS } = require('../extra/loadFonts.cjs')
+const { getImageDataUrl } = require('../extra/loadImage.cjs')
+
 module.exports = class TestTicketBuilder {
   constructor() { }
+
+  logoPath = ''
+
+  async setLogoPath() {
+    this.logoPath = await getImageDataUrl('default.jpg')
+  }
 
   build() {
     const data = {
@@ -30,6 +39,7 @@ module.exports = class TestTicketBuilder {
       <meta charset="UTF-8">
       <title>Print preview</title>
       <style>
+        ${getFontFaceCSS()}
         @page {
           margin: 0;
           size: 80mm auto;
@@ -37,7 +47,7 @@ module.exports = class TestTicketBuilder {
         body {
           margin: 0;
           padding: 0;
-          font-family: 'Arial', monospace;
+          font-family: 'Barlow Semi Condensed', monospace;
           font-size: 14px;
           font-weight: bold;
           width: 80mm;
@@ -124,6 +134,7 @@ module.exports = class TestTicketBuilder {
       <div class="container">
         <header>
           <div class="center">
+            <img src="${this.logoPath}" alt="Logo" style="width: 100%; height: auto; max-width: 200px; max-height: 80px; object-fit: contain;">
             <h3 style="margin: 5px 0;">Mi Tienda POS</h3>
             <p style="margin: 2px 0;">Ticket de compra</p>
             <p style="margin: 2px 0;">${new Date().toLocaleString()}</p>
@@ -169,7 +180,8 @@ module.exports = class TestTicketBuilder {
     return rawDocument
   }
 
-  generateTicket() {
+  async generateTicket() {
+    await this.setLogoPath()
     return this.build()
   }
 }
