@@ -16,3 +16,7 @@ exports.getToday = function () {
 exports.getUTCToday = function () {
   return dayjs().utc().format('YYYY-MM-DD 00:00:00')
 }
+
+exports.getDatetimeForFile = function () {
+  return dayjs().format('YYYY-MM-DD_HH-mm-ss')
+}

@@ -23,6 +23,8 @@ const toWords = new ToWords({
   },
 })
 
+const fontName = 'Roboto Condensed'
+
 module.exports = class SaleTicketBuilder {
   businessInfo = {}
   ticketInfo = {}
@@ -117,16 +119,13 @@ module.exports = class SaleTicketBuilder {
     this.ticket += `
       <div class="header center">
         ${logoHtml}
-        <h3 style="margin: 5px 0;">${this.businessInfo.businessName}</h3>
+        <h3 style="margin: 5px 0; text-transform: uppercase;">${this.businessInfo.businessName}</h3>
         <p style="margin: 2px 0;">${this.businessInfo.legalName}</p>
         <p style="margin: 2px 0;">${this.businessInfo.address}</p>
         <p style="margin: 2px 0;">${this.businessInfo.location}</p>
-        <p style="margin: 2px 0;">RFC: ${this.businessInfo.rfc}</p>
-        ${
-  this.businessInfo.branchInfo
-    ? `<p style="margin: 2px 0;">${this.businessInfo.branchInfo}</p>`
-    : ''
-}
+        <p style="margin: 2px 0; text-transform: uppercase;">RFC: ${this.businessInfo.rfc}</p>
+        <p style="margin: 2px 0; font-weight: 700;">SUCURSAL</p>
+        <p style="margin: 2px 0; text-transform: uppercase;">${this.businessInfo.branchInfo}</p>
         <hr>
       </div>
     `
@@ -210,12 +209,18 @@ module.exports = class SaleTicketBuilder {
     this.ticket += `
       <div class="total">
         <hr>
-        <p style="margin: 2px 0; text-align: right; font-size: 18px; font-weight: 700;">Total: $ ${this.paymentInfo.total}</p>
+        <p style="margin: 2px 0; text-align: right; font-size: 18px; font-weight: 600;">Total: $ ${this.paymentInfo.total}</p>
         <p style="margin: 2px 0; font-size: 12px;">
-          (${this.amountToWords(this.paymentInfo.total)})
+          (${this.amountToWords(this.paymentInfo.total)} 00/100 M.N.)
         </p>
         <p style="margin: 2px 0; font-size: 12px;">Precios con IVA incluido</p>
-        <p style="margin: 2px 0; font-size: 12px;">IVA: $ ${this.paymentInfo.tax}</p>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="margin: 2px 0; font-size: 12px;">IVA: $ ${this.paymentInfo.tax}</span>
+          <div style="display: flex; flex-direction: column;">
+            <span style="margin: 0;">Entregado: $ ${this.paymentInfo.amountGiven}</span>
+            <span style="margin: 0;">Cambio: $ ${this.paymentInfo.change}</span>
+          </div>
+        </div>
       </div>
     `
     return this
@@ -233,13 +238,6 @@ module.exports = class SaleTicketBuilder {
         <p style="margin: 2px 0;">${method.name}: $ ${method.amount}</p>
       `
     })
-
-    if (this.paymentInfo.amountGiven > 0) {
-      this.ticket += `
-        <p style="margin: 2px 0;">Entregado: $ ${this.paymentInfo.amountGiven}</p>
-        <p style="margin: 2px 0;">Cambio: $ ${this.paymentInfo.change}</p>
-      `
-    }
 
     this.ticket += `</div>`
     return this
@@ -309,7 +307,7 @@ module.exports = class SaleTicketBuilder {
   }
 
   amountToWords(amount) {
-    return `${toWords.convert(Number(amount))} 00/100 M.N.`
+    return toWords.convert(Number(amount))
   }
 
   async build() {
@@ -325,7 +323,7 @@ module.exports = class SaleTicketBuilder {
         body {
           margin: 0;
           padding: 0;
-          font-family: 'Barlow Semi Condensed', monospace;
+          font-family: '${fontName}', monospace;
           font-size: 14px;
           width: 80mm;
         }
@@ -401,6 +399,10 @@ module.exports = class SaleTicketBuilder {
     `
   }
 
+  getTicketName() {
+    return `${this.ticketInfo.ticketId}`
+  }
+
   async generateTicket() {
     await this.createQRCode()
     await this.setLogoPath()
@@ -414,7 +416,6 @@ module.exports = class SaleTicketBuilder {
       .buildInvoiceInfo()
       .buildFooter()
 
-    // Esperar a que se carguen las fuentes antes de construir el HTML
     return await this.build()
   }
 }

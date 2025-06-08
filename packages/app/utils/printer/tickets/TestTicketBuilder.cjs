@@ -1,5 +1,6 @@
 const { getFontFaceCSS } = require('../extra/loadFonts.cjs')
 const { getImageDataUrl } = require('../extra/loadImage.cjs')
+const { getDatetimeForFile } = require('../../../helpers/index.cjs')
 
 module.exports = class TestTicketBuilder {
   constructor() { }
@@ -33,7 +34,8 @@ module.exports = class TestTicketBuilder {
       )
       .join('')
 
-    const rawDocument = `<!DOCTYPE html>
+    const rawDocument = `
+    <!DOCTYPE html>
     <html lang="es">
     <head>
       <meta charset="UTF-8">
@@ -56,8 +58,8 @@ module.exports = class TestTicketBuilder {
           border-top: 1px dashed black;
         }
         .container {
-          width: 72mm;
-          padding: 0 4mm;
+          width: 100%;
+          padding: 0;
         }
 
         .logo {
@@ -178,6 +180,10 @@ module.exports = class TestTicketBuilder {
     </html>`
 
     return rawDocument
+  }
+
+  getTicketName() {
+    return `TEST-${getDatetimeForFile()}`
   }
 
   async generateTicket() {

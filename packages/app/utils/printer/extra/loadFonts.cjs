@@ -3,6 +3,8 @@ const fs = require('fs')
 const mime = require('mime-types')
 const { app } = require('electron')
 
+const fontFileName = 'RobotoCondensed'
+const fontName = 'Roboto Condensed'
 
 module.exports.getFontFaceCSS = async () => {
   // Función para convertir un archivo a Data URL
@@ -25,10 +27,10 @@ module.exports.getFontFaceCSS = async () => {
     'resources',
     'fonts'
   )
-  const regularPath = path.join(fontDir, 'BarlowSemiCondensed-Regular.ttf')
-  const semiBoldPath = path.join(fontDir, 'BarlowSemiCondensed-SemiBold.ttf')
-  const boldPath = path.join(fontDir, 'BarlowSemiCondensed-Bold.ttf')
-  const blackPath = path.join(fontDir, 'BarlowSemiCondensed-Black.ttf')
+  const regularPath = path.join(fontDir, `${fontFileName}-Regular.ttf`)
+  const semiBoldPath = path.join(fontDir, `${fontFileName}-SemiBold.ttf`)
+  const boldPath = path.join(fontDir, `${fontFileName}-Bold.ttf`)
+  const blackPath = path.join(fontDir, `${fontFileName}-Black.ttf`)
 
   // Convertir las fuentes a Data URLs
   const regularFont = fileToDataUrl(regularPath)
@@ -38,7 +40,7 @@ module.exports.getFontFaceCSS = async () => {
 
   return `
       @font-face {
-        font-family: 'Barlow Semi Condensed';
+        font-family: '${fontName}';
         src: url('${regularFont}') format('truetype');
         font-weight: 400;
         font-style: normal;
@@ -46,7 +48,7 @@ module.exports.getFontFaceCSS = async () => {
       }
 
       @font-face {
-        font-family: 'Barlow Semi Condensed';
+        font-family: '${fontName}';
         src: url('${semiBoldFont}') format('truetype');
         font-weight: 600;
         font-style: normal;
@@ -54,7 +56,7 @@ module.exports.getFontFaceCSS = async () => {
       }
 
       @font-face {
-        font-family: 'Barlow Semi Condensed';
+        font-family: '${fontName}';
         src: url('${boldFont}') format('truetype');
         font-weight: 700;
         font-style: normal;
@@ -62,7 +64,7 @@ module.exports.getFontFaceCSS = async () => {
       }
 
       @font-face {
-        font-family: 'Barlow Semi Condensed';
+        font-family: '${fontName}';
         src: url('${blackFont}') format('truetype');
         font-weight: 900;
         font-style: normal;

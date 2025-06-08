@@ -715,12 +715,21 @@ const isPaidAmountLowerThanTotal = computed(() => {
 
 // PRINT TICKET
 const handlePrintTicket = () => {
+  const paymentMethodsInSale = multiplePaymentMethods.value ? paymentMethods.value : [
+    {
+      payment_method: onePaymentMethod.value.payment_method,
+      amount: parseAmount(paymentQuantity.value) - fixedAmount(cashPaymentChange.value),
+    },
+  ]
+
+  const amountGiven = multiplePaymentMethods.value ? paymentMethods.value.reduce((acc, payment) => acc + payment.amount, 0) : parseAmount(paymentQuantity.value)
+
   const saleTicketPayload = {
     businessInfo: {
       businessName: company.value.trade_name,
       legalName: company.value.legal_name,
-      address: company.value.fiscal_address,
-      location: company.value.municipality,
+      address: `${company.value.fiscal_address}, ${company.value.neighborhood}, ${company.value.postal_code.toString()}`,
+      location: `${company.value.municipality}, ${company.value.state}, ${company.value.country}`,
       rfc: company.value.tax_id,
       branchInfo: branch.value.branch_name,
     },
@@ -739,11 +748,11 @@ const handlePrintTicket = () => {
     paymentInfo: {
       total: formatWithoutSymbol(currentCartTotal.value),
       tax: formatWithoutSymbol(currentCartTax.value),
-      paymentMethods: paymentMethods.value.map((payment) => ({
-        name: payment.payment_method,
+      paymentMethods: paymentMethodsInSale.map((payment) => ({
+        name: paymentMethodsOptions.find((method) => method.id === payment.payment_method)?.name,
         amount: formatWithoutSymbol(payment.amount),
       })),
-      amountGiven: formatWithoutSymbol(parseAmount(paymentQuantity.value)),
+      amountGiven: formatWithoutSymbol(amountGiven),
       change: formatWithoutSymbol(cashPaymentChange.value),
     },
     invoiceInstructions: 'SIN INSTRUCCIONES',
@@ -752,8 +761,6 @@ const handlePrintTicket = () => {
     thankYouMessage: 'Gracias por su compra',
     businessUrl: 'https://mitienda.app',
   }
-
-  console.log(saleTicketPayload)
 
   const printer = printTicket.value ? configuration.value.default_printer : null
   printSaleTicket(printer, saleTicketPayload, (response: Response<any>) => {

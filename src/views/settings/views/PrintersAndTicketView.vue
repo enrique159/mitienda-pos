@@ -34,7 +34,7 @@
           </button>
         </div>
 
-        <select v-if="!loadingPrinters" :value="selectedPrinter?.name" class="select select-bordered" @change="handleDefaultPrinterChange">
+        <select v-if="!loadingPrinters" :value="selectedPrinterName" class="select select-bordered" @change="handleDefaultPrinterChange">
           <option disabled value="">
             Selecciona una impresora
           </option>
@@ -44,7 +44,7 @@
           <option disabled v-if="isEmptyPrinters">
             No hay impresoras disponibles
           </option>
-          <option value="" v-else>
+          <option value="-" v-else>
             Ninguna
           </option>
         </select>
@@ -80,6 +80,9 @@ const { setConfiguration, configuration } = useConfiguration()
 
 const printers = ref<Printer[]>([])
 const selectedPrinter = ref<Printer | null>(null)
+const selectedPrinterName = computed(() => {
+  return selectedPrinter.value?.name || '-'
+})
 
 const isEmptyPrinters = computed(() => {
   return printers.value.length === 0

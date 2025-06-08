@@ -93,7 +93,7 @@ exports.getSales = async function () {
 */
 exports.getSalesInTurn = async function (idCashRegister) {
   try {
-    const sales = await knex('sales').where('id_cash_register', idCashRegister).select()
+    const sales = await knex('sales').where('id_cash_register', idCashRegister).select().orderBy('created_at', 'desc')
     if (!sales.length) {
       logger.error({ type: 'GET SALES IN TURN', message: 'No se encontraron ventas' })
       return response(true, 'Ventas no encontradas', [])
