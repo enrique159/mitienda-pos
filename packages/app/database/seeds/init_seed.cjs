@@ -61,7 +61,7 @@ exports.seed = async function(knex) {
       is_main: true, // Es la sucursal principal
       pin_enabled: true, // Habilitar PIN
       pin: '1234', // PIN
-      logo: 'https://via.placeholder.com/150', // URL del logo
+      logo: null, // URL del logo
       ticket_config: {
         // Configuración del ticket
         header: 'Mi Tiendita',

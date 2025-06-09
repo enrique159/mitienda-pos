@@ -17,7 +17,7 @@
           <IconUserPlus class="text-brand-black" size="18" />
         </base-button>
 
-        <base-button @click="selectImage">
+        <base-button @click="selectImage()">
           Cuenta pendiente
         </base-button>
       </div>
@@ -248,7 +248,7 @@
             </div>
             <pin-input @input="editPaymentQuantity" />
             <span class="text-black-1 text-lg">
-              Cambio: <strong> {{ formatCurrency(cashPaymentChange) }} </strong>
+              Cambio: <strong :class="{ 'text-brand-orange': cashPaymentChange > 0 }"> {{ formatCurrency(cashPaymentChange) }} </strong>
             </span>
           </div>
           <!-- MULTIPLE PAYMENT METHODS -->
@@ -770,8 +770,8 @@ const handlePrintTicket = () => {
   })
 }
 
-const selectImage = (setDefaultImage = false) => {
-  setBranchLogo(setDefaultImage, (response: Response<any>) => {
+const selectImage = (setDefaultLogo = false) => {
+  setBranchLogo(setDefaultLogo, (response: Response<any>) => {
     if (!response.success) {
       toast.error(response.message)
       return

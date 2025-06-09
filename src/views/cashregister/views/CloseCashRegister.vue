@@ -149,6 +149,12 @@
               formatCurrency(cashRegisterCashAmount)
             }}</span>
           </div>
+          <div class="flex items-center justify-between">
+            <span class="text-black-2 font-medium">Total de ventas</span>
+            <span class="text-black-2 font-medium">{{
+              formatCurrency(cashRegisterState.total_amount_paid)
+            }}</span>
+          </div>
           <div class="divider my-1" />
           <div class="flex items-center justify-between">
             <span class="text-black-2 font-medium">Monto de cierre (efectivo)</span>
