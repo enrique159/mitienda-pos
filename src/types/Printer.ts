@@ -61,14 +61,13 @@ export interface PaymentInfo {
 }
 
 export interface CustomerInfo {
-  // Add specific customer info properties based on your application's needs
-  // For example:
-  name?: string;
-  email?: string;
-  phone?: string;
-  rfc?: string;
-  address?: string;
-  // Add other customer-related fields as needed
+  name: string;
+  creditLimit: string;
+  previousBalance: string;
+  currentPurchase: string;
+  finalBalance: string;
+  paymentDueDate: string;
+  amountToPay: string;
 }
 
 export interface InvoiceInfo {

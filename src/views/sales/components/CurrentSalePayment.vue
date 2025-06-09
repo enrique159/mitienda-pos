@@ -724,6 +724,21 @@ const handlePrintTicket = () => {
 
   const amountGiven = multiplePaymentMethods.value ? paymentMethods.value.reduce((acc, payment) => acc + payment.amount, 0) : parseAmount(paymentQuantity.value)
 
+  // Calcula el total financiado, ejemplo: si el total del carrito es 100 y el cliente paga 50, entonces el total financiado es 50
+  const totalFinanced = currentCartTotal.value - amountGiven
+
+  const customerInfo = customerCurrentSale.value ? {
+    name: customerCurrentSale.value.name,
+    creditLimit: formatWithoutSymbol(customerCurrentSale.value.credit_limit),
+    previousBalance: formatWithoutSymbol(customerCurrentSale.value.used_credit),
+    currentPurchase: formatWithoutSymbol(totalFinanced),
+    finalBalance: formatWithoutSymbol(customerCurrentSale.value.used_credit + totalFinanced),
+    paymentDueDate: customerCurrentSale.value?.days_until_due
+      ? new Date(Date.now() + customerCurrentSale.value.days_until_due * 86400000)
+      : null,
+    amountToPay: formatWithoutSymbol(totalFinanced + customerCurrentSale.value.used_credit),
+  } : null
+
   const saleTicketPayload = {
     businessInfo: {
       businessName: company.value.trade_name,
@@ -755,6 +770,7 @@ const handlePrintTicket = () => {
       amountGiven: formatWithoutSymbol(amountGiven),
       change: formatWithoutSymbol(cashPaymentChange.value),
     },
+    customerInfo,
     invoiceInstructions: 'SIN INSTRUCCIONES',
     invoiceUrl: 'https://mitienda.app',
     qrCode: 'https://mitienda.app',

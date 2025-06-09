@@ -247,16 +247,39 @@ module.exports = class SaleTicketBuilder {
     if (!this.customerInfo) return this
 
     this.ticket += `
-      <div class="customer-info">
+      <div>
         <hr>
-        <p style="margin: 2px 0;"><strong>Cliente</strong></p>
-        <p style="margin: 2px 0;">Nombre: ${this.customerInfo.name}</p>
-        <p style="margin: 2px 0;">Límite de crédito: $ ${this.customerInfo.creditLimit}</p>
-        <p style="margin: 2px 0;">Saldo anterior: $ ${this.customerInfo.previousBalance}</p>
-        <p style="margin: 2px 0;">Usado en esta compra: $ ${this.customerInfo.currentPurchase}</p>
-        <p style="margin: 2px 0;">Saldo final: $ ${this.customerInfo.finalBalance}</p>
-        <p style="margin: 2px 0;">FECHA LIMITE PAGO: ${this.customerInfo.paymentDueDate}</p>
-        <p style="margin: 2px 0;"><strong>Monto a pagar: $ ${this.customerInfo.amountToPay}</strong></p>
+        <table id="client_table" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td colspan="2" style="text-align: center; font-weight: bold; padding: 2px 0;">CLIENTE</td>
+          </tr>
+          <tr>
+            <td style="padding: 1px 0;">Nombre:</td>
+            <td style="text-align: right; padding: 1px 0;">${this.customerInfo.name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 1px 0;">Límite de crédito:</td>
+            <td style="text-align: right; padding: 1px 0;">$ ${this.customerInfo.creditLimit}</td>
+          </tr>
+          <tr>
+            <td style="padding: 1px 0;">Saldo anterior:</td>
+            <td style="text-align: right; padding: 1px 0;">$ ${this.customerInfo.previousBalance}</td>
+          </tr>
+          <tr>
+            <td style="padding: 1px 0;">Usado en esta compra:</td>
+            <td style="text-align: right; padding: 1px 0;">$ ${this.customerInfo.currentPurchase}</td>
+          </tr>
+          <tr>
+            <td style="padding: 1px 0;">Saldo final:</td>
+            <td style="text-align: right; padding: 1px 0;">$ ${this.customerInfo.finalBalance}</td>
+          </tr>
+        </table>
+        <p style="margin: 2px 0; font-size: 12px; text-align: center;">FECHA LÍMITE PAGO: ${this.customerInfo.paymentDueDate.toLocaleString('es-MX', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }) || 'N/A'}</p>
+        <p style="margin: 2px 0; font-size: 12px; text-align: center; font-weight: bold;">Monto a pagar: $ ${this.customerInfo.amountToPay}</p>
       </div>
     `
     return this
@@ -364,6 +387,9 @@ module.exports = class SaleTicketBuilder {
           vertical-align: top;
           max-width: 30mm;
           font-size: 11px;
+        }
+        #client_table td {
+          font-size: 14px;
         }
         .left {
           text-align: left;
