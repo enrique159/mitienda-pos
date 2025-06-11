@@ -274,11 +274,7 @@ module.exports = class SaleTicketBuilder {
             <td style="text-align: right; padding: 1px 0;">$ ${this.customerInfo.finalBalance}</td>
           </tr>
         </table>
-        <p style="margin: 2px 0; font-size: 12px; text-align: center;">FECHA LÍMITE PAGO: ${this.customerInfo.paymentDueDate.toLocaleString('es-MX', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }) || 'N/A'}</p>
+        <p style="margin: 2px 0; font-size: 12px; text-align: center;">FECHA LÍMITE PAGO: ${this.customerInfo.paymentDueDate || 'N/A'}</p>
         <p style="margin: 2px 0; font-size: 12px; text-align: center; font-weight: bold;">Monto a pagar: $ ${this.customerInfo.amountToPay}</p>
       </div>
     `

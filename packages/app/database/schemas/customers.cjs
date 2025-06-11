@@ -15,7 +15,7 @@ exports.createTable = async function(knex) {
     table.string('address') // Dirección
     table.boolean('has_credit').defaultTo(false) // Tiene crédito
     table.integer('credit_limit').defaultTo(0) // Límite de crédito
-    table.integer('days_until_due').defaultTo(10) // Días hasta la vencimiento
+    table.string('payment_due_date').defaultTo(null) // Día de pago mensual
     table.enu('status', ['active', 'inactive']).defaultTo('active').notNullable() // Estado del cliente
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable() // Fecha de creación
     table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable() // Fecha de edición

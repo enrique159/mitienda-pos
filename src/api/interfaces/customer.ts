@@ -9,7 +9,7 @@ export interface Customer {
   has_credit: boolean
   credit_limit: number
   used_credit: number
-  days_until_due: number
+  payment_due_date: string | null
   status: 'active' | 'inactive'
   created_at: string
   updated_at: string
@@ -25,5 +25,5 @@ export interface CreateCustomer {
   address?: string
   has_credit?: boolean
   credit_limit?: number
-  days_until_due?: number
+  payment_due_date?: string | Date
 }

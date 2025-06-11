@@ -352,6 +352,7 @@ import { useCustomer } from '@/composables/useCustomer'
 import { useUser } from '@/composables/useUser'
 import { useCompany } from '@/composables/useCompany'
 import { useConfiguration } from '@/composables/useConfiguration'
+import { useDate } from '@/composables/useDate'
 import { toast } from 'vue3-toastify'
 import { Snackbar } from '@/types/Snackbar'
 import { getCustomers } from '@/api/electron'
@@ -376,6 +377,7 @@ const { saleFolio, branch, generateFolio } = useBranch()
 const { user } = useUser()
 const { cashRegister } = useCashRegister()
 const { getActiveCustomers, customerCurrentSale, setCustomerCurrentSale, clearCustomerCurrentSale, setCustomers } = useCustomer()
+const { getNextPaymentDueDateCustomer } = useDate()
 
 /**
  * *************** Select client ***************
@@ -733,9 +735,7 @@ const handlePrintTicket = () => {
     previousBalance: formatWithoutSymbol(customerCurrentSale.value.used_credit),
     currentPurchase: formatWithoutSymbol(totalFinanced),
     finalBalance: formatWithoutSymbol(customerCurrentSale.value.used_credit + totalFinanced),
-    paymentDueDate: customerCurrentSale.value?.days_until_due
-      ? new Date(Date.now() + customerCurrentSale.value.days_until_due * 86400000)
-      : null,
+    paymentDueDate: customerCurrentSale.value?.payment_due_date ? getNextPaymentDueDateCustomer(customerCurrentSale.value.payment_due_date) : null,
     amountToPay: formatWithoutSymbol(totalFinanced + customerCurrentSale.value.used_credit),
   } : null
 
@@ -743,7 +743,7 @@ const handlePrintTicket = () => {
     businessInfo: {
       businessName: company.value.trade_name,
       legalName: company.value.legal_name,
-      address: `${company.value.fiscal_address}, ${company.value.neighborhood}, ${company.value.postal_code.toString()}`,
+      address: `${company.value.fiscal_address}, ${company.value.neighborhood}, CP:${company.value.postal_code.toString()}`,
       location: `${company.value.municipality}, ${company.value.state}, ${company.value.country}`,
       rfc: company.value.tax_id,
       branchInfo: branch.value.branch_name,

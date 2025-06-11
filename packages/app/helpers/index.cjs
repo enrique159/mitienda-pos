@@ -1,5 +1,5 @@
 const logger = require('./logger.cjs')
-const { getDatetime, getToday, getUTCToday, getDatetimeForFile } = require('./datetime.cjs')
+const { getDatetime, getToday, getUTCToday, getDatetimeForFile, getPaymentDueDate } = require('./datetime.cjs')
 const { generateQRCode } = require('./qr.cjs')
 const { saveFile, selectFile } = require('./files.cjs')
 
@@ -15,6 +15,7 @@ module.exports = {
   getDatetime,
   getToday,
   getUTCToday,
+  getPaymentDueDate,
   getDatetimeForFile,
   generateQRCode,
   selectFile,

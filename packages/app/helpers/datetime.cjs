@@ -20,3 +20,7 @@ exports.getUTCToday = function () {
 exports.getDatetimeForFile = function () {
   return dayjs().format('YYYY-MM-DD_HH-mm-ss')
 }
+
+exports.getPaymentDueDate = function () {
+  return dayjs().add(10, 'days').format('DD')
+}

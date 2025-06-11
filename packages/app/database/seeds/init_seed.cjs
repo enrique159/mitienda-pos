@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid')
 const { products } = require('./products_seed.cjs')
 const { categories } = require('./categories_seed.cjs')
 const { taxes } = require('./taxes_seed.cjs')
-const { logger } = require('../../helpers/index.cjs')
+const { logger, getPaymentDueDate } = require('../../helpers/index.cjs')
 
 /**
  * @param { import("knex").Knex } knex
@@ -33,7 +33,7 @@ exports.seed = async function(knex) {
       tax_id: 'MITI840101XYZ', // RFC
       email: 'contacto@mitiendita.com', // Correo electrónico
       phone: '555-123-4567', // Teléfono
-      fiscal_address: 'Calle Principal #123, Centro', // Dirección fiscal
+      fiscal_address: 'Calle Principal #123', // Dirección fiscal
       postal_code: 12345, // Código Postal
       neighborhood: 'Centro', // Colonia
       municipality: 'La Paz', // Municipio
@@ -141,7 +141,7 @@ exports.seed = async function(knex) {
       address: 'Calle Principal #123, Centro',
       has_credit: true,
       credit_limit: 100000,
-      days_until_due: 20,
+      payment_due_date: getPaymentDueDate(),
     })
 
     // Taxes
