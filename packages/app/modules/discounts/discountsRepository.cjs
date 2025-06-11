@@ -54,7 +54,7 @@ exports.getDiscounts = async function () {
  * Crear un descuento
  */
 exports.createDiscount = async function (discount) {
-  discount.schedule = discount.schedule.length ? JSON.stringify(discount.schedule) : []
+  discount.schedule = discount?.schedule?.length > 0 ? JSON.stringify(discount.schedule) : null
   discount.start_date = discount.start_date.toISOString().slice(0, 10)
   if (discount.end_date) {
     discount.end_date = discount.end_date.toISOString().slice(0, 10)
@@ -78,7 +78,7 @@ exports.createDiscount = async function (discount) {
  * Actualizar un descuento
  */
 exports.updateDiscount = async function (discount) {
-  discount.schedule = discount.schedule.length? JSON.stringify(discount.schedule) : []
+  discount.schedule = discount?.schedule?.length > 0 ? JSON.stringify(discount.schedule) : null
   discount.start_date = discount.start_date.toISOString().slice(0, 10)
   if (discount.end_date) {
     discount.end_date = discount.end_date.toISOString().slice(0, 10)

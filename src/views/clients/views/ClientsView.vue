@@ -26,6 +26,7 @@
             <th>Estado</th>
             <th>Crédito</th>
             <th>Crédito usado</th>
+            <th>Próximo pago</th>
             <th>Fecha creación</th>
             <th />
           </tr>
@@ -60,6 +61,16 @@
                   :value="customer.used_credit"
                   :max="customer.credit_limit"
                 />
+              </div>
+            </td>
+            <td
+              :class="[
+                isPaymentDueDateToday(getNextPaymentDueDateCustomer(customer.payment_due_date, 'MM/DD/YYYY')) ? 'text-red-500' : '',
+                isPaymentDueDateInNext7Days(getNextPaymentDueDateCustomer(customer.payment_due_date, 'MM/DD/YYYY')) ? 'text-yellow-500' : '',
+              ]"
+            >
+              <div class="tooltip tooltip-bottom" :data-tip="getRelativeTime(getNextPaymentDueDateCustomer(customer.payment_due_date, 'MM/DD/YYYY'))">
+                <span>{{ getNextPaymentDueDateCustomer(customer.payment_due_date) }}</span>
               </div>
             </td>
             <td>{{ formatDatetimeShort(customer.created_at) }}</td>
@@ -244,8 +255,12 @@ import { useCustomer } from '@/composables/useCustomer'
 import { toast } from 'vue3-toastify'
 import { reactive, ref } from 'vue'
 import { computed } from 'vue'
+import dayjs from 'dayjs'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 
-const { formatDatetimeShort } = useDate()
+dayjs.extend(isSameOrAfter)
+
+const { formatDatetimeShort, getNextPaymentDueDateCustomer, getRelativeTime } = useDate()
 const { formatCurrency } = useCurrency()
 
 const { customers, setCustomers } = useCustomer()
@@ -375,6 +390,23 @@ const getProgressColorByCreditUsed = (creditUsed: number, creditLimit: number) =
   } else {
     return 'progress-error'
   }
+}
+
+
+const isPaymentDueDateToday = (paymentDueDate: string | null) => {
+  if (!paymentDueDate) return false
+  const today = dayjs()
+  const dueDate = dayjs(paymentDueDate)
+
+  return dueDate.isSame(today, 'day')
+}
+
+const isPaymentDueDateInNext7Days = (paymentDueDate: string | null) => {
+  if (!paymentDueDate) return false
+  const today = dayjs()
+  const dueDate = dayjs(paymentDueDate)
+
+  return dueDate.isSameOrAfter(today) && dueDate.isBefore(today.add(7, 'day'))
 }
 </script>
 

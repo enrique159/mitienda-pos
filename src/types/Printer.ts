@@ -1,3 +1,5 @@
+import { Discount } from "@/api/interfaces"
+
 export interface Printer {
   name: string;
   displayName: string;
@@ -86,8 +88,7 @@ export interface SaleTicketItem {
   name: string;
   price: number;
   subtotal: number;
-  discount?: number;
-  discountLabel?: string;
+  discounts: Array<{ description: string; amount: number | string }> | null
 }
 
 export interface SaleTicketBuilderOptions {

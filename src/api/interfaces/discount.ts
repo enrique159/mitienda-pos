@@ -32,7 +32,7 @@ export interface CreateDiscount {
   discount_for_one: boolean
   start_date: Date
   end_date?: Date
-  schedule: Array<DiscountSchedule>
+  schedule: Array<DiscountSchedule> | null
   status: 'active' | 'inactive'
 }
 

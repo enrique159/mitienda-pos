@@ -176,16 +176,18 @@ module.exports = class SaleTicketBuilder {
     `
 
     this.items.forEach((item) => {
-      const discount = item.discount
-        ? `
-        <tr>
-          <td colspan="3" class="right">- ${
-  item.discountLabel || 'Descuento'
-}</td>
-          <td class="right">-${item.discount}</td>
-        </tr>
-      `
-        : ''
+      let discounts = ''
+      if (item.discounts?.length) {
+        discounts = item.discounts.map((discount) => {
+          return `
+          <tr>
+            <td></td>
+            <td colspan="2">- <strong>${discount.description}</strong></td>
+            <td class="right">- <strong>${discount.amount}</strong></td>
+          </tr>
+        `
+        }).join('')
+      }
 
       this.ticket += `
         <tr>
@@ -194,7 +196,7 @@ module.exports = class SaleTicketBuilder {
           <td class="right">${item.price}</td>
           <td class="right">${item.subtotal}</td>
         </tr>
-        ${discount}
+        ${discounts}
       `
     })
 
@@ -210,7 +212,7 @@ module.exports = class SaleTicketBuilder {
       <div class="total">
         <hr>
         <p style="margin: 2px 0; text-align: right; font-size: 18px; font-weight: 600;">Total: $ ${this.paymentInfo.total}</p>
-        <p style="margin: 2px 0; font-size: 12px;">
+        <p style="margin: 2px 0; font-size: 12px; margin-bottom: 12px;">
           (${this.amountToWords(this.paymentInfo.total)} 00/100 M.N.)
         </p>
         <p style="margin: 2px 0; font-size: 12px;">Precios con IVA incluido</p>

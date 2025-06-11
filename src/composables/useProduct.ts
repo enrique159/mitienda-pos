@@ -78,11 +78,21 @@ export const useProduct = () => {
       if (!validDiscounts.length) return { ...product, valid_discounts: [] }
 
       // Calcular el total de descuento sumando todos los descuentos válidos
+      // Tambien guardar en el producto cada descuento aplicado con el monto de ese descuento
+      let appliedDiscounts: { description: string; amount: number }[] = []
       const totalDiscountAmount = validDiscounts.reduce((acc, discount) => {
         if (discount.discount_for_one) {
           const quantityApplied = Math.floor(product.quantity / (discount.condition_quantity ?? 1))
+          appliedDiscounts.push({
+            description: discount.description,
+            amount: calculateDiscountAmount(product.selling_price, discount) * quantityApplied,
+          })
           return acc + calculateDiscountAmount(product.selling_price, discount) * quantityApplied
         }
+        appliedDiscounts.push({
+          description: discount.description,
+          amount: calculateDiscountAmount(product.selling_price, discount) * product.quantity,
+        })
         return acc + calculateDiscountAmount(product.selling_price, discount) * product.quantity
       }, 0)
 
@@ -90,6 +100,7 @@ export const useProduct = () => {
         ...product,
         valid_discounts: validDiscounts,
         discount_amount: totalDiscountAmount,
+        applied_discounts: appliedDiscounts,
         subtotal: product.selling_price * product.quantity - totalDiscountAmount,
       }
     })

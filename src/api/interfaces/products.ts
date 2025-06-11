@@ -54,6 +54,7 @@ export interface ProductCart extends Product {
   quantity: number
   subtotal: number
   valid_discounts?: Discount[]
+  applied_discounts?: { description: string; amount: number }[]
   discount_amount?: number
 }
 

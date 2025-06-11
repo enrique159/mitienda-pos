@@ -3,10 +3,12 @@ import 'dayjs/locale/es'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import { useBranch } from './useBranch'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 dayjs.locale('es')
 dayjs.extend(utc)
 dayjs.extend(timezone)
+dayjs.extend(relativeTime)
 
 export const useDate = () => {
   const { timezone: tz } = useBranch()
@@ -54,7 +56,8 @@ export const useDate = () => {
     return dayjs(`2000-01-01 ${time}`).format('HH:mm')
   }
 
-  const getNextPaymentDueDateCustomer = (dayMonth: string) => {
+  const getNextPaymentDueDateCustomer = (dayMonth: string | null, format: string = 'DD/MM/YYYY') => {
+    if (!dayMonth) return null
     const today = dayjs()
     const day = parseInt(dayMonth, 10)
 
@@ -75,7 +78,12 @@ export const useDate = () => {
       )
     }
 
-    return nextPaymentDueDate.format('DD/MM/YYYY')
+    return nextPaymentDueDate.format(format)
+  }
+
+  const getRelativeTime = (date: string | Date | null) => {
+    if (!date) return ''
+    return dayjs(date).fromNow()
   }
 
   return {
@@ -87,5 +95,6 @@ export const useDate = () => {
     formatTime12,
     formatTime24,
     getNextPaymentDueDateCustomer,
+    getRelativeTime,
   }
 }

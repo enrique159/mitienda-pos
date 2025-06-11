@@ -440,6 +440,7 @@ const handleSubmitCreate = async () => {
       end_time: schedule.end_time,
     }
   })
+
   const newDiscount: CreateDiscount = {
     id_company: branch.value.id_company,
     id_branch: branch.value.id,
@@ -450,7 +451,7 @@ const handleSubmitCreate = async () => {
     discount_for_one: formData.discount_for_one,
     start_date: formData.start_date,
     end_date: formData.end_date ?? undefined,
-    schedule: discountScheduleSaved,
+    schedule: Array.isArray(discountScheduleSaved) && discountScheduleSaved.length > 0 ? discountScheduleSaved : null,
     status: 'active',
   }
   createDiscount(newDiscount, (response: Response<any>) => {

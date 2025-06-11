@@ -735,7 +735,7 @@ const handlePrintTicket = () => {
     previousBalance: formatWithoutSymbol(customerCurrentSale.value.used_credit),
     currentPurchase: formatWithoutSymbol(totalFinanced),
     finalBalance: formatWithoutSymbol(customerCurrentSale.value.used_credit + totalFinanced),
-    paymentDueDate: customerCurrentSale.value?.payment_due_date ? getNextPaymentDueDateCustomer(customerCurrentSale.value.payment_due_date) : null,
+    paymentDueDate: getNextPaymentDueDateCustomer(customerCurrentSale.value.payment_due_date),
     amountToPay: formatWithoutSymbol(totalFinanced + customerCurrentSale.value.used_credit),
   } : null
 
@@ -754,9 +754,13 @@ const handlePrintTicket = () => {
       attendedBy: user.value.name,
       date: new Date(),
     },
-    items: currentCart.value.map((product) => ({
+    items: currentCartProductsWithDiscount.value.map((product) => ({
       name: product.name,
       quantity: product.quantity,
+      discounts: product.applied_discounts?.map((discount) => ({
+        description: discount.description,
+        amount: formatWithoutSymbol(discount.amount),
+      })) || null,
       price: formatWithoutSymbol(product.selling_price),
       subtotal: formatWithoutSymbol(product.selling_price * product.quantity),
     })),
