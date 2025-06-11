@@ -215,7 +215,7 @@ module.exports = class SaleTicketBuilder {
         </p>
         <p style="margin: 2px 0; font-size: 12px;">Precios con IVA incluido</p>
         <div style="display: flex; justify-content: space-between;">
-          <span style="margin: 2px 0; font-size: 12px;">IVA: $ ${this.paymentInfo.tax}</span>
+          <span style="margin: 2px 0; font-size: 12px;">IMPUESTOS: $ ${this.paymentInfo.tax}</span>
           <div style="display: flex; flex-direction: column;">
             <span style="margin: 0;">Entregado: $ ${this.paymentInfo.amountGiven}</span>
             <span style="margin: 0;">Cambio: $ ${this.paymentInfo.change}</span>

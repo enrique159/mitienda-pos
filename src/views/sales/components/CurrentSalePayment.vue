@@ -641,7 +641,7 @@ const createCurrentSale = () => {
   })
   const payments: PaymentPayload[] = paymentMethods.value.map((payment) => ({
     payment_method: payment.payment_method,
-    amount: payment.amount,
+    amount: payment.payment_method === PaymentMethods.CASH ? payment.amount - cashPaymentChange.value : payment.amount,
     change: payment.payment_method === PaymentMethods.CASH ? cashPaymentChange.value : 0,
   }))
   const payload: CreateSalePayload = {
