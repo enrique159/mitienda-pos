@@ -9,16 +9,22 @@ import { useTitle } from '@vueuse/core'
 import { getVersion, getConfiguration } from '@/api/electron'
 import { Configuration, Response } from './api/interfaces'
 import { useConfiguration } from './composables/useConfiguration'
+import { useRouter } from 'vue-router'
 
-const { setConfiguration } = useConfiguration()
+const router = useRouter()
+const { setConfiguration, configuration } = useConfiguration()
 
 getVersion((response: string) => {
   useTitle(`mitienda - v${response}`)
 })
 
+
 getConfiguration((response: Response<Configuration>) => {
   if (response.success) {
     setConfiguration(response.response)
+    router.push({ name: configuration.value.configured ? 'SignInAsUser' : 'Login' })
+  } else {
+    router.push({ name: 'Login' })
   }
 })
 </script>

@@ -2,6 +2,11 @@ const { ipcMain } = require('electron')
 const configurationRepository = require('./configurationRepository.cjs')
 const logger = require('../../helpers/logger.cjs')
 
+ipcMain.on('initial_configuration', async (event, payload) => {
+  const response = await configurationRepository.initialConfiguration(payload)
+  event.reply('initial_configuration', response)
+})
+
 ipcMain.on('get_configuration', async (event) => {
   const response = await configurationRepository.getConfiguration()
   event.reply('get_configuration', response)

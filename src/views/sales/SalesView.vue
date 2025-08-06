@@ -260,7 +260,7 @@
                 @keydown="(event) => {
                   !previewProductToAdd?.is_bulk
                     ? validateOnlyNumbers(event)
-                    : validateNumbersAndDots(event, addProductQuantity)
+                    : validateNumbersAndDot(event, addProductQuantity)
                 }"
                 @keyup.enter="saveAddProductQuantity"
                 v-model="addProductQuantity"
@@ -351,7 +351,7 @@
                 @keydown="(event) => {
                   !selectedProduct?.is_bulk
                     ? validateOnlyNumbers(event)
-                    : validateNumbersAndDots(event, newQuantity)
+                    : validateNumbersAndDot(event, newQuantity)
                 }"
                 @keyup.enter="saveNewQuantity"
                 v-model="newQuantity"
@@ -483,7 +483,7 @@ import { Category, Product, ProductCart, Response } from '@/api/interfaces'
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useCurrency } from '@/composables/useCurrency'
 import { getProductsByCategory, getProducts } from '@/api/electron'
-import { validateOnlyNumbers, validateNumbersAndDots } from '@/utils/InputValidators'
+import { validateOnlyNumbers, validateNumbersAndDot } from '@/utils/InputValidators'
 import { getNameUnitMeasurement, getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
 import { useBranch } from '@/composables/useBranch'
 

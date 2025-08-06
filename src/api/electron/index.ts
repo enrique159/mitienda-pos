@@ -70,6 +70,7 @@ export const deletePurchaseOrder = async (id: string, callback: any) => window.e
 /* Branches */
 export const getBranchInfo = async (callback: any) => window.electron.getBranchInfo(callback)
 export const setBranchLogo = async (setDefaultLogo: boolean = false, callback: any) => window.electron.setBranchLogo(setDefaultLogo, callback)
+export const getBranchesByEmail = async (email: string, callback: any) => window.electron.getBranchesByEmail(email, callback)
 
 /* Cash Register */
 export const getCashRegisterActive = async (): Promise<Response<any>> => window.electron.getCashRegisterActive()
@@ -81,6 +82,7 @@ export const closeCashRegister = async (data: CreateCashRegisterAudit, callback:
 export const createCashMovement = async (data: CreateCashMovement, callback: any) => window.electron.createCashMovement(data, callback)
 
 /* Configuration */
+export const initialConfiguration = async (payload: any, callback: any) => window.electron.initialConfiguration(payload, callback)
 export const getConfiguration = async (callback: any) => window.electron.getConfiguration(callback)
 export const updateConfiguration = async (configuration: Configuration, callback: any) => window.electron.updateConfiguration(configuration, callback)
 export const createConfiguration = async (configuration: Configuration, callback: any) => window.electron.createConfiguration(configuration, callback)

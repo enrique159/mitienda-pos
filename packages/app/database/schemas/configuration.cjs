@@ -6,8 +6,9 @@ const { logger } = require('../../helpers/index.cjs')
  */
 exports.createTable = async function (knex) {
   await knex.schema.createTable('configuration', (table) => {
-    table.increments('id').primary()
+    table.uuid('id').defaultTo(knex.fn.uuid()).primary()
     table.boolean('configured').defaultTo(false)
+    table.text('token', 'longtext').defaultTo(null)
     table.enu('mode', ['offline', 'business']).defaultTo('offline')
     table.string('default_printer').defaultTo(null)
     table.boolean('enable_sync').defaultTo(false)

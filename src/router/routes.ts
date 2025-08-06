@@ -9,6 +9,7 @@ import { ProductsRoutes } from "@/views/products/routes"
 import { ReportsRoutes } from "@/views/reports/routes"
 import { OrdersRoutes } from "@/views/orders/routes"
 
+import SplashScreenView from "@/views/SplashScreenView.vue"
 import MainModule from "@/views/MainModule.vue"
 import HomeView from "@/views/HomeView.vue"
 import SalesView from "@/views/sales/SalesView.vue"
@@ -18,7 +19,12 @@ import NotFoundView from "@/views/NotFoundView.vue"
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    redirect: "/auth/signin-as-user",
+    redirect: "/splash-screen",
+  },
+  {
+    path: "/splash-screen",
+    name: "SplashScreen",
+    component: SplashScreenView,
   },
   {
     path: "/main",

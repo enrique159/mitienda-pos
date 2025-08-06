@@ -4,6 +4,7 @@ const os = require('os')
 const knex = require('knex')(require('./knexfile.cjs'))
 const seeds = require('./seeds/init_seed.cjs')
 const { logger } = require('../helpers/index.cjs')
+const env = require('../../env.json')
 // Importing schemas
 const configuration = require('./schemas/configuration.cjs')
 const users = require('./schemas/users.cjs')
@@ -27,6 +28,9 @@ const sales = require('./schemas/sales.cjs')
 const saleDetails = require('./schemas/sale_details.cjs')
 const salePayments = require('./schemas/sale_payments.cjs')
 const aiModels = require('./schemas/ai_models.cjs')
+
+const dev = env.NODE_ENV === 'development'
+const seed = env.SEED
 
 const initDB = async() => {
   const destinationPath = path.join(os.homedir(), '.db')
@@ -74,7 +78,9 @@ const initDB = async() => {
     console.log('Database created and initialized with tables.')
 
     /* INSERT DEFAULT USER */
-    await seeds.seed(knex)
+    if (dev && seed) {
+      await seeds.seed(knex)
+    }
   } else {
     console.log('Database already exists.')
   }

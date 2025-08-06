@@ -1,5 +1,5 @@
 const { generateQRCode, logger } = require('../../../helpers/index.cjs')
-const { getFontFaceCSS } = require('../extra/loadFonts.cjs')
+const { getFontFaceCSS, fontName } = require('../extra/loadFonts.cjs')
 const { getImageDataUrl } = require('../extra/loadImage.cjs')
 const branchesRepository = require('../../../modules/branches/branchesRepository.cjs')
 const { ToWords } = require('to-words')
@@ -22,8 +22,6 @@ const toWords = new ToWords({
     },
   },
 })
-
-const fontName = 'Roboto Condensed'
 
 module.exports = class SaleTicketBuilder {
   businessInfo = {}

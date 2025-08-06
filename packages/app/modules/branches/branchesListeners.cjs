@@ -11,3 +11,9 @@ exports.setBranchLogo = function (setDefaultLogo, callback) {
   ipcRenderer.on('set_branch_logo', (_, response) => callback(response))
   ipcRenderer.send('set_branch_logo', setDefaultLogo)
 }
+
+exports.getBranchesByEmail = function (email, callback) {
+  ipcRenderer.removeAllListeners('get_branches_by_email')
+  ipcRenderer.on('get_branches_by_email', (_, response) => callback(response))
+  ipcRenderer.send('get_branches_by_email', email)
+}

@@ -1,5 +1,9 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
+const { response, logger, parseBoolean, parseObjectJson } = require('../../helpers/index.cjs')
+const Http = require('../../network/Http.cjs')
+const { getBranchesByEmail } = require('../../shared/routes.cjs')
+
+const http = new Http()
 
 exports.getBranchInfo = async function () {
   return await knex('branches').select().first()
@@ -10,6 +14,7 @@ exports.getBranchInfo = async function () {
       }
       branch = {
         ...branch,
+        ticket_config: parseObjectJson(branch.ticket_config),
         is_main: parseBoolean(branch.is_main),
         pin_enabled: parseBoolean(branch.pin_enabled),
         pin_cancel_sale_required: parseBoolean(branch.pin_cancel_sale_required),
@@ -42,5 +47,18 @@ exports.setBranchLogo = async function (image) {
     .catch((err) => {
       logger.error({ type: 'SET BRANCH LOGO ERROR', message: `${err}`, data: err })
       return response(false, 'Error al actualizar el logo de la sucursal', err)
+    })
+}
+
+// API FETCHES
+exports.getBranchesByEmail = async function (email) {
+  const url = getBranchesByEmail(Http.baseUrl)
+  return await http.post(url, { data: { email } })
+    .then((apiResponse) => {
+      return response(true, 'Sucursales encontradas', apiResponse.data)
+    })
+    .catch((err) => {
+      logger.error({ type: 'GET BRANCHES BY EMAIL ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al traer las sucursales', err.errors)
     })
 }

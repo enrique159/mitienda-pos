@@ -1,11 +1,11 @@
 const { contextBridge, ipcRenderer, shell } = require('electron')
-const { getConfiguration, getVersion, setDefaultPrinter } = require('./app/modules/configuration/configurationListeners.cjs')
+const { initialConfiguration, getConfiguration, getVersion, setDefaultPrinter } = require('./app/modules/configuration/configurationListeners.cjs')
 const { getCompany } = require('./app/modules/company/companyListeners.cjs')
 const { startSession, getSellers, closeSession } = require('./app/modules/sellers/sellersListeners.cjs')
 const { createProduct, deleteProduct, getActiveProducts, getProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
 const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, deleteDiscount, getDiscountProducts, createDiscountProduct } = require('./app/modules/discounts/discountsListeners.cjs')
 const { getCategories, createCategory, updateCategory, deleteCategory } = require('./app/modules/categories/categoriesListeners.cjs')
-const { getBranchInfo, setBranchLogo } = require('./app/modules/branches/branchesListeners.cjs')
+const { getBranchInfo, setBranchLogo, getBranchesByEmail } = require('./app/modules/branches/branchesListeners.cjs')
 const { getCashRegisterActive, createCashRegister, getCurrentCashRegisterState } = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
 const { createCashRegisterAudit } = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
 const { createSale, getSales, getSalesInTurn, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
@@ -63,6 +63,7 @@ contextBridge.exposeInMainWorld('electron', {
   // Branches
   getBranchInfo,
   setBranchLogo,
+  getBranchesByEmail,
   // Cash Registers
   getCashRegisterActive,
   createCashRegister,
@@ -73,6 +74,7 @@ contextBridge.exposeInMainWorld('electron', {
   getSalesInTurn,
   generateSaleFolio,
   // Configuration
+  initialConfiguration,
   getVersion,
   getConfiguration,
   setDefaultPrinter,

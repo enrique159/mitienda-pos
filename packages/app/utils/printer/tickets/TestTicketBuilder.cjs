@@ -1,4 +1,4 @@
-const { getFontFaceCSS } = require('../extra/loadFonts.cjs')
+const { getFontFaceCSS, fontName } = require('../extra/loadFonts.cjs')
 const { getImageDataUrl } = require('../extra/loadImage.cjs')
 const { getDatetimeForFile } = require('../../../helpers/index.cjs')
 
@@ -11,7 +11,10 @@ module.exports = class TestTicketBuilder {
     this.logoPath = await getImageDataUrl('default.jpg')
   }
 
-  build() {
+  async build() {
+    // Cargar las fuentes primero
+    const fontFaceCSS = await getFontFaceCSS()
+
     const data = {
       items: [
         {
@@ -41,7 +44,7 @@ module.exports = class TestTicketBuilder {
       <meta charset="UTF-8">
       <title>Print preview</title>
       <style>
-        ${getFontFaceCSS()}
+        ${fontFaceCSS}
         @page {
           margin: 0;
           size: 80mm auto;
@@ -49,7 +52,7 @@ module.exports = class TestTicketBuilder {
         body {
           margin: 0;
           padding: 0;
-          font-family: 'Barlow Semi Condensed', monospace;
+          font-family: '${fontName}', monospace;
           font-size: 14px;
           font-weight: bold;
           width: 80mm;
@@ -74,7 +77,7 @@ module.exports = class TestTicketBuilder {
 
         .info {
           text-align: center;
-          font-size: 12px;
+          font-size: 14px;
         }
 
         .info p {
@@ -90,7 +93,7 @@ module.exports = class TestTicketBuilder {
           padding: 0.5rem 0;
           border-top: 1px dashed black;
           border-bottom: 1px dashed black;
-          font-size: 11px;
+          font-size: 14px;
         }
 
         table td {
@@ -99,11 +102,11 @@ module.exports = class TestTicketBuilder {
           padding-bottom: .1rem;
           vertical-align: top;
           max-width: 30mm;
-          font-size: 11px;
+          font-size: 14px;
         }
 
         .text-xs {
-          font-size: 10px;
+          font-size: 12px;
         }
 
         .left {
@@ -188,6 +191,6 @@ module.exports = class TestTicketBuilder {
 
   async generateTicket() {
     await this.setLogoPath()
-    return this.build()
+    return await this.build()
   }
 }

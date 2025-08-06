@@ -13,7 +13,7 @@ exports.seed = async function(knex) {
 
     // Configuration
     await knex('configuration').del()
-    await knex('configuration').insert({ configured: true, mode: 'offline', enable_sync: false })
+    await knex('configuration').insert({ configured: false, mode: 'offline', enable_sync: false })
     // User
     await knex('users').del()
     await knex('users').insert({
@@ -42,13 +42,6 @@ exports.seed = async function(knex) {
       business_type: 'convenience_store', // Tipo de negocio
       business_description: 'Una tienda de abarrotes local con productos básicos.', // Descripción
       ai_enabled: false,
-      // ai_models: JSON.stringify([
-      //   {
-      //     name: 'gemini',
-      //     model: 'gemini-2.5-flash',
-      //     api_key: 'AIzaSyD9wgSKKO5_Ci7B50QO5BwpenP_QiyTVPQ',
-      //   },
-      // ]),
     })
 
     // Branch
@@ -63,9 +56,10 @@ exports.seed = async function(knex) {
       pin: '1234', // PIN
       logo: null, // URL del logo
       ticket_config: {
-        // Configuración del ticket
-        header: 'Mi Tiendita',
-        footer: 'Gracias por su compra',
+        footer_info: {
+          thank_you_message: "Muchas gracias por su compra",
+          business_url: "https://mitiendapos.mx",
+        },
       },
       timezone: 'America/Mazatlan', // Zona horaria
       pin_cancel_sale_required: true, // Requerir PIN para cancelar venta

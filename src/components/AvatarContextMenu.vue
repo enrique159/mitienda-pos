@@ -11,7 +11,9 @@
       tabindex="0"
       class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
     >
-      <li class="menu-title capitalize">{{ user.name }}</li>
+      <li class="menu-title capitalize">
+        {{ user.name }}
+      </li>
       <li>
         <router-link to="/profile">
           <icon-user size="1.1rem" stroke-width="2" />

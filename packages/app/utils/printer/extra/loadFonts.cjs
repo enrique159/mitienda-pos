@@ -6,6 +6,8 @@ const { app } = require('electron')
 const fontFileName = 'RobotoCondensed'
 const fontName = 'Roboto Condensed'
 
+module.exports.fontName = fontName
+
 module.exports.getFontFaceCSS = async () => {
   // Función para convertir un archivo a Data URL
   const fileToDataUrl = (filePath) => {

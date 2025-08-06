@@ -34,3 +34,8 @@ ipcMain.on('set_branch_logo', async (event, setDefaultLogo) => {
   const updateResponse = await branchesRepository.setBranchLogo(imagePath)
   event.reply('set_branch_logo', updateResponse)
 })
+
+ipcMain.on('get_branches_by_email', async (event, email) => {
+  const response = await branchesRepository.getBranchesByEmail(email)
+  event.reply('get_branches_by_email', response)
+})

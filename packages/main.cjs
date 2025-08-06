@@ -22,7 +22,7 @@ function createWindow() {
 
   mainWindow.loadURL(
     dev
-      ? 'http://localhost:8080'
+      ? 'http://localhost:5173'
       : `file://${path.join(__dirname, '../dist/index.html')}`
   )
   if (dev) {

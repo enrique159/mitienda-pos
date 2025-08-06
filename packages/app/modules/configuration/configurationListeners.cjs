@@ -1,5 +1,11 @@
 const { ipcRenderer } = require('electron')
 
+exports.initialConfiguration = function (payload, callback) {
+  ipcRenderer.removeAllListeners('initial_configuration')
+  ipcRenderer.on('initial_configuration', (_, response) => callback(response))
+  ipcRenderer.send('initial_configuration', payload)
+}
+
 exports.getConfiguration = function (callback) {
   ipcRenderer.removeAllListeners('get_configuration')
   ipcRenderer.on('get_configuration', (_, response) => callback(response))
