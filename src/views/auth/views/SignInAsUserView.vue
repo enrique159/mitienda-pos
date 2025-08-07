@@ -42,8 +42,8 @@
 
       <div>
         <p class="text-black-3 text-sm text-center">
-          Si tiene problemas para ingresar puede acceder <br>con la <router-link class="text-brand-pink underline" to="/admin/signin-as-admin">
-            cuenta principal
+          Si desea configurar un nuevo punto de venta <br>puede dirigirse a la <router-link class="text-brand-pink underline" to="/auth/login">
+            pantalla de configuración
           </router-link>
         </p>
       </div>

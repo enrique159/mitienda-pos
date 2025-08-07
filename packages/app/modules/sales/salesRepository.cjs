@@ -20,7 +20,6 @@ exports.createSale = async function (sale, trx) {
       return response(true, 'Venta creada', Array.isArray(sale) ? sale[0] : sale)
     })
     .catch((err) => {
-      console.log(err)
       logger.error({ type: 'CREATE SALE ERROR', message: `${err}`, data: err })
       return response(false, 'Error al crear la venta', err)
     })
@@ -34,7 +33,6 @@ exports.createSaleDetail = async function (saleDetail, trx) {
       return response(true, 'Detalle de venta creado', saleDetail)
     })
     .catch((err) => {
-      console.log(err)
       logger.error({ type: 'CREATE SALE DETAIL ERROR', message: `${err}`, data: err })
       return response(false, 'Error al crear el detalle de la venta', err)
     })
@@ -47,7 +45,6 @@ exports.createSalePayment = async function (salePayment, trx) {
       return response(true, 'Pago de venta creado', salePayment)
     })
     .catch((err) => {
-      console.log(err)
       logger.error({ type: 'CREATE SALE PAYMENT ERROR', message: `${err}`, data: err })
       return response(false, 'Error al crear el pago de la venta', err)
     })
@@ -80,7 +77,6 @@ exports.getSales = async function () {
 
     return response(true, 'Ventas encontradas', salesWithDetails)
   } catch (err) {
-    console.log(err)
     logger.error({ type: 'GET SALES ERROR', message: `${err}`, data: err })
     return response(false, 'Error al traer las ventas', err)
   }
@@ -114,7 +110,6 @@ exports.getSalesInTurn = async function (idCashRegister) {
 
     return response(true, 'Ventas encontradas', salesWithDetails)
   } catch (err) {
-    console.log(err)
     logger.error({ type: 'GET SALES IN TURN ERROR', message: `${err}`, data: err })
     return response(false, 'Error al traer las ventas', err)
   }

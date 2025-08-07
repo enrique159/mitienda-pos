@@ -1,9 +1,22 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
+const branchesService = require('./branchesService.cjs')
 const { response, logger, parseBoolean, parseObjectJson } = require('../../helpers/index.cjs')
-const Http = require('../../network/Http.cjs')
-const { getBranchesByEmail } = require('../../shared/routes.cjs')
 
-const http = new Http()
+exports.getBranchesByEmail = async function (email) {
+  return await branchesService.fetchBranchesByEmail(email)
+}
+
+exports.saveBranch = async function (branch, trx) {
+  const queryBuilder = trx ? knex('branches').transacting(trx) : knex('branches')
+  return await queryBuilder.insert(branch).returning('*')
+    .then((branch) => {
+      return response(true, 'Sucursal guardada', branch)
+    })
+    .catch((err) => {
+      logger.error({ type: 'SAVE BRANCH ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al guardar la sucursal', err)
+    })
+}
 
 exports.getBranchInfo = async function () {
   return await knex('branches').select().first()
@@ -47,18 +60,5 @@ exports.setBranchLogo = async function (image) {
     .catch((err) => {
       logger.error({ type: 'SET BRANCH LOGO ERROR', message: `${err}`, data: err })
       return response(false, 'Error al actualizar el logo de la sucursal', err)
-    })
-}
-
-// API FETCHES
-exports.getBranchesByEmail = async function (email) {
-  const url = getBranchesByEmail(Http.baseUrl)
-  return await http.post(url, { data: { email } })
-    .then((apiResponse) => {
-      return response(true, 'Sucursales encontradas', apiResponse.data)
-    })
-    .catch((err) => {
-      logger.error({ type: 'GET BRANCHES BY EMAIL ERROR', message: `${err}`, data: err })
-      return response(false, 'Error al traer las sucursales', err.errors)
     })
 }
