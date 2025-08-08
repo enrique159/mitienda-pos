@@ -2,10 +2,11 @@ const finish = (string, end) =>
   string.endsWith(end) ? string : `${string}${end}`
 const finishSlash = (string) => finish(string, '/')
 
-// CONFIGURATION ROUTES
-const initialConfiguration = (baseUrl) => `${finishSlash(baseUrl)}pos/install`
+// POS ROUTES
+const initialConfiguration = (baseUrl) => `${finishSlash(baseUrl)}pos/pos/install`
+const getPosCompany = (baseUrl) => `${finishSlash(baseUrl)}pos/pos/company`
 // COMPANY ROUTES
-const getBranchesByEmail = (baseUrl) => `${finishSlash(baseUrl)}companies/branches`
+const getBranchesByEmail = (baseUrl) => `${finishSlash(baseUrl)}pos/companies/branches`
 
 // AUTH ROUTES
 // const signIn = (baseUrl) => `${finishSlash(baseUrl)}auth/signin`
@@ -46,11 +47,8 @@ const getBranchesByEmail = (baseUrl) => `${finishSlash(baseUrl)}companies/branch
 // const updatePos = (baseUrl, posId) =>
 //   `${finishSlash(baseUrl)}pos/${posId}`
 
-// // SELLERS ROUTES
-// const createSeller = (baseUrl) => `${finishSlash(baseUrl)}sellers`
-// const getSellers = (baseUrl) => `${finishSlash(baseUrl)}sellers`
-// const updateSellerPos = (baseUrl, sellerId) =>
-//   `${finishSlash(baseUrl)}sellers/${sellerId}/update-pos`
+// SELLERS ROUTES
+const getSellers = (baseUrl) => `${finishSlash(baseUrl)}pos/sellers`
 
 exports.finish = finish
 exports.finishSlash = finishSlash
@@ -60,4 +58,7 @@ module.exports = {
   initialConfiguration,
   // COMPANY ROUTES
   getBranchesByEmail,
+  getPosCompany,
+  // SELLERS ROUTES
+  getSellers,
 }

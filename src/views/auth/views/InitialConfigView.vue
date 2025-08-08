@@ -6,6 +6,7 @@
       :to="{ name: 'Login' }"
       role="button"
       class="btn btn-ghost btn-lg rounded-full text-white-1"
+      :class="{ 'success-left': isSuccess }"
     >
       <icon-arrow-left />
       Regresar
@@ -96,6 +97,7 @@
                 </label>
                 <select
                   v-model="formDataInitConfig.idBranch"
+                  ref="branchSelect"
                   class="select text-white-1 bg-black-1/30 w-full placeholder:text-white/40"
                 >
                   <option disabled value="">
@@ -193,7 +195,7 @@ import {
   initialConfiguration,
   getBranchesByEmail
 } from '@/api/electron'
-import { computed, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref } from 'vue'
 import {
   validateOnlyEmail,
   validateOnlyNumbers,
@@ -202,9 +204,13 @@ import {
 import { toast } from 'vue3-toastify'
 import { Response } from '@/api/interfaces'
 import { Branch } from '@/types/api/Branches'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 // STEPS
 const step = ref(1)
+const branchSelect = ref()
 
 const formDataInitConfig = reactive({
   idBranch: '',
@@ -246,10 +252,12 @@ const handleSubmit = async () => {
 
   isLoading.value = true
   await initialConfiguration(payload, (response: Response<any>) => {
-    console.log(response)
     if (response.success) {
       toast.success('Configuración exitosa')
       isSuccess.value = true
+      setTimeout(() => {
+        router.push({ name: 'Syncing' })
+      }, 1000)
     } else {
       if (response.response instanceof Array) {
         for (const error of response.response) {
@@ -303,6 +311,11 @@ const fetchBranchesByEmail = async () => {
       if (response.success) {
         availableBranches.value = response.response
         step.value = 2
+        nextTick(() => {
+          if (branchSelect.value) {
+            branchSelect.value.focus()
+          }
+        })
       } else {
         for (const error of response.response) {
           toast.error(error)
@@ -316,9 +329,10 @@ const fetchBranchesByEmail = async () => {
 const goBack = () => {
   step.value = 1
   formDataSearchBranches.email = ''
-  vSearchBranches$.value.$reset()
   formDataInitConfig.idBranch = ''
   availableBranches.value = []
+  vSearchBranches$.value.$reset()
+  vInitConfig$.value.$reset()
 }
 </script>
 

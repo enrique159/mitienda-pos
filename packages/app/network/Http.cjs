@@ -40,7 +40,6 @@ class Http {
         params: payload?.params,
         headers: this.requestHeaders(payload?.headers ?? {}),
         timeout: payload?.timeout ?? TIME_OUT,
-        data: payload?.data ?? null,
         withCredentials: payload?.auth || WITH_CREDENTIALS,
       })
 

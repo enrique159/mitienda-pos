@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer, shell } = require('electron')
 const { initialConfiguration, getConfiguration, getVersion, setDefaultPrinter } = require('./app/modules/configuration/configurationListeners.cjs')
-const { getCompany } = require('./app/modules/company/companyListeners.cjs')
+const { getCompany, getPosCompany } = require('./app/modules/company/companyListeners.cjs')
 const { startSession, getSellers, closeSession } = require('./app/modules/sellers/sellersListeners.cjs')
 const { createProduct, deleteProduct, getActiveProducts, getProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
 const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, deleteDiscount, getDiscountProducts, createDiscountProduct } = require('./app/modules/discounts/discountsListeners.cjs')
@@ -33,6 +33,7 @@ window.addEventListener('DOMContentLoaded', () => {
 contextBridge.exposeInMainWorld('electron', {
   // Company
   getCompany,
+  getPosCompany,
   // Sellers
   getSellers,
   startSession,

@@ -12,6 +12,7 @@ export const printSaleTicket = async (printerName: string | null, payload: any, 
 
 /* Company */
 export const getCompany = async (callback: any) => window.electron.getCompany(callback)
+export const getPosCompany = async (callback: any) => window.electron.getPosCompany(callback)
 
 /* Sellers */
 export const getSellers = async (callback: any) => window.electron.getSellers(callback)

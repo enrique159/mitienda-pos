@@ -87,3 +87,20 @@ exports.setDefaultPrinter = async function (printerName) {
       return response(false, 'Error al actualizar la impresora por defecto', err)
     })
 }
+
+exports.getToken = async function () {
+  return await knex('configuration').select('token').first()
+    .then((token) => {
+      if (!token) {
+        return response(false, 'Token no encontrado', null)
+      }
+      const authHeader = {
+        Authorization: `Bearer ${token.token}`,
+      }
+      return response(true, 'Token encontrado', authHeader)
+    })
+    .catch((err) => {
+      logger.error({ type: 'GET TOKEN ERROR', message: err })
+      return response(false, 'Error al traer el token', err)
+    })
+}
