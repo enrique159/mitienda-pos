@@ -35,7 +35,7 @@ exports.initialConfiguration = async function (payload) {
 
   const trx = await knex.transaction()
   try {
-    await cleanAllTables(trx)
+    await cleanAllTables({ excludedTables: ['taxes'], trx })
     await exports.saveConfiguration(configuration, trx)
     await branchRepository.saveBranch(branchPayload, trx)
     await trx.commit()

@@ -8,8 +8,8 @@ const response = (success, message, response) => ({ success, message, response }
  * @param {Object} trx - Transacción de Knex (opcional)
  * @returns {Promise<{success: boolean, message: string, response: *}>}
  */
-exports.cleanAllTables = async function (trx) {
-  const transaction = trx || await knex.transaction()
+exports.cleanAllTables = async function (payload) {
+  const transaction = payload.trx || await knex.transaction()
 
   try {
     // Desactivar restricciones de clave foránea temporalmente
@@ -18,10 +18,12 @@ exports.cleanAllTables = async function (trx) {
     // Obtener todas las tablas de la base de datos
     const tables = await transaction.raw("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")
 
-    // Truncar cada tabla
+    // Truncar cada tabla excepto las excluidas
     for (const tableObj of tables) {
       const tableName = tableObj.name
-      await transaction.raw(`DELETE FROM ${tableName};`)
+      if (!payload.excludedTables.includes(tableName)) {
+        await transaction.raw(`DELETE FROM ${tableName};`)
+      }
     }
 
     // Verificar si existe la tabla sqlite_sequence antes de intentar limpiarla
@@ -35,13 +37,13 @@ exports.cleanAllTables = async function (trx) {
     // Reactivar restricciones de clave foránea
     await transaction.raw('PRAGMA foreign_keys = ON;')
 
-    if (!trx) {
+    if (!payload.trx) {
       await transaction.commit()
     }
 
     return response(true, 'Todas las tablas han sido limpiadas correctamente', null)
   } catch (err) {
-    if (!trx) {
+    if (!payload.trx) {
       await transaction.rollback()
     }
     logger.error({ type: 'CLEAN ALL TABLES ERROR', message: `${err}`, data: err })

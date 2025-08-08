@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer, shell } = require('electron')
+const { clearDatabase } = require('./app/utils/database/databaseListeners.cjs')
 const { initialConfiguration, getConfiguration, getVersion, setDefaultPrinter } = require('./app/modules/configuration/configurationListeners.cjs')
 const { getCompany, getPosCompany } = require('./app/modules/company/companyListeners.cjs')
 const { startSession, getSellers, closeSession } = require('./app/modules/sellers/sellersListeners.cjs')
@@ -115,6 +116,8 @@ contextBridge.exposeInMainWorld('electron', {
   getPrinters,
   printTestTicket,
   printSaleTicket,
+  // Database
+  clearDatabase,
   // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),

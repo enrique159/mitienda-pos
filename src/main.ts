@@ -24,6 +24,7 @@ import PinInput from './components/inputs/PinInput.vue'
 import CurrencyInput from './components/inputs/CurrencyInput.vue'
 import CustomKbd from './components/CustomKbd.vue'
 import InputErrors from './components/InputErrors.vue'
+import StepText from './components/StepText.vue'
 
 
 const app = createApp(App)
@@ -42,5 +43,6 @@ app.component('CurrencyInput', CurrencyInput)
 app.component('CustomKbd', CustomKbd)
 app.component('DatePicker', VueDatePicker)
 app.component('InputErrors', InputErrors)
+app.component('StepText', StepText)
 
 app.mount('#app')

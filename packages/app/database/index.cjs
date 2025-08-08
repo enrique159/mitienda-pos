@@ -81,6 +81,7 @@ const initDB = async() => {
     if (dev && seed) {
       await seeds.seed(knex)
     }
+    await seeds.requiredSeed(knex)
   } else {
     console.log('Database already exists.')
   }

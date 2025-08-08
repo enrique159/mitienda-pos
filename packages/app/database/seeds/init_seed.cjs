@@ -137,7 +137,14 @@ exports.seed = async function(knex) {
       credit_limit: 100000,
       payment_due_date: getPaymentDueDate(),
     })
+  } catch (error) {
+    console.error('Error seeding data:', error)
+    logger.error({ type: 'DB SEEDS', message: `${error}`, error })
+  }
+}
 
+exports.requiredSeed = async function(knex) {
+  try {
     // Taxes
     await knex('taxes').del()
     await knex('taxes').insert(taxes)

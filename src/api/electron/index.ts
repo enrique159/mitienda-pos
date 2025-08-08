@@ -5,6 +5,9 @@ import { CreatePurchaseOrderItem, PurchaseOrderItem, PurchaseOrderStatus } from 
 export const getVersion = async (callback: any) => window.electron.getVersion(callback)
 export const openExternalLink = async (url: string) => window.electron.openExternalLink(url)
 
+/* Database */
+export const clearDatabase = async (payload: { excludedTables: string[] }, callback: any): Promise<Response<null>> => window.electron.clearDatabase(payload, callback)
+
 /* Printer */
 export const getPrinters = async (callback: any) => window.electron.getPrinters(callback)
 export const printTestTicket = async (printerName: string, callback: any) => window.electron.printTestTicket(printerName, callback)

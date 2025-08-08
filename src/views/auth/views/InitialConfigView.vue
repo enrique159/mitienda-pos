@@ -11,6 +11,13 @@
       <icon-arrow-left />
       Regresar
     </router-link>
+    <router-link
+      :to="{ name: 'Syncing' }"
+      role="button"
+      class="btn btn-ghost btn-lg rounded-full text-white-1"
+    >
+      ir a configuración
+    </router-link>
     <div class="w-full max-w-[1080px] h-[80%] grid grid-cols-2 mx-auto px-12">
       <!-- LEFT SIDE -->
       <div
