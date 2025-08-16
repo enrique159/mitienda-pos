@@ -24,12 +24,11 @@ export const useCurrency = () => {
   }
 
   const formatCurrencySimple = (value: number, currency = 'MXN') => {
-    const adjustedValue = safeDivide(value, 100)
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency,
       maximumFractionDigits: 2,
-    }).format(adjustedValue)
+    }).format(value)
   }
 
   return {

@@ -15,3 +15,8 @@ ipcMain.on('get_sellers', async (event) => {
   const response = await sellerRepository.getSellers()
   event.reply('get_sellers', response)
 })
+
+ipcMain.on('get_pos_sellers', async (event) => {
+  const response = await sellerRepository.getPosSellers()
+  event.reply('get_pos_sellers', response)
+})

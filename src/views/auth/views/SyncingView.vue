@@ -9,59 +9,59 @@
     <h4 class="text-2xl font-bold text-white mb-4">
       Configurando punto de venta
     </h4>
-    <progress class="progress w-56 text-white" :value="progressPercent" max="100" />
     <StepText
       :texts="syncSteps"
       :step="currentStep"
       text-class="text-white text-lg"
     />
+    <progress-bar v-model="currentStep" color="bg-white" :max="syncSteps.length" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { IconRefresh } from '@tabler/icons-vue'
-import { clearDatabase, getPosCompany } from '@/api/electron'
+import { clearDatabase, getPosCompany, getPosSellers } from '@/api/electron'
 import { onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import { Response } from '@/api/interfaces'
-import StepText from '@/components/StepText.vue'
 
 const isLoading = ref(false)
 const isError = ref(false)
-const progressPercent = ref(0)
 const currentStep = ref(1)
-
-const syncSteps = [
-  { step: 1, text: 'Guardando datos de la empresa' },
-  { step: 2, text: 'Obteniendo usuarios vendedores' },
-  { step: 3, text: 'Sincronización exitosa' },
-]
 
 const syncronize = async () => {
   isError.value = false
   isLoading.value = true
-  // Limpiar base de datos excepto las siguientes tablas
-  const excludedTables = ['taxes', 'configuration', 'branches']
-  await clearDatabase({ excludedTables }, (response: Response<any>) => {
-    console.log(response)
-  })
-  await syncCompany()
+  for (const step of syncSteps) {
+    if (isError.value) break
+    if (step.action) {
+      await step.action()
+    }
+  }
 
-  // Simulate next steps
-  currentStep.value = 2
-  progressPercent.value = 50
-  await new Promise((resolve) => setTimeout(resolve, 1500))
-
-  currentStep.value = 3
-  progressPercent.value = 100
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  currentStep.value = 4
 }
+
 onMounted(() => {
   syncronize()
 })
 
+// 1. PrepareDatabase
+const prepareDatabase = async () => {
+  const excludedTables = ['taxes', 'configuration', 'branches']
+  await clearDatabase({ excludedTables }, (response: Response<any>) => {
+    if (!response.success) {
+      isError.value = true
+      toast.error(response.message)
+    }
+    isLoading.value = false
+  })
+}
+
+// 2. Sync Company
 const syncCompany = async () => {
-  currentStep.value = 1
-  progressPercent.value = 10
+  currentStep.value = 2
   await new Promise((resolve) => setTimeout(resolve, 1000))
   getPosCompany((response: Response<any>) => {
     if (!response.success) {
@@ -71,6 +71,26 @@ const syncCompany = async () => {
     isLoading.value = false
   })
 }
+
+// 3. Sync Sellers
+const syncSellers = async () => {
+  currentStep.value = 3
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  getPosSellers((response: Response<any>) => {
+    if (!response.success) {
+      isError.value = true
+      toast.error(response.message)
+    }
+    isLoading.value = false
+  })
+}
+
+const syncSteps = [
+  { step: 1, text: 'Preparando base de datos', action: prepareDatabase },
+  { step: 2, text: 'Guardando datos de la empresa', action: syncCompany },
+  { step: 3, text: 'Obteniendo usuarios vendedores', action: syncSellers },
+  { step: 4, text: 'Sincronización exitosa' },
+]
 </script>
 
 <style lang="scss" scoped>

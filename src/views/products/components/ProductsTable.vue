@@ -106,6 +106,7 @@ const filteredProducts = computed(() => {
 
 const toggleActive = async (productId: string) => {
   console.log(productId)
+  // TODO: Implement toggle active
 }
 
 const deleteProductHandler = async (productId: string) => {

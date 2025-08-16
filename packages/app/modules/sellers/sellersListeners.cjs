@@ -13,3 +13,9 @@ exports.getSellers = function (callback) {
   ipcRenderer.on('get_sellers', (_, response) => callback(response))
   ipcRenderer.send('get_sellers')
 }
+
+exports.getPosSellers = function (callback) {
+  ipcRenderer.removeAllListeners('get_pos_sellers')
+  ipcRenderer.on('get_pos_sellers', (_, response) => callback(response))
+  ipcRenderer.send('get_pos_sellers')
+}

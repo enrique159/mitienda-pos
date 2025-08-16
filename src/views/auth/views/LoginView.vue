@@ -34,7 +34,7 @@
     </div>
 
     <div class="w-full flex justify-between text-white-1">
-      <a href="#" class="hover:underline">mitiendapos.net</a>
+      <a href="#" class="hover:underline">mitiendapos.mx</a>
       <a href="#" class="flex items-center gap-2 hover:underline">
         <icon-lifebuoy class="w-6 h-6" />
         ¿Necesitas ayuda?

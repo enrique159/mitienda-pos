@@ -1,5 +1,6 @@
 const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
+const { response, logger, camelToSnakeCase } = require('../../helpers/index.cjs')
+const sellersService = require('./sellersService.cjs')
 
 const mapDataToSeller = (data) => ({
   id: data.id,
@@ -16,6 +17,17 @@ const mapDataToSellerSimple = (data) => ({
   name: data.name,
   pin: data.pin,
 })
+
+exports.saveSellers = async function (sellers) {
+  return await knex('sellers').insert(sellers).returning('*')
+    .then((sellers) => {
+      return response(true, 'Vendedores guardados', sellers.map(mapDataToSellerSimple))
+    })
+    .catch((err) => {
+      logger.error({ type: 'SAVE SELLERS ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al guardar los vendedores', err)
+    })
+}
 
 /**
  * Inicia una sesión de vendedor
@@ -64,4 +76,19 @@ exports.getSellers = async function () {
     return response(false, 'Vendedores no encontrados', [])
   }
   return response(true, 'Vendedores encontrados', sellers.map(mapDataToSellerSimple))
+}
+
+
+exports.getPosSellers = async function () {
+  const responseFetch = await sellersService.fetchSellers()
+  if (!responseFetch.success) {
+    return responseFetch
+  }
+  try {
+    const sellers = responseFetch.response.map(camelToSnakeCase)
+    return await this.saveSellers(sellers)
+  } catch (err) {
+    logger.error({ type: 'GET POS SELLERS ERROR', message: `${err}`, data: err })
+    return response(false, 'Error al obtener los vendedores', err)
+  }
 }
