@@ -3,13 +3,11 @@
     class="w-full h-full bg-brand-orange flex flex-col pt-12 pb-6 px-6 justify-between items-center"
   >
     <div class="flex items-center gap-2">
-      <img src="@/assets/logo_full_white.svg" alt="Logo" class="w-[198px]">
+      <img src="@/assets/logo_full_white.svg" alt="Logo" class="w-[198px]" />
     </div>
 
     <div class="flex flex-col items-center justify-center gap-4">
-      <h2 class="text-white mb-4 text-3xl font-medium">
-        Bienvenido
-      </h2>
+      <h2 class="text-white mb-4 text-3xl font-medium">Bienvenido</h2>
       <router-link
         :to="{ name: 'InitialConfig' }"
         role="button"
@@ -19,7 +17,7 @@
       </router-link>
 
       <router-link
-        :to="{ name: 'InitialConfig' }"
+        :to="{ name: 'Starting' }"
         role="button"
         class="btn w-[280px] bg-brand-white hover:bg-brand-pink hover:text-white border-none text-brand-pink"
       >
@@ -27,15 +25,21 @@
       </router-link>
 
       <p class="text-center text-white-1 text-sm font-bold mt-4">
-        Si tienes dudas, puedes consultar nuestra sección <br>
-        de <a class="text-brand-black underline" href="#">documentación</a> en
-        nuestro sitio web.
+        Si tienes dudas, puedes consultar nuestra sección <br />
+        de
+        <a
+          class="text-brand-black underline"
+          href="#"
+          @click.prevent="openExternalLink('https://mitiendapos.mx')"
+          >documentación</a
+        >
+        en nuestro sitio web.
       </p>
     </div>
 
     <div class="w-full flex justify-between text-white-1">
-      <a href="#" class="hover:underline">mitiendapos.mx</a>
-      <a href="#" class="flex items-center gap-2 hover:underline">
+      <a href="#" class="hover:underline" @click.prevent="openExternalLink('https://mitiendapos.mx')">mitiendapos.mx</a>
+      <a href="#" class="flex items-center gap-2 hover:underline" @click.prevent="openExternalLink('https://mitiendapos.mx')">
         <icon-lifebuoy class="w-6 h-6" />
         ¿Necesitas ayuda?
       </a>
@@ -45,6 +49,7 @@
 
 <script setup lang="ts">
 import { IconLifebuoy } from '@tabler/icons-vue'
+import { openExternalLink } from '@/api/electron'
 </script>
 
 <style scoped></style>

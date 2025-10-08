@@ -51,7 +51,7 @@ module.exports = class TestTicketBuilder {
         }
         body {
           margin: 0;
-          padding: 0;
+          padding: 0 8mm;
           font-family: '${fontName}', monospace;
           font-size: 14px;
           font-weight: bold;

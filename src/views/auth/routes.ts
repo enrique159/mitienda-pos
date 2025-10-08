@@ -2,6 +2,7 @@ import AuthModule from './AuthModule.vue'
 import LoginView from './views/LoginView.vue'
 import SignInAsUserView from './views/SignInAsUserView.vue'
 import InitialConfigView from './views/InitialConfigView.vue'
+import StartingView from './views/StartingView.vue'
 import SyncingView from './views/SyncingView.vue'
 
 export const AuthRoutes = [
@@ -29,6 +30,11 @@ export const AuthRoutes = [
         path: 'syncing',
         name: 'Syncing',
         component: SyncingView,
+      },
+      {
+        path: 'starting',
+        name: 'Starting',
+        component: StartingView,
       },
     ],
   },

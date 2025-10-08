@@ -11,13 +11,6 @@
       <icon-arrow-left />
       Regresar
     </router-link>
-    <router-link
-      :to="{ name: 'Syncing' }"
-      role="button"
-      class="btn btn-ghost btn-lg rounded-full text-white-1"
-    >
-      ir a configuración
-    </router-link>
     <div class="w-full max-w-[1080px] h-[80%] grid grid-cols-2 mx-auto px-12">
       <!-- LEFT SIDE -->
       <div
@@ -31,7 +24,7 @@
         </h6>
         <p class="text-white-2 mb-4">
           Perfecto. Ahora lo que necesitamos es que ingreses el correo
-          electrónico de la cuenta principal, luego seleccione la sucursal donde
+          electrónico de la <strong>cuenta principal</strong>, luego seleccione la sucursal donde
           se encuentra el punto de venta, ingrese el alias y PIN de seguridad
           para comenzar con la configuración.
         </p>
