@@ -1,6 +1,7 @@
 const { ipcMain } = require('electron')
 const knex = require('knex')(require('../../database/knexfile.cjs'))
 const salesRepository = require('./salesRepository.cjs')
+const productsRepository = require('../products/productsRepository.cjs')
 const { response, logger } = require('../../helpers/index.cjs')
 
 
@@ -17,6 +18,14 @@ ipcMain.on('create_sale', async (event, payload) => {
       for (const detail of details) {
         detail.id_sale = idSale
         await salesRepository.createSaleDetail(detail, trx)
+        // Update stock
+        const { response: currentProduct } = await productsRepository.getProductById(detail.id_product)
+        if (currentProduct.unlimited_stock) {
+          continue
+        }
+        const currentStock = currentProduct.stock
+        const newStock = Math.max(0, currentStock - detail.quantity)
+        await productsRepository.updateStockProduct(detail.id_product, newStock, trx)
       }
       for (const payment of payments) {
         payment.id_sale = idSale

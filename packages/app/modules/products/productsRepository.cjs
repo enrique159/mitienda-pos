@@ -23,6 +23,27 @@ function normalizeProduct(product) {
 }
 
 /**
+ * Obtiene un producto por su id
+ * @param {string} productId 
+ * @returns 
+ */
+exports.getProductById = async function (productId) {
+  return await knex('products').where('id', productId).first()
+    .then((product) => {
+      if (!product) {
+        logger.error({ type: 'GET PRODUCT BY ID', message: 'Producto no encontrado' })
+        return response(false, 'Producto no encontrado', null)
+      }
+      return response(true, 'Producto encontrado', normalizeProduct(product))
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'GET PRODUCT BY ID ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al traer el producto', err)
+    })
+}
+
+/**
  * Obtiene todos los productos para la sección de products
  */
 exports.getProducts = async function () {
@@ -149,6 +170,20 @@ exports.createProduct = async function (product) {
       console.log(err)
       logger.error({ type: 'CREATE PRODUCT ERROR', message: `${err}`, data: err })
       return response(false, 'Error al crear el producto', err)
+    })
+}
+
+exports.updateStockProduct = async function (productId, stock, trx) {
+  const queryBuilder = trx ? knex('products').transacting(trx) : knex('products')
+  return await queryBuilder.where('id', productId).update({ stock })
+    .then((product) => {
+      logger.info({ type: 'UPDATE STOCK PRODUCT', message: 'Stock actualizado exitosamente', data: product })
+      return response(true, 'Stock actualizado exitosamente', product)
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'UPDATE STOCK PRODUCT ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al actualizar el stock', err)
     })
 }
 

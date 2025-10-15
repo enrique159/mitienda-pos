@@ -1,5 +1,6 @@
 import { RouteRecordRaw } from "vue-router"
 import { AuthRoutes } from "@/views/auth/routes"
+import { SetupRoutes } from "@/views/setup/routes"
 import { SettingsRoutes } from "@/views/settings/routes"
 import { CashRegisterRoutes } from "@/views/cashregister/routes"
 import { ClientsRoutes } from "@/views/clients/routes"
@@ -59,7 +60,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   ...AuthRoutes,
-
+  ...SetupRoutes,
 
   // // 404
   {

@@ -51,6 +51,7 @@
 
           <button
             class="absolute bottom-4 left-4 w-[calc(100%-2rem)] h-fit btn bg-white text-brand-black rounded-xl"
+            @click="goToSetup()"
           >
             <IconArrowRight />
             Comienza ahora
@@ -122,6 +123,13 @@ import {
   IconX,
 } from '@tabler/icons-vue'
 import { openExternalLink } from '@/api/electron'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const goToSetup = () => {
+  router.push({ name: 'SetupPart1' })
+}
 
 const localFeatures = [
   'Instalación en 1 computador',
