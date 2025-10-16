@@ -355,6 +355,7 @@ module.exports = class SaleTicketBuilder {
         .container {
           width: 72mm;
           padding: 0 4mm;
+          padding-top: 4mm;
         }
         .center {
           text-align: center;

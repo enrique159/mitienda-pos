@@ -2,6 +2,7 @@ const knex = require('knex')(require('../../database/knexfile.cjs'))
 const { response, logger, parseBoolean, cleanAllTables } = require('../../helpers/index.cjs')
 const configurationService = require('./configurationService.cjs')
 const branchRepository = require('../branches/branchesRepository.cjs')
+const { downloadImage } = require('../../utils/images/downloadImage.cjs')
 
 exports.initialConfiguration = async function (payload) {
   const responseFetch = await configurationService.fetchInitialConfiguration(payload)
@@ -21,6 +22,13 @@ exports.initialConfiguration = async function (payload) {
   }
 
   const branch = responseFetch.response.initialConfig.branch
+
+  // Download branch image
+  if (branch.image) {
+    const { success, response } = await downloadImage(branch.image)
+    branch.image = success ? response.filename : null
+  }
+
   const branchPayload = {
     id: branch.id,
     id_company: branch.idCompany,
