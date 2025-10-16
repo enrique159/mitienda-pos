@@ -341,7 +341,7 @@
               <input
                 type="checkbox"
                 class="toggle checked:text-brand-pink"
-                :checked="formData.unlimited_stock"
+                :checked="!formData.unlimited_stock"
                 @change="toggleUnlimitedStock"
               >
             </label>
@@ -359,7 +359,7 @@
               type="number"
               min="0"
               step="1"
-              :disabled="!formData.unlimited_stock"
+              :disabled="formData.unlimited_stock"
               class="input input-bordered w-full"
             >
             <div v-for="(error, index) in v$.stock.$errors" :key="`error-stock-${index}`">
@@ -377,7 +377,7 @@
               type="number"
               min="0"
               step="1"
-              :disabled="!formData.unlimited_stock"
+              :disabled="formData.unlimited_stock"
               class="input input-bordered w-full"
             >
             <div v-for="(error, index) in v$.stock_minimum.$errors" :key="`error-stock_minimum-${index}`">
@@ -532,7 +532,7 @@ const formData = reactive({
   description: '',
   unit_measurement: UnitMeasurement.PIECE,
   is_bulk: false,
-  unlimited_stock: true,
+  unlimited_stock: false,
   stock: null as number | null,
   stock_minimum: null as number | null,
   purchase_price: 0,

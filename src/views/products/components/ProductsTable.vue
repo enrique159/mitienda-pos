@@ -35,8 +35,11 @@
             </p>
           </td>
           <td>{{ formatCurrency(item.selling_price) }}</td>
-          <td :class="item.stock < item.stock_minimum ? 'text-brand-pink' : 'text-black-1'">
+          <td v-if="!item.unlimited_stock" :class="item.stock < item.stock_minimum ? 'text-brand-pink' : 'text-black-1'">
             {{ item.stock }}
+          </td>
+          <td v-else>
+            <span class="text-black-1">Sin límite</span>
           </td>
           <td>
             <div class="form-control">
