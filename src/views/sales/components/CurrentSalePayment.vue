@@ -776,10 +776,10 @@ const handlePrintTicket = () => {
     },
     customerInfo,
     invoiceInstructions: 'SIN INSTRUCCIONES',
-    invoiceUrl: 'https://mitienda.app',
-    qrCode: 'https://mitienda.app',
+    invoiceUrl: 'https://mitiendapos.mx',
+    qrCode: 'https://mitiendapos.mx',
     thankYouMessage: 'Gracias por su compra',
-    businessUrl: 'https://mitienda.app',
+    businessUrl: 'https://mitiendapos.mx',
   }
 
   const printer = printTicket.value ? configuration.value.default_printer : null
