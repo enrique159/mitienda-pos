@@ -105,6 +105,7 @@ module.exports = class SaleTicketBuilder {
       return
     }
     this.logoPath = await getImageDataUrl(response.response.logo || 'default.jpg')
+    if (!this.logoPath) this.logoPath = await getImageDataUrl('default.jpg')
   }
 
   buildHeader() {
@@ -206,12 +207,13 @@ module.exports = class SaleTicketBuilder {
   }
 
   buildTotal() {
+    const [total, totalCents] = typeof this.paymentInfo.total === 'number' ? this.paymentInfo.total.toFixed(2).split('.') : this.paymentInfo.total.split('.')
     this.ticket += `
       <div class="total">
         <hr>
         <p style="margin: 2px 0; text-align: right; font-size: 18px; font-weight: 600;">Total: $ ${this.paymentInfo.total}</p>
         <p style="margin: 2px 0; font-size: 12px; margin-bottom: 12px;">
-          (${this.amountToWords(this.paymentInfo.total)} 00/100 M.N.)
+          (${this.amountToWords(total)} ${totalCents ?? '00'}/100 M.N.)
         </p>
         <p style="margin: 2px 0; font-size: 12px;">Precios con IVA incluido</p>
         <div style="display: flex; justify-content: space-between;">

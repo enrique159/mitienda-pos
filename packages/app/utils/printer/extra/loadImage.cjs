@@ -2,6 +2,7 @@ const path = require('path')
 const fs = require('fs')
 const mime = require('mime-types')
 const { app } = require('electron')
+const logger = require('../../../helpers/logger.cjs')
 
 
 module.exports.getImageDataUrl = (imageFileName) => {
@@ -12,7 +13,7 @@ module.exports.getImageDataUrl = (imageFileName) => {
       const base64 = imageFileData.toString('base64')
       return `data:${mimeType};base64,${base64}`
     } catch (error) {
-      console.error('Error al cargar la imagen:', error)
+      logger.error({ type: 'GET IMAGE DATA URL', message: 'Error al cargar la imagen', data: error })
       return ''
     }
   }
