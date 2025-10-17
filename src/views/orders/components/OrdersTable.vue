@@ -134,7 +134,7 @@ import { usePurchaseOrder } from '@/composables/usePurchaseOrder'
 import { PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
 import { getPurchaseOrderStatusBadge } from '@/utils/PurchaseOrders'
 import { useDate } from '@/composables/useDate'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { useRouter } from 'vue-router'
 
 const { formatDatetimeShort } = useDate()

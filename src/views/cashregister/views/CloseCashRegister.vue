@@ -206,7 +206,7 @@ import {
 import { CashRegisterState } from '@/api/interfaces'
 import { getCurrentCashRegisterState } from '@/api/electron'
 import { useCurrency } from '@/composables/useCurrency'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {

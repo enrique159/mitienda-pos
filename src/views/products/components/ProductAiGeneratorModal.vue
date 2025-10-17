@@ -106,7 +106,7 @@
 <script setup lang="ts">
 import { IconX, IconSend, IconPlus, IconEraser } from '@tabler/icons-vue'
 import { useAI } from '@/composables/useAI'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { ref, nextTick, watch, onMounted } from 'vue'
 
 interface Message {

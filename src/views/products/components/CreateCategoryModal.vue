@@ -72,7 +72,7 @@ import { useProduct } from '@/composables/useProduct'
 import { Category, CreateCategory, Response } from '@/api/interfaces'
 import { createCategory, getCategories } from '@/api/electron'
 import { useBranch } from '@/composables/useBranch'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 // Props
 const props = defineProps({

@@ -152,7 +152,7 @@ import { useProduct } from '@/composables/useProduct'
 import { IconDotsVertical, IconEdit, IconTrash } from '@tabler/icons-vue'
 import { Category, Response } from '@/api/interfaces'
 import { updateCategory, getCategories, deleteCategory } from '@/api/electron'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const { categories, setCategories } = useProduct()
 

@@ -13,7 +13,7 @@ import { Response, Product, Category, Discount, Provider } from '@/api/interface
 import { useTax } from '@/composables/useTax'
 import { useProduct } from '@/composables/useProduct'
 import { onMounted } from 'vue'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { useProvider } from '@/composables/useProvider'
 
 const { setTaxes } = useTax()

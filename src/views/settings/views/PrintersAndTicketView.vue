@@ -180,7 +180,7 @@ import { IconAlertCircle, IconCircleCheck, IconDeviceDesktopDown, IconPrinter } 
 import { getPrinters, setDefaultPrinter, getConfiguration, printTestTicket } from '@/api/electron'
 import { Printer } from '@/types/Printer'
 import { Configuration, Response } from '@/api/interfaces'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useConfiguration } from '@/composables/useConfiguration'
 import { useBranch } from '@/composables/useBranch'

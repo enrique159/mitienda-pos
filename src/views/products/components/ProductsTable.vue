@@ -94,7 +94,7 @@ import { useProduct } from '@/composables/useProduct'
 import { deleteProduct, getProducts } from '@/api/electron'
 import { Product, Response } from '@/api/interfaces'
 import { useRouter } from 'vue-router'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { computed } from 'vue'
 
 const router = useRouter()

@@ -138,7 +138,7 @@
 import { getCurrentCashRegisterState } from '@/api/electron'
 import { ref } from 'vue'
 import { CashRegisterState } from '@/api/interfaces'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { useCurrency } from '@/composables/useCurrency'
 import { IconCash, IconCreditCard, IconTransferVertical } from '@tabler/icons-vue'
 

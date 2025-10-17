@@ -259,7 +259,7 @@ import { useDate } from '@/composables/useDate'
 import { useRoute } from 'vue-router'
 import { Product, Response } from '@/api/interfaces'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const route = useRoute()
 const isAdditionalInfoOpen = ref(false)

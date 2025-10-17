@@ -289,7 +289,7 @@ import { CreateDiscount, Response, DiscountSchedule, Discount } from '@/api/inte
 import { createDiscount, getDiscounts } from '@/api/electron'
 import { useBranch } from '@/composables/useBranch'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const { setDiscounts } = useProduct()
 const { branch } = useBranch()

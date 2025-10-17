@@ -219,7 +219,7 @@ import { CreatePurchaseOrder, CreatePurchaseOrderItem, Product, Response } from 
 import { validateOnlyNumbers } from '@/utils/InputValidators'
 import { CreatePurchaseOrderPayload, PurchaseOrder, PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
 import { useRouter } from 'vue-router'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const { branch } = useBranch()
 const { user } = useUser()

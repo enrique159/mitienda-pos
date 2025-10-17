@@ -79,7 +79,7 @@ import { useCustomer } from '@/composables/useCustomer'
 import { useCompany } from '@/composables/useCompany'
 import { useUser } from '@/composables/useUser'
 import { useAI } from '@/composables/useAI'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const { setProducts, setCategories } = useProduct()
 const { setBranch, branch } = useBranch()

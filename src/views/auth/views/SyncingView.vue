@@ -22,7 +22,7 @@
 import { IconRefresh } from '@tabler/icons-vue'
 import { clearDatabase, getPosCompany, getPosSellers } from '@/api/electron'
 import { onMounted, ref } from 'vue'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { Response } from '@/api/interfaces'
 
 const isLoading = ref(false)

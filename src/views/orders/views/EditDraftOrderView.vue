@@ -186,7 +186,7 @@ import { useProvider } from '@/composables/useProvider'
 import { useUser } from '@/composables/useUser'
 import { useBranch } from '@/composables/useBranch'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
 
 const route = useRoute()

@@ -115,7 +115,7 @@ import { IconSearch, IconPlus, IconMinus } from '@tabler/icons-vue'
 import { getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
 import { attachProductsToDiscount, getDiscountProducts } from '@/api/electron'
 import { Category, Discount, Response } from '@/api/interfaces'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const { availableCategories, products } = useProduct()
 const { formatCurrency } = useCurrency()

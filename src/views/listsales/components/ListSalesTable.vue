@@ -262,7 +262,7 @@ import { Sale, Response } from '@/api/interfaces'
 import { getSalesInTurn } from '@/api/electron'
 import { useCurrency } from '@/composables/useCurrency'
 import { useDate } from '@/composables/useDate'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { getPaymentMethodName, getSaleStatusName } from '@/utils/Payments'
 import { useCashRegister } from '@/composables/useCashRegister'
 

@@ -193,7 +193,7 @@ import { createCustomer } from '@/api/electron'
 import { CreateCustomer, Response } from '@/api/interfaces'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
 import { useBranch } from '@/composables/useBranch'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const { branch } = useBranch()
 const router = useRouter()

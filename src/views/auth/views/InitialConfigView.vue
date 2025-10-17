@@ -201,7 +201,7 @@ import {
   validateOnlyNumbers,
   validateOnlyNumbersAndLetters
 } from '@/utils/InputValidators'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { Response } from '@/api/interfaces'
 import { Branch } from '@/types/api/Branches'
 import { useRouter } from 'vue-router'

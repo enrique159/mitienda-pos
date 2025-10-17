@@ -72,7 +72,7 @@ import { IconSwipeRight, IconSwipeLeft } from '@tabler/icons-vue'
 import { CashMovement, CreateCashMovement, Response } from '@/api/interfaces'
 import { createCashMovement } from '@/api/electron'
 import { computed, ref } from 'vue'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { useCashRegister } from '@/composables/useCashRegister'
 
 const movementType = ref<'income' | 'withdraw'>('income')

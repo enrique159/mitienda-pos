@@ -200,7 +200,7 @@ import { createAiModel, deleteAiModel, getAiModels, setDefaultAiModel, updateAiM
 import { Response } from '@/api/interfaces'
 import { openExternalLink } from '@/api/electron'
 import { useAI } from '@/composables/useAI'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const { branch } = useBranch()
 const { aiModels, setAiModels } = useConfiguration()
@@ -404,9 +404,7 @@ onMounted(() => {
 
 watch(isInitialized, () => {
   if (isInitialized.value) {
-    toast.info('Modelo inicializado', {
-      theme: 'colored',
-    })
+    toast.info('Modelo inicializado')
   }
 })
 </script>

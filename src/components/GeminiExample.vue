@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { useAI } from '@/composables/useAI'
 
 const prompt = ref('')

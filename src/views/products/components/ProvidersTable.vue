@@ -70,7 +70,7 @@
 import { IconDotsVertical, IconEdit, IconTrash } from '@tabler/icons-vue'
 import { Provider, Response } from '@/api/interfaces'
 import { getProviders } from '@/api/electron'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { useProvider } from '@/composables/useProvider'
 import { formatPhone } from '@/utils/Phone'
 import { deleteProvider } from '@/api/electron'

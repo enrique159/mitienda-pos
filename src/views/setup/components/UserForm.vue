@@ -118,7 +118,7 @@
 <script setup lang="ts">
 import useVuelidate from '@vuelidate/core'
 import { email, helpers, required } from '@vuelidate/validators'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { onMounted, reactive, ref } from 'vue'
 import { IconArrowRight, IconEye, IconEyeOff } from '@tabler/icons-vue'
 import { strongPassword } from '@/utils/Validators'

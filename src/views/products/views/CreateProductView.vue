@@ -442,7 +442,7 @@ import { useTax } from '@/composables/useTax'
 import { useProduct } from '@/composables/useProduct'
 import { useDate } from '@/composables/useDate'
 import { Months } from '@/constants'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 import { useProvider } from '@/composables/useProvider'
 
 const { taxes } = useTax()

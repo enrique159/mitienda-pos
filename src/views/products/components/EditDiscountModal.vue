@@ -309,7 +309,7 @@ import { Response, DiscountSchedule, Discount, UpdateDiscount } from '@/api/inte
 import { updateDiscount, getDiscounts } from '@/api/electron'
 import { useBranch } from '@/composables/useBranch'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const { setDiscounts } = useProduct()
 const { branch } = useBranch()

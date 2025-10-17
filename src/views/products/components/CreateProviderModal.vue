@@ -167,7 +167,7 @@ import { useBranch } from '@/composables/useBranch'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
 import { CreateProvider, Provider, Response } from '@/api/interfaces'
 import { useProviderStore } from '@/stores/providerStore'
-import { toast } from 'vue3-toastify'
+import { toast } from '@/composables/useToast'
 
 const { branch } = useBranch()
 const { setProviders } = useProviderStore()
