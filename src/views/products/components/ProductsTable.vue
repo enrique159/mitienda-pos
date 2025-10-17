@@ -66,6 +66,12 @@
                 tabindex="0"
                 class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow"
               >
+                <li @click.stop="updateProductHandler(item.id)">
+                  <a>
+                    <icon-edit class="w-4 h-4" />
+                    Editar producto
+                  </a>
+                </li>
                 <li @click.stop="deleteProductHandler(item.id)">
                   <a class="text-brand-pink">
                     <icon-trash class="w-4 h-4" />
@@ -82,14 +88,16 @@
 </template>
 
 <script setup lang="ts">
-import { IconDotsVertical, IconTrash } from '@tabler/icons-vue'
+import { IconDotsVertical, IconEdit, IconTrash } from '@tabler/icons-vue'
 import { useCurrency } from '@/composables/useCurrency'
 import { useProduct } from '@/composables/useProduct'
 import { deleteProduct, getProducts } from '@/api/electron'
 import { Product, Response } from '@/api/interfaces'
+import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import { computed } from 'vue'
 
+const router = useRouter()
 const { formatCurrency } = useCurrency()
 const { allProducts: products, setAllProducts: setProducts } = useProduct()
 
@@ -133,5 +141,9 @@ const getAllProducts = async () => {
     }
     setProducts(response.response)
   })
+}
+
+const updateProductHandler = async (productId: string) => {
+  router.push({ name: 'UpdateProductView', params: { id: productId } })
 }
 </script>

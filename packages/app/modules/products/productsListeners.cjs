@@ -6,6 +6,12 @@ exports.createProduct = function (product, callback) {
   ipcRenderer.send('create_product', product)
 }
 
+exports.updateProduct = function (product, callback) {
+  ipcRenderer.removeAllListeners('update_product')
+  ipcRenderer.on('update_product', (_, response) => callback(response))
+  ipcRenderer.send('update_product', product)
+}
+
 exports.deleteProduct = function (productId, callback) {
   ipcRenderer.removeAllListeners('delete_product')
   ipcRenderer.on('delete_product', (_, response) => callback(response))

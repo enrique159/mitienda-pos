@@ -6,6 +6,11 @@ ipcMain.on('create_product', async (event, product) => {
   event.reply('create_product', response)
 })
 
+ipcMain.on('update_product', async (event, product) => {
+  const response = await productsRepository.updateProduct(product)
+  event.reply('update_product', response)
+})
+
 ipcMain.on('delete_product', async (event, productId) => {
   const response = await productsRepository.deleteProduct(productId)
   event.reply('delete_product', response)

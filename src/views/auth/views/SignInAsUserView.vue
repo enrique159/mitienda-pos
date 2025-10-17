@@ -122,7 +122,7 @@ const users = ref<Array<Partial<User>>>([])
 
 getSellers((response: Response<Partial<User>[]>) => {
   users.value = response.response
-  if (users.value.length === 1) {
+  if (users.value.length) {
     userSelected.value = users.value[0]
     pinInputRef.value?.focus()
   }

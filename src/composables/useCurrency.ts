@@ -32,6 +32,7 @@ export const useCurrency = () => {
   }
 
   return {
+    safeDivide,
     formatCurrency,
     formatWithoutSymbol,
     formatCurrencySimple,

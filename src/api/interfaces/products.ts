@@ -80,3 +80,27 @@ export interface CreateProduct {
   requires_quantity?: boolean;
   is_composite: boolean;
 }
+
+export interface UpdateProduct {
+  id: string;
+  id_company: string;
+  id_category: string;
+  id_provider: string;
+  name: string;
+  sku: string;
+  barcode?: string;
+  description?: string;
+  unit_measurement: UnitMeasurement;
+  is_bulk: boolean;
+  unlimited_stock: boolean;
+  stock: number | null;
+  stock_minimum: number | null;
+  purchase_price: number;
+  selling_price: number;
+  taxes: ProductTax[];
+  is_active: boolean;
+  has_expiration_date: boolean;
+  expiration_date?: Date | string;
+  requires_quantity?: boolean;
+  is_composite: boolean;
+}

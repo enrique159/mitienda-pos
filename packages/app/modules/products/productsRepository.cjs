@@ -173,6 +173,20 @@ exports.createProduct = async function (product) {
     })
 }
 
+exports.updateProduct = async function (product) {
+  product.taxes = JSON.stringify(product.taxes || [])
+  return await knex('products').where('id', product.id).update(product)
+    .then((product) => {
+      logger.info({ type: 'UPDATE PRODUCT', message: 'Producto actualizado exitosamente', data: product })
+      return response(true, 'Producto actualizado exitosamente', product)
+    })
+    .catch((err) => {
+      console.log(err)
+      logger.error({ type: 'UPDATE PRODUCT ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al actualizar el producto', err)
+    })
+}
+
 exports.updateStockProduct = async function (productId, stock, trx) {
   const queryBuilder = trx ? knex('products').transacting(trx) : knex('products')
   return await queryBuilder.where('id', productId).update({ stock })

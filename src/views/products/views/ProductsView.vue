@@ -8,13 +8,13 @@
       </h1>
 
       <div class="flex items-center gap-4">
-        <button
+        <!-- <button
           class="flex items-center gap-2 transition-all duration-200 rounded-md px-2 py-[4px] text-sm font-semibold bg-gradient-to-r from-brand-orange to-brand-blue text-white shadow-md hover:bg-brand-pink custom-shadow"
           @click="showProductAiGeneratorModal = true"
         >
           <IconSparkles size="18" />
           Generar producto
-        </button>
+        </button> -->
         <button
           class="btn btn-sm bg-brand-orange text-white shadow-none hover:bg-brand-pink hover:border-brand-pink"
           @click="$router.push({ name: 'CreateProductView' })"

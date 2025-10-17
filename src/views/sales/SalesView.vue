@@ -7,7 +7,7 @@
       <button
         :disabled="isCurrentCartEmpty"
         class="bg-transparent px-3 py-1 flex items-center gap-2 text-brand-pink rounded-badge text-sm transition-all"
-        :class="[ isCurrentCartEmpty ? 'cursor-not-allowed opacity-50' : 'hover:bg-white-1 active:bg-brand-pink/10 active:scale-95' ]"
+        :class="[ isCurrentCartEmpty ? 'cursor-default opacity-0' : 'hover:bg-white-1 active:bg-brand-pink/10 active:scale-95' ]"
         @click="openCancelSaleModal"
       >
         Cancelar venta

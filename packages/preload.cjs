@@ -3,7 +3,7 @@ const { clearDatabase } = require('./app/utils/database/databaseListeners.cjs')
 const { initialConfiguration, getConfiguration, getVersion, setDefaultPrinter } = require('./app/modules/configuration/configurationListeners.cjs')
 const { getCompany, getPosCompany } = require('./app/modules/company/companyListeners.cjs')
 const { startSession, getSellers, closeSession, getPosSellers } = require('./app/modules/sellers/sellersListeners.cjs')
-const { createProduct, deleteProduct, getActiveProducts, getProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
+const { createProduct, updateProduct, deleteProduct, getActiveProducts, getProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
 const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, deleteDiscount, getDiscountProducts, createDiscountProduct } = require('./app/modules/discounts/discountsListeners.cjs')
 const { getCategories, createCategory, updateCategory, deleteCategory } = require('./app/modules/categories/categoriesListeners.cjs')
 const { getBranchInfo, setBranchLogo, getBranchesByEmail } = require('./app/modules/branches/branchesListeners.cjs')
@@ -42,6 +42,7 @@ contextBridge.exposeInMainWorld('electron', {
   closeSession,
   // Products
   createProduct,
+  updateProduct,
   deleteProduct,
   getActiveProducts,
   getProducts,
