@@ -23,7 +23,8 @@
     "migrate:make": "knex migrate:make"
   },
   "dependencies": {
-    "@google/genai": "1.10.0",
+    "@google/genai": "1.25.0",
+    "@pablotheblink/flashyjs": "^1.0.5",
     "@tabler/icons-vue": "3.34.1",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
@@ -35,7 +36,7 @@
     "jwt-decode": "^4.0.0",
     "knex": "^3.1.0",
     "mime-types": "^3.0.1",
-    "openai": "5.10.2",
+    "openai": "6.5.0",
     "pinia": "3.0.3",
     "qrcode": "^1.5.4",
     "sharp": "^0.34.2",
