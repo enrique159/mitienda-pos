@@ -10,7 +10,7 @@
           :to="item.path"
           class="hover:bg-white-2 rounded-lg pl-4 pr-2 py-2 flex items-center gap-2 transition-all active:scale-95 active:bg-white-3 text-[0.9rem] relative"
           :class="[
-            currentRoutePath === item.path
+            isCurrentPath(item)
               ? 'text-brand-orange show-badge'
               : 'text-black-1',
           ]"
@@ -28,10 +28,10 @@ interface ItemMenu {
   title: string
   path: string
   icon: any
+  subPaths?: string[]
 }
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-
 
 const route = useRoute()
 
@@ -43,6 +43,10 @@ const props = defineProps({
     required: true,
   },
 })
+
+const isCurrentPath = (item: ItemMenu) => {
+  return item.path === currentRoutePath.value || item.subPaths?.some(subPath => currentRoutePath.value.startsWith(subPath))
+}
 </script>
 
 <style scoped>
@@ -55,6 +59,6 @@ const props = defineProps({
   border-radius: 5px;
   height: 24px;
   transform: translateY(-12px);
-  background-color: #FF7270;
+  background-color: #ff7270;
 }
 </style>

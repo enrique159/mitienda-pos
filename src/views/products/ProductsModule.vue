@@ -78,6 +78,9 @@ const productsMenu = [
     title: 'Productos',
     path: '/main/products',
     icon: IconBox,
+    subPaths: [
+      '/main/products/update'
+    ],
   },
   {
     title: 'Nuevo producto',
