@@ -17,14 +17,17 @@
     <!-- SEARCH CODEBAR -->
     <section class="w-full flex items-center justify-between bg-white h-fit py-2 px-2 border-b border-gray-200">
       <div class="flex items-center gap-2">
-        <input
-          v-model="search"
-          type="text"
-          ref="inputSearchRef"
-          class="w-[260px] h-10 px-4 border border-gray-300 rounded-md focus:outline-2 outline-brand-pink"
-          placeholder="Buscar por código o nombre"
-          @keydown.enter="searchProduct"
-        >
+        <div class="relative">
+          <input
+            v-model="search"
+            type="text"
+            ref="inputSearchRef"
+            class="w-[260px] h-10 px-4 border border-gray-300 rounded-md focus:outline-2 outline-brand-pink"
+            placeholder="Buscar por código o nombre"
+            @keydown.enter="searchProduct"
+          >
+          <CustomKbd class="absolute top-1/2 right-2 -translate-y-1/2">⏎</CustomKbd>
+        </div>
         <button
           class="base-btn"
           @click="searchProduct"
