@@ -50,7 +50,7 @@
           <h6 class="text-lg font-bold">
             Ventas en efectivo
           </h6>
-          <IconCash size="24" stroke-width="2" />
+          <IconCash class="text-green-500" size="24" stroke-width="2" />
         </div>
         <p class="text-sm text-gray-500">
           Total de dinero en efectivo de ventas
@@ -66,7 +66,7 @@
           <h6 class="text-lg font-bold">
             Ventas con tarjeta
           </h6>
-          <IconCreditCard size="24" stroke-width="2" />
+          <IconCreditCard class="text-blue-500" size="24" stroke-width="2" />
         </div>
         <p class="text-sm text-gray-500">
           Total de ventas con tarjeta
@@ -82,7 +82,7 @@
           <h6 class="text-lg font-bold">
             Ventas por transferencia
           </h6>
-          <IconTransferVertical size="24" stroke-width="2" />
+          <IconBrandZapier class="text-yellow-500" size="24" stroke-width="2" />
         </div>
         <p class="text-sm text-gray-500">
           Total de ventas por transferencia
@@ -140,7 +140,7 @@ import { ref } from 'vue'
 import { CashRegisterState } from '@/api/interfaces'
 import { toast } from '@/composables/useToast'
 import { useCurrency } from '@/composables/useCurrency'
-import { IconCash, IconCreditCard, IconTransferVertical } from '@tabler/icons-vue'
+import { IconBrandZapier, IconCash, IconCreditCard } from '@tabler/icons-vue'
 
 const { formatCurrency } = useCurrency()
 
