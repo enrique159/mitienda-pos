@@ -9,8 +9,8 @@ exports.createTable = async function(knex) {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary() // Llave primaria
     table.uuid('id_inventory').notNullable().references('iventories.id') // A que inventario pertenece
     table.uuid('id_product').notNullable().references('products.id') // A que producto pertenece
-    table.number('counted_quantity').notNullable()
-    table.number('registered_quantity').notNullable()
+    table.integer('counted_quantity').notNullable()
+    table.integer('registered_quantity').notNullable()
     table.string('incidence').notNullable()
     table.string('note').nullable().defaultTo('')
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable()
