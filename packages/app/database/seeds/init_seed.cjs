@@ -13,7 +13,7 @@ exports.seed = async function(knex) {
 
     // Configuration
     await knex('configuration').del()
-    await knex('configuration').insert({ configured: false, mode: 'offline', enable_sync: false })
+    await knex('configuration').insert({ configured: true, mode: 'offline', enable_sync: false })
     // User
     await knex('users').del()
     await knex('users').insert({
