@@ -28,6 +28,8 @@ const sales = require('./schemas/sales.cjs')
 const saleDetails = require('./schemas/sale_details.cjs')
 const salePayments = require('./schemas/sale_payments.cjs')
 const aiModels = require('./schemas/ai_models.cjs')
+const inventories = require('./schemas/iventories.cjs')
+const inventoryItems = require('./schemas/inventory_items.cjs')
 
 const dev = env.NODE_ENV === 'development'
 const seed = env.SEED
@@ -67,6 +69,8 @@ const initDB = async() => {
         saleDetails.createTable(knex),
         salePayments.createTable(knex),
         aiModels.createTable(knex),
+        inventories.createTable(knex),
+        inventoryItems.createTable(knex),
       ])
     } catch (error) {
       logger.error({ type: 'DB', message: `${error}`, error })
