@@ -14,7 +14,7 @@ import SplashScreenView from "@/views/SplashScreenView.vue"
 import MainModule from "@/views/MainModule.vue"
 import HomeView from "@/views/HomeView.vue"
 import SalesView from "@/views/sales/SalesView.vue"
-import OpenCashRegisterView from "@/views/cashregister/OpenCashRegisterView.vue"
+import OpenCashRegisterView from "@/views/cashregister/views/OpenCashRegisterView.vue"
 import NotFoundView from "@/views/NotFoundView.vue"
 
 const routes: RouteRecordRaw[] = [

@@ -86,6 +86,22 @@ export const useDate = () => {
     return dayjs(date).fromNow()
   }
 
+  const getRawDateWithTimezone = (date: string | Date | null) => {
+    if (!date) return ''
+    if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
+      return dayjs.tz(date, 'YYYY-MM-DD HH:mm:ss', tz.value).toDate()
+    }
+    return dayjs.tz(date, tz.value).toDate()
+  }
+
+  const getFormattedDateWithTimezone = (date: string | Date | null) => {
+    if (!date) return ''
+    if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
+      return dayjs.tz(date, 'YYYY-MM-DD HH:mm:ss', tz.value).format('YYYY-MM-DD HH:mm:ss')
+    }
+    return dayjs.tz(date, tz.value).format('YYYY-MM-DD HH:mm:ss')
+  }
+
   return {
     getCurrentDate,
     formatDatetime,
@@ -96,5 +112,7 @@ export const useDate = () => {
     formatTime24,
     getNextPaymentDueDateCustomer,
     getRelativeTime,
+    getRawDateWithTimezone,
+    getFormattedDateWithTimezone,
   }
 }

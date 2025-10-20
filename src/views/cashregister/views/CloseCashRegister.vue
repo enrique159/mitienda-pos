@@ -204,7 +204,7 @@ import {
   IconCircleX
 } from '@tabler/icons-vue'
 import { CashRegisterState } from '@/api/interfaces'
-import { getCurrentCashRegisterState } from '@/api/electron'
+import { getCurrentCashRegisterState, printCloseCashRegisterTicket } from '@/api/electron'
 import { useCurrency } from '@/composables/useCurrency'
 import { toast } from '@/composables/useToast'
 import { computed, ref } from 'vue'
@@ -217,8 +217,16 @@ import {
 import { useCashRegister } from '@/composables/useCashRegister'
 import { useUser } from '@/composables/useUser'
 import { closeCashRegister } from '@/api/electron'
+import { useConfiguration } from '@/composables/useConfiguration'
+import { useCompany } from '@/composables/useCompany'
+import { useBranch } from '@/composables/useBranch'
+import { useDate } from '@/composables/useDate'
 
+const { getFormattedDateWithTimezone } = useDate()
 const { formatCurrency } = useCurrency()
+const { configuration } = useConfiguration()
+const { company } = useCompany()
+const { branch } = useBranch()
 
 const cashRegisterState = ref<CashRegisterState>({
   payments: {
@@ -398,8 +406,38 @@ const handleConfirmAudit = () => {
       return toast.error('No se pudo cerrar la caja')
     }
     toast.success('Caja cerrada exitosamente')
+    handlePrintTicket()
     logout()
     router.push({ name: 'SignInAsUser' })
+  })
+}
+
+// PRINT TICKET
+const handlePrintTicket = () => {
+  const payload = {
+    businessInfo: {
+      businessName: company.value.trade_name,
+      branchInfo: branch.value.branch_name,
+      branchTimezone: branch.value.timezone,
+      posAlias: branch.value.branch_alias,
+      date: new Date(),
+      logo: branch.value.logo,
+    },
+    ticketInfo: {
+      openedBy: cashRegister.value?.id_user_opening || '',
+      closedBy: user.value?.name || '',
+      openedAt: getFormattedDateWithTimezone(cashRegister.value?.opening_date || new Date()),
+      closedAt: new Date(),
+      type: closureSelected.value,
+    },
+    items: [],
+  }
+  const printer = configuration.value.default_printer || null
+
+  printCloseCashRegisterTicket(printer, payload, (response: Response<any>) => {
+    if (!response.success) {
+      toast.error('Error al imprimir el cierre de caja')
+    }
   })
 }
 </script>

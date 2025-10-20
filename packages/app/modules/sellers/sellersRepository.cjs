@@ -18,6 +18,10 @@ const mapDataToSellerSimple = (data) => ({
   pin: data.pin,
 })
 
+/**
+ * Guarda los vendedores en la base de datos
+ * @param { Seller[] } sellers
+ */
 exports.saveSellers = async function (sellers) {
   return await knex('sellers').insert(sellers).returning('*')
     .then((sellers) => {
@@ -51,6 +55,10 @@ exports.startSession = async function (data) {
   return response(true, 'Vendedor encontrado', mapDataToSeller(seller))
 }
 
+/**
+ * Cierra una sesión de vendedor
+ * @param { string } sellerId
+ */
 exports.closeSession = async function (sellerId) {
   try {
     const seller = await knex('sellers').select().where('id', sellerId).first()
@@ -67,7 +75,8 @@ exports.closeSession = async function (sellerId) {
 }
 
 /**
- * Obtiene todos los usuarios activos
+ * Obtiene todos los vendedores activos
+ * @returns { Response<SellerSimple[]> }
  */
 exports.getSellers = async function () {
   const sellers = await knex('sellers').select().where('status', 'active')
@@ -78,7 +87,23 @@ exports.getSellers = async function () {
   return response(true, 'Vendedores encontrados', sellers.map(mapDataToSellerSimple))
 }
 
+/**
+ * Obtiene un vendedor por su id
+ * @param { string } sellerId
+ */
+exports.getSellerById = async function (sellerId) {
+  const seller = await knex('sellers').select().where('id', sellerId).first()
+  if (!seller) {
+    logger.error({ type: 'GET SELLER BY ID', message: 'Vendedor no encontrado', data: { seller_id: sellerId } })
+    return response(false, 'Vendedor no encontrado', seller)
+  }
+  return response(true, 'Vendedor encontrado', mapDataToSeller(seller))
+}
 
+/**
+ * ☁️ Obtiene todos los vendedores activos de la base de datos de la nube
+ * @returns { Response<Seller[]> }
+ */
 exports.getPosSellers = async function () {
   const responseFetch = await sellersService.fetchSellers()
   if (!responseFetch.success) {

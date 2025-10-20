@@ -24,3 +24,15 @@ exports.getDatetimeForFile = function () {
 exports.getPaymentDueDate = function () {
   return dayjs().add(10, 'days').format('DD')
 }
+
+exports.ticketDateFormatter = function (date) {
+  return date instanceof Date
+    ? dayjs(date).format('DD/MM/YYYY hh:mm A')
+    : date
+}
+
+exports.ticketDateFormatterTimezone = function (dateString, timezone) {
+  if (!dateString || !timezone) return ''
+  const parsed = dayjs.utc(dateString, 'YYYY-MM-DD HH:mm:ss').tz(timezone)
+  return parsed.format('DD/MM/YYYY hh:mm A')
+}

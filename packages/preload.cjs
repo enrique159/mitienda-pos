@@ -16,7 +16,7 @@ const { createCashMovement } = require('./app/modules/cash_movements/cashMovemen
 const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
 const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderStatus, updatePurchaseOrderItem, updatePurchaseOrderItems, deletePurchaseOrder, updatePurchaseOrderDraftItems } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
 const { getAiModels, getAiModelById, createAiModel, updateAiModel, deleteAiModel, updateAiModelStatus, setDefaultAiModel } = require('./app/modules/ai_models/aiModelsListeners.cjs')
-const { getPrinters, printTestTicket, printSaleTicket } = require('./app/utils/printer/printerListeners.cjs')
+const { getPrinters, printTestTicket, printSaleTicket, printCloseCashRegisterTicket } = require('./app/utils/printer/printerListeners.cjs')
 
 ipcRenderer.setMaxListeners(100)
 
@@ -118,6 +118,7 @@ contextBridge.exposeInMainWorld('electron', {
   getPrinters,
   printTestTicket,
   printSaleTicket,
+  printCloseCashRegisterTicket,
   // Database
   clearDatabase,
   // Extras

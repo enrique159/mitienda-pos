@@ -17,3 +17,9 @@ exports.printSaleTicket = function (printerName, payload, callback) {
   ipcRenderer.on('print_sale_ticket', (_, response) => callback(response))
   ipcRenderer.send('print_sale_ticket', printerName, payload)
 }
+
+exports.printCloseCashRegisterTicket = function (printerName, payload, callback) {
+  ipcRenderer.removeAllListeners('print_close_cash_register_ticket')
+  ipcRenderer.on('print_close_cash_register_ticket', (_, response) => callback(response))
+  ipcRenderer.send('print_close_cash_register_ticket', printerName, payload)
+}

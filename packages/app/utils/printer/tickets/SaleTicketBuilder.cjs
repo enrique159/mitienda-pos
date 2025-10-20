@@ -1,4 +1,4 @@
-const { generateQRCode, logger } = require('../../../helpers/index.cjs')
+const { generateQRCode, logger, ticketDateFormatter } = require('../../../helpers/index.cjs')
 const { getFontFaceCSS, fontName } = require('../extra/loadFonts.cjs')
 const { getImageDataUrl } = require('../extra/loadImage.cjs')
 const branchesRepository = require('../../../modules/branches/branchesRepository.cjs')
@@ -132,24 +132,12 @@ module.exports = class SaleTicketBuilder {
   }
 
   buildTicketInfo() {
-    const formattedDate =
-      this.ticketInfo.date instanceof Date
-        ? this.ticketInfo.date.toLocaleString('es-MX', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        })
-        : this.ticketInfo.date
-
     this.ticket += `
       <div class="ticket-info">
         <p style="margin: 2px 0; text-align: center;"><strong>Ticket de compra</strong></p>
         <div style="display: flex; justify-content: space-between;">
           <p style="margin: 0;">${this.ticketInfo.ticketId}</p>
-          <p style="margin: 0;">${formattedDate}</p>
+          <p style="margin: 0;">${ticketDateFormatter(this.ticketInfo.date)}</p>
         </div>
         <div style="display: flex; justify-content: space-between;">
           <p style="margin: 0;">CAJA: ${this.ticketInfo.cashier}</p>
