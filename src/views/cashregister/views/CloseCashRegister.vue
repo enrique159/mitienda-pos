@@ -371,7 +371,7 @@ const handleCreateCashRegisterAudit = (closure: Closure) => {
 // CONFIRM AUDIT
 const prepareCashRegisterAudit = (): CreateCashRegisterAudit => {
   const totalAmount = cashRegisterCashAmount.value + cashRegisterState.value.payments.card
-  const balance = totalAmount + Number(cardAmount.value)
+  const balance = totalInCashRegister.value + Number(cardAmount.value)
   const difference = balance - totalAmount
 
   const cashBreakdown: Denomination[] = currencyInCashRegister.value.map((denomination) => ({
@@ -414,6 +414,7 @@ const handleConfirmAudit = () => {
 
 // PRINT TICKET
 const handlePrintTicket = () => {
+  const summary = prepareCashRegisterAudit()
   const payload = {
     businessInfo: {
       businessName: company.value.trade_name,
@@ -430,7 +431,29 @@ const handlePrintTicket = () => {
       closedAt: new Date(),
       type: closureSelected.value,
     },
-    items: [],
+    items: [
+      { name: 'Monto inicial', value: formatCurrency(cashRegisterState.value.opening_amount), symbol: '+' },
+      { name: 'Monto en efectivo', value: formatCurrency(cashRegisterState.value.payments.cash), symbol: '+' },
+      { name: 'Monto en tarjeta', value: formatCurrency(cashRegisterState.value.payments.card), symbol: '+' },
+      { name: 'Monto en transferencia', value: formatCurrency(cashRegisterState.value.payments.transfer), symbol: '+' },
+      { name: 'Monto en otros', value: formatCurrency(cashRegisterState.value.payments.other), symbol: '+' },
+      { name: 'Ingresos', value: formatCurrency(cashRegisterState.value.movements.income), symbol: '+' },
+      { name: 'Retiros', value: formatCurrency(cashRegisterState.value.movements.withdraw), symbol: '-' },
+      { name: 'Cant. de ventas', value: cashRegisterState.value.total_sales },
+      { name: 'Cant. de movimientos', value: cashRegisterState.value.total_movements },
+    ],
+    totals: [
+      { name: 'Total vendido', value: formatCurrency(cashRegisterState.value.total_sales_amount) }, // Suma de cash, card, transfer, other
+      { name: 'Total ingresado', value: formatCurrency(cashRegisterState.value.total_amount_paid) }, // Suma de monto pagado, mas tarjeta
+      { name: 'Total', value: formatCurrency(summary.total_amount) }, // Suma del total ingresado mas el monto inicial
+      { name: 'Balance', value: formatCurrency(summary.balance) }, // Suma de la cantidad de dinero en caja mas la tarjeta
+      { 
+        name: 'Diferencia', 
+        value: formatCurrency(Math.abs(summary.difference)), 
+        symbol: summary.difference < 0 ? '-' : summary.difference > 0 ? '+' : null
+      }, // Diferencia entre el total y el total registrado
+    ]
+
   }
   const printer = configuration.value.default_printer || null
 

@@ -11,6 +11,7 @@ module.exports = class CloseCashRegisterTicketBuilder {
   businessInfo = {}
   ticketInfo = {}
   items = []
+  totals = []
 
   constructor({
     businessInfo = {
@@ -31,10 +32,12 @@ module.exports = class CloseCashRegisterTicketBuilder {
     },
 
     items = [],
+    totals = [],
   }) {
     this.businessInfo = businessInfo
     this.ticketInfo = ticketInfo
     this.items = items
+    this.totals = totals
   }
 
 
@@ -69,7 +72,6 @@ module.exports = class CloseCashRegisterTicketBuilder {
       <div class="header center">
         ${logoHtml}
         <h3 style="margin: 5px 0; text-transform: uppercase;">${this.businessInfo.businessName}</h3>
-        <p style="margin: 2px 0; font-weight: 700;">SUCURSAL</p>
         <p style="margin: 2px 0; text-transform: uppercase;">${this.businessInfo.branchInfo}</p>
         <p style="margin: 2px 0; text-transform: uppercase;">CAJA: ${this.businessInfo.posAlias}</p>
         <p style="margin: 2px 0;">${ticketDateFormatter(this.businessInfo.date)}</p>
@@ -99,6 +101,49 @@ module.exports = class CloseCashRegisterTicketBuilder {
           <p style="margin: 0;">${ticketDateFormatter(this.ticketInfo.closedAt)}</p>
         </div>
         <hr>
+      </div>
+    `
+    return this
+  }
+
+  buildItems() {
+    this.ticket += `
+      <table id="table">
+        <tbody id="table-body">
+    `
+
+    this.items.forEach((item) => {
+      this.ticket += `
+        <tr>
+          <td>${item.name}</td>
+          <td class="right">${item.symbol ? item.symbol + ' ' : ''}${item.value}</td>
+        </tr>
+      `
+    })
+
+    this.totals.forEach((total) => {
+      this.ticket += `
+        <tr style="font-weight: bold;">
+          <td style="font-size: 12px;">${total.name}</td>
+          <td class="right" style="font-size: 12px;">${total.symbol ? total.symbol + ' ' : ''}${total.value}</td>
+        </tr>
+      `
+    })
+
+    this.ticket += `
+        </tbody>
+      </table>
+      <hr>
+    `
+    return this
+  }
+
+  buildSignSection() {
+    this.ticket += `
+      <div class="sign-section" style="margin-top: 20px; text-align: center;">
+        <p style="margin-bottom: 10px; font-size: 11px;">Firma de quien realiza el corte</p>
+        <div style="border: 1px solid #000; width: 200px; height: 60px; margin: 10px auto;"></div>
+        <p style="margin-top: 5px; font-size: 10px;">${this.ticketInfo.closedBy}</p>
       </div>
     `
     return this
@@ -209,6 +254,8 @@ module.exports = class CloseCashRegisterTicketBuilder {
 
     this.buildHeader()
       .buildTicketInfo()
+      .buildItems()
+      .buildSignSection()
 
     return await this.build()
   }
