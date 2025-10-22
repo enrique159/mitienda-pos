@@ -13,3 +13,26 @@ exports.createCashRegisterAudit = async function (data) {
       return response(false, 'Error al registrar el cierre de caja registradora', err)
     })
 }
+
+exports.getCashRegisterAudits = async function () {
+  return await knex('cash_register_audits')
+    .select(
+      'cash_register_audits.*',
+      'cash_registers.opening_amount',
+      'cash_registers.opening_date',
+      'seller_opening.name as opening_user_name',
+      'seller_closing.name as closing_user_name'
+    )
+    .leftJoin('cash_registers', 'cash_register_audits.id_cash_register', 'cash_registers.id')
+    .leftJoin('sellers as seller_opening', 'cash_registers.id_user_opening', 'seller_opening.id')
+    .leftJoin('sellers as seller_closing', 'cash_register_audits.id_user', 'seller_closing.id')
+    .orderBy('cash_register_audits.created_at', 'desc')
+    .then((cashRegisterAudits) => {
+      const cashRegisterAuditsData = Array.isArray(cashRegisterAudits) ? cashRegisterAudits : [cashRegisterAudits]
+      return response(true, 'Cierres de caja registradoras obtenidos', cashRegisterAuditsData)
+    })
+    .catch((err) => {
+      logger.error({ type: 'GET CASH REGISTER AUDITS ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al traer los cierres de caja registradoras', err)
+    })
+}

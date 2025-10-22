@@ -46,3 +46,10 @@ export interface CreateCashRegisterAudit {
   count_movements: number
   closure: Closure
 }
+
+export interface CashRegisterAuditDetail extends CashRegisterAudit {
+  opening_date: string
+  closing_date: string
+  opening_user_name: string
+  closing_user_name: string
+}

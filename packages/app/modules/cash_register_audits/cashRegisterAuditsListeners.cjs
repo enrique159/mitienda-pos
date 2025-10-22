@@ -5,3 +5,5 @@ exports.createCashRegisterAudit = function (data, callback) {
   ipcRenderer.on('create_cash_register_audit', (_, response) => callback(response))
   ipcRenderer.send('create_cash_register_audit', data)
 }
+
+exports.getCashRegisterAudits = () => ipcRenderer.sendSync('get_cash_register_audits')

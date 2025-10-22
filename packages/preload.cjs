@@ -8,7 +8,7 @@ const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, delete
 const { getCategories, createCategory, updateCategory, deleteCategory } = require('./app/modules/categories/categoriesListeners.cjs')
 const { getBranchInfo, setBranchLogo, getBranchesByEmail } = require('./app/modules/branches/branchesListeners.cjs')
 const { getCashRegisterActive, createCashRegister, getCurrentCashRegisterState } = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
-const { createCashRegisterAudit } = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
+const { createCashRegisterAudit, getCashRegisterAudits } = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
 const { createSale, getSales, getSalesInTurn, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
 const { getTaxes, createTax, deleteTax } = require('./app/modules/taxes/taxesListeners.cjs')
 const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
@@ -97,6 +97,7 @@ contextBridge.exposeInMainWorld('electron', {
   createCashMovement,
   // Cash Register Audits
   createCashRegisterAudit,
+  getCashRegisterAudits,
   // Purchase Orders
   getPurchaseOrders,
   createPurchaseOrder,
