@@ -21,7 +21,7 @@
         </router-link>
       </li>
       <li>
-        <a>
+        <a @click.prevent="userLogout">
           <icon-logout size="1.1rem" stroke-width="2" />
           Cerrar mi sesión
         </a>
@@ -33,13 +33,24 @@
 <script setup lang="ts">
 import { IconUser, IconLogout } from '@tabler/icons-vue'
 import { useUser } from '@/composables/useUser'
+import { useRouter } from 'vue-router'
 import { computed } from 'vue'
 
-const { user } = useUser()
+
+const { user, logout } = useUser()
+const router = useRouter()
 
 const getFirst2Letters = computed(
   () => user.value && user.value?.name?.slice(0, 2)
 )
+
+const userLogout = async () => {
+  if (!user.value) {
+    return;
+  }
+  logout();
+  router.push('/auth/signin-as-user');
+}
 </script>
 
 <style lang="scss" scoped></style>

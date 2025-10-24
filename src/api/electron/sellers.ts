@@ -1,4 +1,4 @@
-import { StartSessionParams } from '@/api/interfaces'
+import { Response, StartSessionParams } from '@/api/interfaces'
 
 export const getSellers = async (callback: any) => window.electron.getSellers(callback)
 export const getPosSellers = async (callback: any) => window.electron.getPosSellers(callback)
