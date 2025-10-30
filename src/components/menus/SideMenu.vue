@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-interface ItemMenu {
+export interface ItemMenu {
   title: string
   path: string
   icon: any

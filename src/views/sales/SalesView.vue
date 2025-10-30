@@ -442,6 +442,7 @@
         <div class="flex justify-between items-start gap-2">
           <label class="input bg-white-1 input-bordered flex items-center max-w-48 gap-2">
             <input
+              type="password"
               ref="inputCancelSaleRef"
               class="w-full"
               placeholder="Pin de autorización"

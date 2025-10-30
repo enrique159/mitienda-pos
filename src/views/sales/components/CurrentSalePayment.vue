@@ -108,7 +108,7 @@
 
               <p>Descuento</p>
               <p class="text-end">
-                {{ formatCurrency(currentCartDiscount) }}
+                {{ `${currentCartDiscount > 0 ? '-' : ''}${formatCurrency(currentCartDiscount)}` }}
               </p>
 
               <p>Impuestos</p>

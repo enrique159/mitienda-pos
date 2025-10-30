@@ -9,6 +9,7 @@ exports.createTable = async function(knex) {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary()
     table.uuid('id_company').references('company.id').notNullable()
     table.string('code')
+    table.string('identifier').notNullable().unique() //TODO: CODE + incremental number Ej: 002-1
     table.string('name')
     table.enu('type', ['tasa', 'cuota', 'exento']).notNullable().defaultTo('tasa')
     table.integer('value').defaultTo(null)
