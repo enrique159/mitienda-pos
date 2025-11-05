@@ -17,7 +17,7 @@ exports.products = [
     stock_minimum: 10,
     purchase_price: 1800, // $18.00 MXN
     selling_price: 2500, // $25.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,
@@ -39,7 +39,7 @@ exports.products = [
     stock_minimum: 10,
     purchase_price: 2300, // $23.00 MXN
     selling_price: 3000, // $30.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,
@@ -61,7 +61,7 @@ exports.products = [
     stock_minimum: 60,
     purchase_price: 2800, // $28.00 MXN
     selling_price: 3500, // $35.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2026-01-01',
@@ -83,7 +83,7 @@ exports.products = [
     stock_minimum: 100,
     purchase_price: 1600, // $16.00 MXN
     selling_price: 2000, // $20.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-12-31',
@@ -105,7 +105,7 @@ exports.products = [
     stock_minimum: 100,
     purchase_price: 1000, // $10.00 MXN
     selling_price: 1500, // $15.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-06-30',
@@ -127,7 +127,7 @@ exports.products = [
     stock_minimum: 50,
     purchase_price: 2700, // $27.00 MXN
     selling_price: 3500, // $35.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-01-20',
@@ -149,7 +149,7 @@ exports.products = [
     stock_minimum: 5,
     purchase_price: 3200, // $32.00 MXN
     selling_price: 4200, // $42.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,
@@ -171,7 +171,7 @@ exports.products = [
     stock_minimum: 5,
     purchase_price: 4000, // $40.00 MXN
     selling_price: 5500, // $55.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,
@@ -193,7 +193,7 @@ exports.products = [
     stock_minimum: 3,
     purchase_price: 8500, // $85.00 MXN
     selling_price: 10000, // $100.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-10-10',
@@ -215,7 +215,7 @@ exports.products = [
     stock_minimum: 10,
     purchase_price: 1800, // $18.00 MXN
     selling_price: 2500, // $25.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: true,
     expiration_date: '2025-12-31',
@@ -237,7 +237,7 @@ exports.products = [
     stock_minimum: 10,
     purchase_price: 2300, // $23.00 MXN
     selling_price: 3000, // $30.00 MXN
-    taxes: [{ code: '002', name: 'IVA', type: 'tasa', value: 16 }],
+    taxes: [{ identifier: '002-1', code: '002', name: 'IVA', type: 'tasa', value: 16 }],
     is_active: true,
     has_expiration_date: false,
     expiration_date: null,

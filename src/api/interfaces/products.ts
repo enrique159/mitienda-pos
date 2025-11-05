@@ -32,6 +32,7 @@ export interface Product {
 }
 
 export interface ProductTax {
+  identifier: string;
   code: string;
   name: string;
   type: string;

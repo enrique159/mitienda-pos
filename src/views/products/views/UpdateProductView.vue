@@ -481,7 +481,7 @@ onBeforeMount(() => {
     formData.expiration_date = product.expiration_date
 
     taxesApplied.value = product.taxes.map((tax) => {
-      return taxes.value.find((t) => t.code === tax.code)
+      return taxes.value.find((t) => t.identifier === tax.identifier)
     }).filter((tax) => tax !== undefined) as Tax[]
   }
 })
@@ -589,10 +589,10 @@ const rules = computed(() => {
     sku: { required: helpers.withMessage('El SKU es requerido', required) },
     unit_measurement: { required: helpers.withMessage('La unidad de medida es requerida', required) },
     stock: {
-      minValue: helpers.withMessage('El stock debe ser mayor o igual a 0', minValue(0)),
+      minValue: helpers.withMessage('El stock debe ser mayor o igual a 1', minValue(1)),
     },
     stock_minimum: {
-      minValue: helpers.withMessage('El stock mínimo debe ser mayor o igual a 0', minValue(0)),
+      minValue: helpers.withMessage('El stock mínimo debe ser mayor o igual a 1', minValue(1)),
     },
     purchase_price: {
       required: helpers.withMessage('El precio de compra es requerido', required),
@@ -617,13 +617,14 @@ const v$ = useVuelidate(rules, formData)
 // Methods
 const toggleUnlimitedStock = () => {
   formData.unlimited_stock = !formData.unlimited_stock
-  formData.stock = formData.unlimited_stock ? null : 0
-  formData.stock_minimum = formData.unlimited_stock ? null : 0
+  formData.stock = formData.unlimited_stock ? null : 1
+  formData.stock_minimum = formData.unlimited_stock ? null : 1
 }
 
 
 const taxMaping = (tax: Tax): ProductTax => {
   return {
+    identifier: tax.identifier,
     code: tax.code,
     type: tax.type,
     name: tax.name,
@@ -688,7 +689,7 @@ const reloadProducts = () => {
 onMounted(() => {
   formData.id_category = availableCategories.value[0] ? availableCategories.value[0].id : ''
   formData.id_provider = providers.value[0] ? providers.value[0].id : ''
-  formData.stock = 0
-  formData.stock_minimum = 0
+  formData.stock = 1
+  formData.stock_minimum = 1
 })
 </script>

@@ -2,6 +2,7 @@ export interface Tax {
   id: string
   id_company: string
   code: string
+  identifier: string
   name: string
   type: 'tasa' | 'cuota' | 'exento'
   value: number | null
