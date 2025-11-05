@@ -42,7 +42,7 @@
               class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center cursor-pointer"
               @click="openSaleDetailsModal(sale)"
             >
-              <icon-dots-vertical class="w-4 h-4" />
+              <icon-eye class="w-4 h-4" />
             </button>
           </td>
         </tr>
@@ -145,6 +145,47 @@
                 <span>{{ formatCurrency(selectedSale?.total!) }}</span>
               </div>
             </div>
+            <div class="divider my-0 col-span-3" />
+          </section>
+
+          <section v-if="isSaleHasClient" class="w-full grid grid-cols-3 gap-x-2">
+            <!-- CLIENT NAME -->
+            <div>
+              <p class="text-sm text-black-3">
+                Cliente
+              </p>
+              <div class="flex items-center gap-2">
+                <span>{{ customerSale?.name }}</span>
+              </div>
+            </div>
+
+            <!-- RFC -->
+            <div>
+              <p class="text-sm text-black-3">
+                RFC
+              </p>
+              <div class="flex items-center gap-2">
+                <span>{{ customerSale?.rfc }}</span>
+              </div>
+            </div>
+
+            <!-- CREDITO DEL CLIENTE -->
+            <div>
+              <p class="text-sm text-black-3">
+                Crédito disponible
+              </p>
+              <div class="flex items-center gap-2">
+                <div class="tooltip tooltip-bottom" :data-tip="`${formatCurrency(customerSale!.credit_limit - customerSale!.used_credit)} de ${formatCurrency(customerSale!.credit_limit)}`">
+                  <progress
+                    class="progress w-48"
+                    :class="getProgressColorByCreditUsed(customerSale!.used_credit, customerSale!.credit_limit)"
+                    :value="customerSale!.used_credit"
+                    :max="customerSale!.credit_limit"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div class="divider my-0 col-span-3" />
           </section>
         </div>
@@ -257,9 +298,9 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
-import { IconDotsVertical, IconCopy } from '@tabler/icons-vue'
-import { Sale, Response } from '@/api/interfaces'
-import { getSalesInTurn } from '@/api/electron'
+import { IconEye, IconCopy } from '@tabler/icons-vue'
+import { Sale, Response, Customer } from '@/api/interfaces'
+import { getSalesInTurn, getCustomers } from '@/api/electron'
 import { useCurrency } from '@/composables/useCurrency'
 import { useDate } from '@/composables/useDate'
 import { toast } from '@/composables/useToast'
@@ -271,12 +312,25 @@ const { formatCurrency } = useCurrency()
 const { cashRegister } = useCashRegister()
 
 const sales = ref<Sale[]>([])
+const customers = ref<Customer[]>([])
 
 const emptySales = computed(() => {
   return sales.value.length === 0
 })
 
-onMounted(() => {
+const getProgressColorByCreditUsed = (creditUsed: number, creditLimit: number) => {
+  const percentage = (creditUsed / creditLimit) * 100
+  if (percentage < 50) {
+    return 'progress-success'
+  } else if (percentage < 75) {
+    return 'progress-warning'
+  } else {
+    return 'progress-error'
+  }
+}
+
+
+onMounted(async () => {
   if (!cashRegister.value) return
   getSalesInTurn(cashRegister.value.id, (response: Response<Sale[]>) => {
     if (!response.success) {
@@ -285,6 +339,11 @@ onMounted(() => {
     }
     sales.value = response.response
   })
+  const response = await getCustomers()
+  if (!response.success) {
+    toast.error(response.message)
+  }
+  customers.value = response.response
 })
 
 const getBadgeColors = (status: string) => {
@@ -306,17 +365,26 @@ const getBadgeColors = (status: string) => {
   }
 }
 
+// CLIENT
+const isSaleHasClient = computed(() => {
+  return customerSale.value
+})
+
 // DIALOG SALE DETAILS
 const dialogSaleDetailsRef = ref()
 const selectedSale = ref<Sale | null>(null)
+const customerSale = ref<Customer | null>(null)
 
 const openSaleDetailsModal = (sale: Sale) => {
   selectedSale.value = sale
+  const foundCustomer = customers.value.find((customer) => customer.id === sale.id_customer)
+  foundCustomer && (customerSale.value = foundCustomer)
   dialogSaleDetailsRef.value.showModal()
 }
 
 const closeSaleDetailsModal = () => {
   selectedSale.value = null
+  customerSale.value = null
   dialogSaleDetailsRef.value.close()
 }
 
@@ -346,7 +414,7 @@ const selectedTab = ref(1)
 .grid-content {
   height: calc(100% - 48px);
   display: grid;
-  grid-template-rows: 132px 40px 1fr 40px;
+  grid-template-rows: v-bind('isSaleHasClient ? "200px" : "138px"') 40px 1fr 40px;
   row-gap: 8px;
   overflow: hidden;
 }
