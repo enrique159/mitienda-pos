@@ -11,6 +11,7 @@
           <th>Cerrado por</th>
           <th>Saldo al corte</th>
           <th>Tipo</th>
+          <th class="w-12"/>
         </tr>
       </thead>
       <tbody>
@@ -41,6 +42,16 @@
               }}
             </div>
           </td>
+          <td>
+            <div class="tooltip tooltip-left" data-tip="Ver detalles">
+              <button
+                class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
+                @click="goToCashRegisterDetails(cashRegisterAudit.id)"
+              >
+                <IconEye class="w-4 h-4" />
+              </button>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -54,7 +65,10 @@ import { useDate } from '@/composables/useDate'
 import { toast } from '@/composables/useToast'
 import { Response, CashRegisterAuditDetail } from '@/api/interfaces'
 import { useCurrency } from '@/composables/useCurrency'
+import { IconEye } from '@tabler/icons-vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const { formatDatetimeShort } = useDate()
 const { formatCurrency } = useCurrency()
 
@@ -95,4 +109,8 @@ const getAllCashRegisterAudits = () => {
 }
 
 getAllCashRegisterAudits()
+
+const goToCashRegisterDetails = (id: string) => {
+  router.push({ name: 'CashRegisterDetails', params: { id } })
+}
 </script>

@@ -6,9 +6,9 @@
 </template>
 
 <script setup lang="ts">
-import SideMenu from '@/components/menus/SideMenu.vue'
+import SideMenu, { ItemMenu } from '@/components/menus/SideMenu.vue'
 import { IconCashRegister, IconSwipeRight, IconDeviceDesktopDollar, IconClockDown } from '@tabler/icons-vue'
-const cashRegisterMenu = [
+const cashRegisterMenu: ItemMenu[] = [
   {
     title: 'Estado actual',
     path: '/main/cashregister/current-state',
@@ -27,6 +27,7 @@ const cashRegisterMenu = [
   {
     title: 'Historial de cajas',
     path: '/main/cashregister/history',
+    subPaths: ['/main/cashregister/details'],
     icon: IconClockDown,
   },
 ]

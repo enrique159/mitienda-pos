@@ -3,6 +3,7 @@ import CurrentCashRegisterStateView from './views/CurrentCashRegisterStateView.v
 import MovementsCashRegisterView from './views/MovementsCashRegisterView.vue'
 import CloseCashRegisterView from './views/CloseCashRegister.vue'
 import HistoryCashRegisterView from './views/HistoryCashRegister.vue'
+import CashRegisterDetailsView from './views/CashRegisterDetails.vue'
 
 export const CashRegisterRoutes = [
   {
@@ -30,6 +31,11 @@ export const CashRegisterRoutes = [
         path: 'history',
         name: 'HistoryCashRegister',
         component: HistoryCashRegisterView,
+      },
+      {
+        path: 'details/:id',
+        name: 'CashRegisterDetails',
+        component: CashRegisterDetailsView,
       },
     ],
   },

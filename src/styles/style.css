@@ -22,6 +22,9 @@
   --black-3: #8E8E8E;
   /* FONTS AND TEXT */
   --font-family: 'Aeonik', system-ui, sans-serif;
+
+  --dp-border-color: transparent;
+  --dp-menu-border-color: transparent;
 }
 
 * {
