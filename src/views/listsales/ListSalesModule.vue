@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import SideMenu from '@/components/menus/SideMenu.vue'
-import { IconReportMoney } from '@tabler/icons-vue'
+import { IconReportMoney, IconTransfer } from '@tabler/icons-vue'
 import { ref } from 'vue'
 
 const listSalesMenu = ref([
@@ -15,6 +15,11 @@ const listSalesMenu = ref([
     title: 'Ventas',
     path: '/main/listsales',
     icon: IconReportMoney,
+  },
+  {
+    title: 'Movimientos',
+    path: '/main/listsales/movements',
+    icon: IconTransfer,
   },
 ])
 </script>

@@ -12,3 +12,26 @@ exports.createCashMovement = async function (data) {
       return response(false, 'Error al crear el movimiento de caja registradora', err)
     })
 }
+
+/*
+  ** ******** OBTENER MOVIMIENTOS DE CAJA ACTUAL ********
+*/
+exports.getMovementsInTurn = async function (cashRegisterId) {
+  try {
+    const cashMovements = await knex('cash_movements').where('id_cash_register', cashRegisterId).orderBy('created_at', 'desc')
+    const sellers = await knex('sellers').select('*')
+    
+    const cashMovementsWithSellers = cashMovements.map((cashMovement) => {
+      const seller = sellers.find((seller) => seller.id === cashMovement.id_seller)
+      return {
+        ...cashMovement,
+        seller
+      }
+    })
+    
+    return response(true, 'Movimientos de caja registradora obtenidos', cashMovementsWithSellers)
+  } catch (err) {
+    logger.error({ type: 'GET CASH MOVEMENTS ERROR', message: `${err}`, data: err })
+    return response(false, 'Error al obtener los movimientos de caja registradora', err)
+  }    
+}

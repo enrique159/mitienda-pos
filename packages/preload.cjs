@@ -12,7 +12,7 @@ const { createCashRegisterAudit, getCashRegisterAudits } = require('./app/module
 const { createSale, getSales, getSalesInTurn, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
 const { getTaxes, createTax, deleteTax } = require('./app/modules/taxes/taxesListeners.cjs')
 const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
-const { createCashMovement } = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
+const { createCashMovement, getMovementsInTurn } = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
 const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
 const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderStatus, updatePurchaseOrderItem, updatePurchaseOrderItems, deletePurchaseOrder, updatePurchaseOrderDraftItems } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
 const { getAiModels, getAiModelById, createAiModel, updateAiModel, deleteAiModel, updateAiModelStatus, setDefaultAiModel } = require('./app/modules/ai_models/aiModelsListeners.cjs')
@@ -95,6 +95,7 @@ contextBridge.exposeInMainWorld('electron', {
   getProviderById,
   // Cash Movements
   createCashMovement,
+  getMovementsInTurn,
   // Cash Register Audits
   createCashRegisterAudit,
   getCashRegisterAudits,
