@@ -33,7 +33,7 @@ const settingsMenu = [
   },
   {
     title: 'Usuarios y permisos',
-    path: '/main/settings/users',
+    path: '/main/settings/sellers',
     icon: IconUsers,
   },
   {

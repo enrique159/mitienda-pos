@@ -34,6 +34,23 @@ exports.saveSellers = async function (sellers) {
 }
 
 /**
+ * Guarda un vendedor en la base de datos
+ * @param { Seller } seller
+ */
+exports.createSeller = async function (seller) {
+  return await knex('sellers').insert(seller).returning('*')
+    .then((seller) => {
+      logger.info({ type: 'CREATE SELLER', message: 'Vendedor creado exitosamente', data: seller })
+      return response(true, 'Vendedor creado exitosamente', seller)
+    })
+    .catch((err) => {
+      logger.error({ type: 'CREATE SELLER ERROR', message: `${err}`, data: err })
+      return response(false, 'Error al crear el vendedor', err)
+    })
+}
+
+
+/**
  * Inicia una sesión de vendedor
  * @param { { id: string, pin: string } } data
  */
@@ -85,6 +102,20 @@ exports.getSellers = async function () {
     return response(false, 'Vendedores no encontrados', [])
   }
   return response(true, 'Vendedores encontrados', sellers.map(mapDataToSellerSimple))
+}
+
+
+/**
+ * Obtiene todos los vendedores sin resctricción (todos)
+ * @returns { Response<Seller[]> }
+ */
+exports.getAllSellers = async function () {
+  const sellers = await knex('sellers').select()
+  if (!sellers.length) {
+    logger.error({ type: 'GET ALL SELLERS', message: 'Vendedores no encontrados' })
+    return response(false, 'Vendedores no encontrados', [])
+  }
+  return response(true, 'Vendedores encontrados', sellers.map(mapDataToSeller))
 }
 
 /**

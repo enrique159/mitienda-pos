@@ -1,5 +1,6 @@
 import SettingsModule from './SettingsModule.vue'
 import GeneralSettingsView from './views/GeneralSettingsView.vue'
+import SellersView from './views/SellersView.vue'
 import SalesAndProductsSettingsView from './views/SalesAndProductsSettingsView.vue'
 import AiModelsView from './views/AiModelsView.vue'
 import PrintersAndTicketView from './views/PrintersAndTicketView.vue'
@@ -20,6 +21,11 @@ export const SettingsRoutes = [
         path: '/main/settings/sales-and-products',
         name: 'SalesAndProductsSettings',
         component: SalesAndProductsSettingsView,
+      },
+      {
+        path: '/main/settings/sellers',
+        name: 'SellersView',
+        component: SellersView,
       },
       {
         path: '/main/settings/printer',

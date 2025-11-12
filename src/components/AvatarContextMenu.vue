@@ -15,7 +15,7 @@
         {{ user.name }}
       </li>
       <li>
-        <router-link to="/profile">
+        <router-link to="/main/settings/sellers">
           <icon-user size="1.1rem" stroke-width="2" />
           Ver mi perfil
         </router-link>
