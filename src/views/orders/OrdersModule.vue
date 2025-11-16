@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import SideMenu from '@/components/menus/SideMenu.vue'
+import SideMenu, { ItemMenu } from '@/components/menus/SideMenu.vue'
 import { IconTruckDelivery, IconCirclePlus } from '@tabler/icons-vue'
 import { getPurchaseOrders, getProviders, getAllProducts } from '@/api/electron'
 import { onMounted } from 'vue'
@@ -47,11 +47,15 @@ onMounted(async () => {
   })
 })
 
-const ordersMenu = [
+const ordersMenu: ItemMenu[] = [
   {
     title: 'Pedidos',
     path: '/main/orders',
     icon: IconTruckDelivery,
+    subPaths: [
+      '/main/orders/edit',
+      '/main/orders/details',
+    ]
   },
   {
     title: 'Nuevo pedido',

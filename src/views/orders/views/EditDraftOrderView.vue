@@ -1,8 +1,11 @@
 <template>
   <div class="p-8 pt-4 w-full overflow-y-auto max-w-[1080px] mx-auto space-y-4">
-    <h6 class="text-2xl font-bold mb-4">
-      Editar pedido
-    </h6>
+    <div class="flex items-center gap-2">
+      <button class="btn btn-sm btn-ghost btn-circle" @click="$router.back()">
+        <IconArrowLeft size="24" />
+      </button>
+      <h6 class="text-2xl font-bold">Editar pedido (borrador)</h6>
+    </div>
 
     <div class="flex justify-between items-end gap-4">
       <div class="flex flex-col">
@@ -42,9 +45,12 @@
                   class="checkbox checkbox-sm"
                   :checked="showLowStockProducts"
                   @change="showLowStockProducts = !showLowStockProducts"
-                >
+                />
                 <div class="flex flex-col items-start ml-2">
-                  <span class="text-black-1 text-sm">Mostrar solo productos <br> con stock bajo</span>
+                  <span class="text-black-1 text-sm"
+                    >Mostrar solo productos <br />
+                    con stock bajo</span
+                  >
                 </div>
               </label>
             </div>
@@ -58,7 +64,7 @@
               type="text"
               class="grow"
               placeholder="Buscar producto..."
-            >
+            />
             <IconSearch class="w-4 h-4 text-black-2" />
           </label>
         </div>
@@ -73,9 +79,7 @@
               <th>Código de barras</th>
               <th>Nombre</th>
               <th>Existencia</th>
-              <th class="w-16">
-                Cantidad a solicitar
-              </th>
+              <th class="w-16">Cantidad a solicitar</th>
               <th class="w-12" />
             </tr>
           </thead>
@@ -89,7 +93,13 @@
               </td>
               <td>{{ product.barcode || 'N/A' }}</td>
               <td>{{ product.name }}</td>
-              <td :class="product.stock < product.stock_minimum ? 'text-brand-pink' : 'text-black-1'">
+              <td
+                :class="
+                  product.stock < product.stock_minimum
+                    ? 'text-brand-pink'
+                    : 'text-black-1'
+                "
+              >
                 {{ product.stock }}
                 <div
                   v-if="product.stock < product.stock_minimum"
@@ -105,7 +115,11 @@
               <td class="px-0">
                 <button
                   class="btn btn-sm btn-circle"
-                  :class="isProductInOrder(product.id) ? 'bg-brand-pink/10 text-brand-pink' : 'text-brand-blue'"
+                  :class="
+                    isProductInOrder(product.id)
+                      ? 'bg-brand-pink/10 text-brand-pink'
+                      : 'text-brand-blue'
+                  "
                   @click="handleActionButton(product)"
                 >
                   <IconX v-if="isProductInOrder(product.id)" />
@@ -120,12 +134,15 @@
   </div>
 
   <!-- ADD ITEM TO SUPPLY -->
-  <dialog id="dialogAddItemToSupply" ref="dialogAddItemToSupplyRef" class="modal" @keydown.escape="closeAddItemToSupplyModal">
+  <dialog
+    id="dialogAddItemToSupply"
+    ref="dialogAddItemToSupplyRef"
+    class="modal"
+    @keydown.escape="closeAddItemToSupplyModal"
+  >
     <div class="modal-box w-[320px]">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">
-          Solicitar producto
-        </h3>
+        <h3 class="text-lg font-bold">Solicitar producto</h3>
         <div class="modal-action mt-0">
           <form method="dialog" @submit="closeAddItemToSupplyModal">
             <button class="close-btn">
@@ -139,7 +156,9 @@
       <div class="flex flex-col justify-center items-center gap-8">
         <label class="form-control w-full max-w-[168px]">
           <div class="label">
-            <span class="label-text text-black-1 font-medium required">Cantidad</span>
+            <span class="label-text text-black-1 font-medium required">
+              Cantidad
+            </span>
           </div>
           <input
             id="quantity"
@@ -150,7 +169,7 @@
             @keydown="validateOnlyNumbers"
             @keyup.enter="handleAddItemToSupply"
             class="input input-bordered w-full"
-          >
+          />
         </label>
 
         <!-- BUTTONS -->
@@ -175,12 +194,27 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowRight, IconDeviceDesktopDown, IconSearch, IconPlus, IconX } from '@tabler/icons-vue'
+import {
+  IconArrowRight,
+  IconDeviceDesktopDown,
+  IconSearch,
+  IconPlus,
+  IconX,
+  IconArrowLeft,
+} from '@tabler/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePurchaseOrder } from '@/composables/usePurchaseOrder'
 import { computed, onMounted, ref, watch } from 'vue'
-import { CreatePurchaseOrderItem, Product, PurchaseOrder, Response } from '@/api/interfaces'
-import { updatePurchaseOrderDraftItems, updatePurchaseOrderStatus } from '@/api/electron'
+import {
+  CreatePurchaseOrderItem,
+  Product,
+  PurchaseOrder,
+  Response,
+} from '@/api/interfaces'
+import {
+  updatePurchaseOrderDraftItems,
+  updatePurchaseOrderStatus,
+} from '@/api/electron'
 import { useProduct } from '@/composables/useProduct'
 import { useProvider } from '@/composables/useProvider'
 import { useUser } from '@/composables/useUser'
@@ -222,15 +256,18 @@ onMounted(() => {
   }
 })
 
-
 // EDIT DRAFT PURCHASE ORDER
 const search = ref('')
 const showLowStockProducts = ref(false)
 const providerProducts = computed(() => {
   return allProducts.value.filter((product: Product) => {
-    return product.id_provider === purchaseOrder.value?.id_provider
-      && product.name.toLowerCase().includes(search.value.toLowerCase())
-      && (showLowStockProducts.value ? product.stock < product.stock_minimum : true)
+    return (
+      product.id_provider === purchaseOrder.value?.id_provider &&
+      product.name.toLowerCase().includes(search.value.toLowerCase()) &&
+      (showLowStockProducts.value
+        ? product.stock < product.stock_minimum
+        : true)
+    )
   })
 })
 
@@ -239,17 +276,23 @@ const productToRequest = ref<Product | null>(null)
 const itemsToSupply = ref<CreatePurchaseOrderItem[]>([])
 
 const getItemQuantity = (productId: string) => {
-  const item = itemsToSupply.value.find((item: CreatePurchaseOrderItem) => item.id_product === productId)
+  const item = itemsToSupply.value.find(
+    (item: CreatePurchaseOrderItem) => item.id_product === productId
+  )
   return item ? item.quantity_ordered : null
 }
 
 const isProductInOrder = (productId: string) => {
-  return itemsToSupply.value.some((item: CreatePurchaseOrderItem) => item.id_product === productId)
+  return itemsToSupply.value.some(
+    (item: CreatePurchaseOrderItem) => item.id_product === productId
+  )
 }
 
 const handleActionButton = (product: Product) => {
   if (isProductInOrder(product.id)) {
-    itemsToSupply.value = itemsToSupply.value.filter((item: CreatePurchaseOrderItem) => item.id_product !== product.id)
+    itemsToSupply.value = itemsToSupply.value.filter(
+      (item: CreatePurchaseOrderItem) => item.id_product !== product.id
+    )
     clearValues()
     return
   }
@@ -291,7 +334,10 @@ const clearValues = () => {
 
 // HANDLE EDIT ORDER
 const handleEditOrder = (status: PurchaseOrderStatus) => {
-  const payload: { purchaseOrderId: string, items: Array<CreatePurchaseOrderItem> } = {
+  const payload: {
+    purchaseOrderId: string
+    items: Array<CreatePurchaseOrderItem>
+  } = {
     purchaseOrderId: purchaseOrder.value?.id!,
     items: itemsToSupply.value.map((item: CreatePurchaseOrderItem) => {
       return {
@@ -303,15 +349,18 @@ const handleEditOrder = (status: PurchaseOrderStatus) => {
       }
     }),
   }
-  updatePurchaseOrderDraftItems(payload, (response: Response<CreatePurchaseOrderItem>) => {
-    if (!response.success) {
-      toast.error(response.message)
-      return
+  updatePurchaseOrderDraftItems(
+    payload,
+    (response: Response<CreatePurchaseOrderItem>) => {
+      if (!response.success) {
+        toast.error(response.message)
+        return
+      }
+      handleUpdatePurchaseOrderStatus(status)
+      toast.success('Orden de compra creada exitosamente')
+      status === PurchaseOrderStatus.SENT && router.push({ name: 'Orders' })
     }
-    handleUpdatePurchaseOrderStatus(status)
-    toast.success('Orden de compra creada exitosamente')
-    status === PurchaseOrderStatus.SENT && router.push({ name: 'Orders' })
-  })
+  )
 }
 
 const handleUpdatePurchaseOrderStatus = (status: PurchaseOrderStatus) => {
@@ -334,15 +383,17 @@ onMounted(() => {
     ) || null
 
   if (purchaseOrder.value && purchaseOrder.value.items) {
-    itemsToSupply.value = purchaseOrder.value.items.map((item: CreatePurchaseOrderItem) => {
-      return {
-        id_product: item.id_product,
-        quantity_ordered: item.quantity_ordered,
-        quantity_received: null,
-        incidence: null,
-        note: null,
+    itemsToSupply.value = purchaseOrder.value.items.map(
+      (item: CreatePurchaseOrderItem) => {
+        return {
+          id_product: item.id_product,
+          quantity_ordered: item.quantity_ordered,
+          quantity_received: null,
+          incidence: null,
+          note: null,
+        }
       }
-    })
+    )
   }
 })
 </script>

@@ -5,10 +5,11 @@
         <button class="btn btn-sm btn-ghost btn-circle" @click="$router.back()">
           <IconArrowLeft size="24" />
         </button>
-        <h6 class="text-2xl font-bold">
-          Detalles del pedido
-        </h6>
-        <span class="badge badge-lg" :class="getPurchaseOrderStatusBadge(purchaseOrder?.status).class">
+        <h6 class="text-2xl font-bold">Detalles del pedido</h6>
+        <span
+          class="badge badge-lg"
+          :class="getPurchaseOrderStatusBadge(purchaseOrder?.status).class"
+        >
           {{ getPurchaseOrderStatusBadge(purchaseOrder?.status).text }}
         </span>
       </div>
@@ -23,33 +24,25 @@
     </header>
     <section id="order-details" class="grid grid-cols-4 gap-4">
       <div>
-        <p class="text-sm text-black-3">
-          Proveedor:
-        </p>
+        <p class="text-sm text-black-3">Proveedor:</p>
         <p class="font-medium">
           {{ purchaseOrder?.provider_name }}
         </p>
       </div>
       <div>
-        <p class="text-sm text-black-3">
-          Creado por:
-        </p>
+        <p class="text-sm text-black-3">Creado por:</p>
         <p class="font-medium">
           {{ purchaseOrder?.seller_name }}
         </p>
       </div>
       <div>
-        <p class="text-sm text-black-3">
-          Fecha de pedido:
-        </p>
+        <p class="text-sm text-black-3">Fecha de pedido:</p>
         <p class="font-medium">
           {{ formatDatetime(purchaseOrder?.ordered_at || undefined) }}
         </p>
       </div>
       <div>
-        <p class="text-sm text-black-3">
-          Fecha de recepción:
-        </p>
+        <p class="text-sm text-black-3">Fecha de recepción:</p>
         <p class="font-medium">
           {{ formatDatetime(purchaseOrder?.received_at || undefined) }}
         </p>
@@ -57,38 +50,41 @@
 
       <!-- SECOND ROW -->
       <div class="collapse bg-white col-span-4">
-        <input type="checkbox" v-model="isAdditionalInfoOpen">
-        <div class="collapse-title font-medium flex justify-between items-center pr-6">
+        <input type="checkbox" v-model="isAdditionalInfoOpen" />
+        <div
+          class="collapse-title font-medium flex justify-between items-center pr-6"
+        >
           <p class="inline-flex items-center gap-2">
             <IconInfoCircle size="24" class="text-brand-blue" />
             Información adicional
           </p>
-          <IconChevronDown size="24" class="transition-transform duration-300" :class="{ 'rotate-180': isAdditionalInfoOpen }" />
+          <IconChevronDown
+            size="24"
+            class="transition-transform duration-300"
+            :class="{ 'rotate-180': isAdditionalInfoOpen }"
+          />
         </div>
         <div class="collapse-content grid grid-cols-2 gap-4">
           <div>
-            <p class="text-sm text-black-3">
-              Fecha de creación:
-            </p>
+            <p class="text-sm text-black-3">Fecha de creación:</p>
             <p class="font-medium">
               {{ formatDatetime(purchaseOrder?.created_at || undefined) }}
             </p>
           </div>
           <div>
-            <p class="text-sm text-black-3">
-              Fecha de actualización:
-            </p>
+            <p class="text-sm text-black-3">Fecha de actualización:</p>
             <p class="font-medium">
               {{ formatDatetime(purchaseOrder?.updated_at || undefined) }}
             </p>
           </div>
           <div class="col-span-2">
             <div class="flex items-center gap-2">
-              <span class="text-sm text-black-3">
-                Notas:
-              </span>
+              <span class="text-sm text-black-3"> Notas: </span>
               <div class="tooltip tooltip-right" data-tip="Editar notas">
-                <button class="btn btn-ghost btn-sm btn-circle" @click="editPurchaseOrderNotes">
+                <button
+                  class="btn btn-ghost btn-sm btn-circle"
+                  @click="editPurchaseOrderNotes"
+                >
                   <IconEdit size="21" />
                 </button>
               </div>
@@ -104,11 +100,7 @@
                 />
               </fieldset>
               <div class="flex justify-end gap-4">
-                <base-button
-                  @click="closeEditingNotes"
-                >
-                  Cancelar
-                </base-button>
+                <base-button @click="closeEditingNotes"> Cancelar </base-button>
                 <base-button button-type="secondary" @click="saveNotes">
                   Guardar
                 </base-button>
@@ -128,34 +120,35 @@
           <tr>
             <th>Artículo</th>
             <th>Solicitado</th>
-            <th class="w-20">
-              Recibido
-            </th>
+            <th class="w-20">Recibido</th>
             <th>Incidecia</th>
             <th>Notas</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in purchaseOrderProducts" :key="`product-row-${item.id}`">
+          <tr
+            v-for="item in purchaseOrderProducts"
+            :key="`product-row-${item.id}`"
+          >
             <td>{{ item.product?.name }}</td>
             <td>{{ item.quantity_ordered }}</td>
             <td>
               <input
                 type="number"
+                :disabled="isDraft"
                 v-model.number="item.quantity_received"
                 @keydown="validateOnlyNumbers"
                 class="input input-sm input-bordered no-arrows w-20"
-              >
+              />
             </td>
             <td>
               <select
                 v-model="item.incidence"
+                :disabled="isDraft"
                 class="select select-sm select-bordered w-full"
                 :class="{ 'text-black-3': !item.incidence }"
               >
-                <option value="">
-                  Sin problemas
-                </option>
+                <option value="">Sin problemas</option>
                 <option
                   v-for="option in PurchaseOrderItemIncidenceOptions"
                   :key="`select-option-${option.value}`"
@@ -168,9 +161,10 @@
             <td>
               <input
                 type="text"
+                :disabled="isDraft"
                 class="input input-sm input-bordered"
                 v-model="item.note"
-              >
+              />
             </td>
           </tr>
         </tbody>
@@ -183,6 +177,7 @@
         <base-button
           button-type="secondary"
           class="flex items-center gap-2"
+          :disabled="isDraft"
           @click="handleSaveChanges"
         >
           <IconDeviceDesktopDown size="18" />
@@ -192,14 +187,11 @@
     </section>
   </div>
 
-
   <!-- DIALOG CHANGE STATUS -->
   <dialog id="dialogChangeStatus" ref="dialogChangeStatusRef" class="modal">
     <div class="modal-box w-[320px]">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">
-          Cambiar estado
-        </h3>
+        <h3 class="text-lg font-bold">Cambiar estado</h3>
         <div class="modal-action mt-0">
           <form method="dialog" @submit="closeChangeStatusModal">
             <button class="close-btn">
@@ -246,13 +238,27 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { IconProgressAlert, IconChevronDown, IconInfoCircle, IconDeviceDesktopDown, IconEdit } from '@tabler/icons-vue'
+import { computed, onMounted, ref } from 'vue'
+import {
+  IconProgressAlert,
+  IconChevronDown,
+  IconInfoCircle,
+  IconDeviceDesktopDown,
+  IconEdit,
+} from '@tabler/icons-vue'
 import { IconArrowLeft } from '@tabler/icons-vue'
 import { usePurchaseOrder } from '@/composables/usePurchaseOrder'
 import { getPurchaseOrderStatusBadge } from '@/utils/PurchaseOrders'
-import { PurchaseOrder, PurchaseOrderItem, PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
-import { updatePurchaseOrder, updatePurchaseOrderItems, updatePurchaseOrderStatus } from '@/api/electron'
+import {
+  PurchaseOrder,
+  PurchaseOrderItem,
+  PurchaseOrderStatus,
+} from '@/api/interfaces/purchase_orders'
+import {
+  updatePurchaseOrder,
+  updatePurchaseOrderItems,
+  updatePurchaseOrderStatus,
+} from '@/api/electron'
 import { PurchaseOrderItemIncidenceOptions } from '@/api/interfaces/purchase_orders'
 import { useProduct } from '@/composables/useProduct'
 import { useDate } from '@/composables/useDate'
@@ -268,33 +274,45 @@ const { formatDatetime } = useDate()
 const { purchaseOrders } = usePurchaseOrder()
 const { products } = useProduct()
 
-let originalPurchaseOrderProducts: Array<PurchaseOrderItem & { product: Product | null }> = []
-const purchaseOrderProducts = ref<Array<PurchaseOrderItem & { product: Product | null }>>([])
+let originalPurchaseOrderProducts: Array<
+  PurchaseOrderItem & { product: Product | null }
+> = []
+const purchaseOrderProducts = ref<
+  Array<PurchaseOrderItem & { product: Product | null }>
+>([])
 const purchaseOrder = ref<PurchaseOrder | null>(null)
 
+const isDraft = computed(() => {
+  return purchaseOrder.value?.status === PurchaseOrderStatus.DRAFT
+})
 
 onMounted(() => {
-  purchaseOrder.value = purchaseOrders.value.find(
-    (purchaseOrder) => purchaseOrder.id === route.params.id
-  ) || null
-  purchaseOrderProducts.value = purchaseOrder.value?.items?.map((item: PurchaseOrderItem) => {
-    const foundProduct = products.value.find((product) => product.id === item.id_product)
-    return {
-      ...item,
-      product: foundProduct || null,
-      incidence: item.incidence || '',
-      note: item.note || '',
-    }
-  }) || []
+  purchaseOrder.value =
+    purchaseOrders.value.find(
+      (purchaseOrder) => purchaseOrder.id === route.params.id
+    ) || null
+  purchaseOrderProducts.value =
+    purchaseOrder.value?.items?.map((item: PurchaseOrderItem) => {
+      const foundProduct = products.value.find(
+        (product) => product.id === item.id_product
+      )
+      return {
+        ...item,
+        product: foundProduct || null,
+        incidence: item.incidence || '',
+        note: item.note || '',
+      }
+    }) || []
 
-  originalPurchaseOrderProducts = JSON.parse(JSON.stringify(purchaseOrderProducts.value))
+  originalPurchaseOrderProducts = JSON.parse(
+    JSON.stringify(purchaseOrderProducts.value)
+  )
 })
 
 const resetPurchaseOrderProducts = () => {
   purchaseOrderProducts.value = [...originalPurchaseOrderProducts]
 }
 
-// CHANGE STATUS
 // CHANGE STATUS
 const dialogChangeStatusRef = ref()
 const newStatus = ref<PurchaseOrderStatus | null>(null)
@@ -352,15 +370,18 @@ const saveNotes = () => {
       notes: newNotes.value,
     },
   }
-  updatePurchaseOrder(purchaseOrderData, (response: Response<PurchaseOrder>) => {
-    if (!response.success) {
-      toast.error(response.message)
-      return
+  updatePurchaseOrder(
+    purchaseOrderData,
+    (response: Response<PurchaseOrder>) => {
+      if (!response.success) {
+        toast.error(response.message)
+        return
+      }
+      toast.success('Notas actualizadas correctamente')
+      purchaseOrder.value!.notes = newNotes.value
+      closeEditingNotes()
     }
-    toast.success('Notas actualizadas correctamente')
-    purchaseOrder.value!.notes = newNotes.value
-    closeEditingNotes()
-  })
+  )
 }
 
 const closeEditingNotes = () => {
@@ -370,22 +391,29 @@ const closeEditingNotes = () => {
 
 const handleSaveChanges = () => {
   if (!purchaseOrder.value) return
-  const purchaseOrderItemsData = purchaseOrderProducts.value.map((item: PurchaseOrderItem) => {
-    return {
-      id: item.id,
-      id_purchase_order: item.id_purchase_order,
-      quantity_received: item.quantity_received,
-      incidence: item.incidence,
-      note: item.note,
+  const purchaseOrderItemsData = purchaseOrderProducts.value.map(
+    (item: PurchaseOrderItem) => {
+      return {
+        id: item.id,
+        id_purchase_order: item.id_purchase_order,
+        quantity_received: item.quantity_received,
+        incidence: item.incidence,
+        note: item.note,
+      }
     }
-  })
-  updatePurchaseOrderItems(purchaseOrderItemsData, (response: Response<PurchaseOrderItem[]>) => {
-    if (!response.success) {
-      toast.error(response.message)
-      return
+  )
+  updatePurchaseOrderItems(
+    purchaseOrderItemsData,
+    (response: Response<PurchaseOrderItem[]>) => {
+      if (!response.success) {
+        toast.error(response.message)
+        return
+      }
+      originalPurchaseOrderProducts = JSON.parse(
+        JSON.stringify(purchaseOrderProducts.value)
+      )
+      toast.success('Pedido actualizado correctamente')
     }
-    originalPurchaseOrderProducts = JSON.parse(JSON.stringify(purchaseOrderProducts.value))
-    toast.success('Pedido actualizado correctamente')
-  })
+  )
 }
 </script>
