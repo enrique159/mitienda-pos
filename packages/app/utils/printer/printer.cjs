@@ -44,14 +44,14 @@ function getStatusText(printer) {
     if (isOffline || !isAccepting) return 'Desconectada'
 
     switch (status) {
-    case 3:
-      return 'Lista'
-    case 4:
-      return 'Imprimiendo'
-    case 5:
-      return 'Detenida o con error'
-    default:
-      return `Código desconocido (${status})`
+      case 3:
+        return 'Lista'
+      case 4:
+        return 'Imprimiendo'
+      case 5:
+        return 'Detenida o con error'
+      default:
+        return `Código desconocido (${status})`
     }
   }
 
@@ -67,7 +67,6 @@ function getStatusText(printer) {
 
   return 'Desconocido'
 }
-
 
 /**
  * @param {string} printerName - Nombre de la impresora
@@ -85,10 +84,14 @@ exports.printTicket = async (printerName, builderInstance) => {
     const rawDocument = await builderInstance.generateTicket()
 
     return new Promise((resolve, reject) => {
-      printWindow.on("closed", function () { printWindow = null })
-      printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(rawDocument)}`)
+      printWindow.on('closed', function () {
+        printWindow = null
+      })
+      printWindow.loadURL(
+        `data:text/html;charset=utf-8,${encodeURIComponent(rawDocument)}`
+      )
 
-      printWindow.webContents.on("did-finish-load", () => {
+      printWindow.webContents.on('did-finish-load', () => {
         printWindow.webContents.print(
           {
             copies: 1,
@@ -102,7 +105,7 @@ exports.printTicket = async (printerName, builderInstance) => {
               vertical: 203,
             },
             margins: {
-              marginType: "custom",
+              marginType: 'custom',
               top: 0,
               bottom: 0,
               right: 0,
@@ -112,7 +115,11 @@ exports.printTicket = async (printerName, builderInstance) => {
           },
           (success, error) => {
             if (!success) {
-              logger.error({ type: 'PRINT TICKET ERROR', message: `${error}`, data: error })
+              logger.error({
+                type: 'PRINT TICKET ERROR',
+                message: `${error}`,
+                data: error,
+              })
               reject(response(false, 'Error al imprimir el ticket', error))
               if (printWindow) {
                 printWindow.destroy()
@@ -128,24 +135,38 @@ exports.printTicket = async (printerName, builderInstance) => {
       })
 
       // Manejar errores de carga
-      printWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-        const error = new Error(`Error al cargar el documento: ${errorDescription} (${errorCode})`)
-        logger.error({ type: 'PRINT TICKET ERROR', message: error.message, data: error })
-        reject(response(false, 'Error al cargar el documento para imprimir', error))
-        if (printWindow) {
-          printWindow.destroy()
+      printWindow.webContents.on(
+        'did-fail-load',
+        (event, errorCode, errorDescription) => {
+          const error = new Error(
+            `Error al cargar el documento: ${errorDescription} (${errorCode})`
+          )
+          logger.error({
+            type: 'PRINT TICKET ERROR',
+            message: error.message,
+            data: error,
+          })
+          reject(
+            response(false, 'Error al cargar el documento para imprimir', error)
+          )
+          if (printWindow) {
+            printWindow.destroy()
+          }
         }
-      })
+      )
     })
   } catch (error) {
-    logger.error({ type: 'PRINT TICKET ERROR', message: `${error}`, data: error })
+    logger.error({
+      type: 'PRINT TICKET ERROR',
+      message: `${error}`,
+      data: error,
+    })
     if (printWindow) {
       printWindow.destroy()
     }
     throw error // Relanzar el error para que sea manejado por el llamador
   }
 }
-
 
 /**
  * @param {TicketBuilder} builderInstance - Instancia de TicketBuilder
@@ -166,21 +187,44 @@ exports.printTicketToPDF = async (builderInstance) => {
     const fileName = builderInstance.getTicketName()
 
     return new Promise((resolve, reject) => {
-      printWindow.on("closed", () => { printWindow = null })
-      printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(rawDocument)}`)
+      printWindow.on('closed', () => {
+        printWindow = null
+      })
+      printWindow.loadURL(
+        `data:text/html;charset=utf-8,${encodeURIComponent(rawDocument)}`
+      )
 
       // Manejar errores de carga
-      printWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-        const error = new Error(`Error al cargar el documento: ${errorDescription} (${errorCode})`)
-        logger.error({ type: 'PRINT TICKET PDF ERROR', message: error.message, data: error })
-        reject(response(false, 'Error al cargar el documento para generar PDF', error))
-        if (printWindow) {
-          printWindow.destroy()
+      printWindow.webContents.on(
+        'did-fail-load',
+        (event, errorCode, errorDescription) => {
+          const error = new Error(
+            `Error al cargar el documento: ${errorDescription} (${errorCode})`
+          )
+          logger.error({
+            type: 'PRINT TICKET PDF ERROR',
+            message: error.message,
+            data: error,
+          })
+          reject(
+            response(
+              false,
+              'Error al cargar el documento para generar PDF',
+              error
+            )
+          )
+          if (printWindow) {
+            printWindow.destroy()
+          }
         }
-      })
+      )
 
-      printWindow.webContents.on("did-finish-load", async () => {
-        const dirPath = path.join(os.homedir(), 'Desktop', 'mitienda-pos-tickets')
+      printWindow.webContents.on('did-finish-load', async () => {
+        const dirPath = path.join(
+          os.homedir(),
+          'Desktop',
+          'mitienda-pos-tickets'
+        )
         const pdfPath = path.join(dirPath, `${fileName}.pdf`)
 
         try {
@@ -192,7 +236,7 @@ exports.printTicketToPDF = async (builderInstance) => {
           // Generar el PDF
           const data = await printWindow.webContents.printToPDF({
             pageSize: {
-              width: 3.15,  // 80mm en pulgadas (80 / 25.4)
+              width: 3.15, // 80mm en pulgadas (80 / 25.4)
               height: 11.69, // Altura de papel A4 en pulgadas
             },
             margins: {
@@ -208,7 +252,11 @@ exports.printTicketToPDF = async (builderInstance) => {
           // Devolver la ruta del archivo generado
           resolve(response(true, 'Ticket guardado como PDF', pdfPath))
         } catch (error) {
-          logger.error({ type: 'PRINT TICKET PDF ERROR', message: `${error}`, data: error })
+          logger.error({
+            type: 'PRINT TICKET PDF ERROR',
+            message: `${error}`,
+            data: error,
+          })
           reject(response(false, 'Error al generar el PDF del ticket', error))
         } finally {
           if (printWindow) {
@@ -218,10 +266,126 @@ exports.printTicketToPDF = async (builderInstance) => {
       })
     })
   } catch (error) {
-    logger.error({ type: 'PRINT TICKET PDF ERROR', message: `${error}`, data: error })
+    logger.error({
+      type: 'PRINT TICKET PDF ERROR',
+      message: `${error}`,
+      data: error,
+    })
     if (printWindow) {
       printWindow.destroy()
     }
     return response(false, 'Error al generar el PDF del ticket', error)
+  }
+}
+
+/**
+ * @param {LetterBuilder} builderInstance - Instancia de LetterBuilder
+ * @returns { Promise<Response<{ success: boolean, message: string, data: string }>> }
+ */
+exports.printDocumentToPDF = async (builderInstance) => {
+  const { BrowserWindow } = electron
+  let printWindow = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      defaultEncoding: 'UTF-8',
+    },
+  })
+
+  try {
+    // Esperar a que se genere el ticket con las fuentes cargadas
+    const rawDocument = await builderInstance.generateTicket()
+    const fileName = builderInstance.getTicketName()
+
+    return new Promise((resolve, reject) => {
+      printWindow.on('closed', () => {
+        printWindow = null
+      })
+      printWindow.loadURL(
+        `data:text/html;charset=utf-8,${encodeURIComponent(rawDocument)}`
+      )
+
+      // Manejar errores de carga
+      printWindow.webContents.on(
+        'did-fail-load',
+        (event, errorCode, errorDescription) => {
+          const error = new Error(
+            `Error al cargar el documento: ${errorDescription} (${errorCode})`
+          )
+          logger.error({
+            type: 'PRINT TICKET PDF ERROR',
+            message: error.message,
+            data: error,
+          })
+          reject(
+            response(
+              false,
+              'Error al cargar el documento para generar PDF',
+              error
+            )
+          )
+          if (printWindow) {
+            printWindow.destroy()
+          }
+        }
+      )
+
+      printWindow.webContents.on('did-finish-load', async () => {
+        const dirPath = path.join(
+          os.homedir(),
+          'Desktop',
+          'mitienda-pos-tickets'
+        )
+        const pdfPath = path.join(dirPath, `${fileName}.pdf`)
+
+        try {
+          // Crear el directorio si no existe
+          if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true })
+          }
+
+          // Generar el PDF
+          const data = await printWindow.webContents.printToPDF({
+            pageSize: {
+              width: 8.5, // Ancho de papel carta en pulgadas
+              height: 11, // Altura de papel carta en pulgadas
+            },
+            margins: {
+              marginType: 'none',
+            },
+            printBackground: false,
+            scale: 1,
+          })
+
+          // Guardar el archivo PDF
+          await fsPromises.writeFile(pdfPath, data)
+
+          // Devolver la ruta del archivo generado
+          resolve(response(true, 'Documento guardado como PDF', pdfPath))
+        } catch (error) {
+          logger.error({
+            type: 'PRINT DOCUMENT PDF ERROR',
+            message: `${error}`,
+            data: error,
+          })
+          reject(
+            response(false, 'Error al generar el PDF del documento', error)
+          )
+        } finally {
+          if (printWindow) {
+            printWindow.destroy()
+          }
+        }
+      })
+    })
+  } catch (error) {
+    logger.error({
+      type: 'PRINT DOCUMENT PDF ERROR',
+      message: `${error}`,
+      data: error,
+    })
+    if (printWindow) {
+      printWindow.destroy()
+    }
+    return response(false, 'Error al generar el PDF del documento', error)
   }
 }
