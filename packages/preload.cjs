@@ -1,22 +1,114 @@
 const { contextBridge, ipcRenderer, shell } = require('electron')
 const { clearDatabase } = require('./app/utils/database/databaseListeners.cjs')
-const { initialConfiguration, getConfiguration, getVersion, setDefaultPrinter } = require('./app/modules/configuration/configurationListeners.cjs')
-const { getCompany, getPosCompany } = require('./app/modules/company/companyListeners.cjs')
-const { startSession, getSellers, closeSession, getPosSellers, getAllSellers, createSeller } = require('./app/modules/sellers/sellersListeners.cjs')
-const { createProduct, updateProduct, deleteProduct, getActiveProducts, getProducts, getProductsByCategory } = require('./app/modules/products/productsListeners.cjs')
-const { getActiveDiscounts, getDiscounts, createDiscount, updateDiscount, deleteDiscount, getDiscountProducts, createDiscountProduct } = require('./app/modules/discounts/discountsListeners.cjs')
-const { getCategories, createCategory, updateCategory, deleteCategory } = require('./app/modules/categories/categoriesListeners.cjs')
-const { getBranchInfo, setBranchLogo, getBranchesByEmail } = require('./app/modules/branches/branchesListeners.cjs')
-const { getCashRegisterActive, createCashRegister, getCurrentCashRegisterState } = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
-const { createCashRegisterAudit, getCashRegisterAudits } = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
-const { createSale, getSales, getSalesInTurn, generateSaleFolio } = require('./app/modules/sales/salesListeners.cjs')
-const { getTaxes, createTax, deleteTax } = require('./app/modules/taxes/taxesListeners.cjs')
-const { getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('./app/modules/customers/customersListeners.cjs')
-const { createCashMovement, getMovementsInTurn } = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
-const { createProvider, updateProvider, deleteProvider, getProviders, getProviderById } = require('./app/modules/providers/providersListeners.cjs')
-const { getPurchaseOrders, createPurchaseOrder, updatePurchaseOrder, updatePurchaseOrderStatus, updatePurchaseOrderItem, updatePurchaseOrderItems, deletePurchaseOrder, updatePurchaseOrderDraftItems } = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
-const { getAiModels, getAiModelById, createAiModel, updateAiModel, deleteAiModel, updateAiModelStatus, setDefaultAiModel } = require('./app/modules/ai_models/aiModelsListeners.cjs')
-const { getPrinters, printTestTicket, printSaleTicket, printCloseCashRegisterTicket } = require('./app/utils/printer/printerListeners.cjs')
+const {
+  initialConfiguration,
+  getConfiguration,
+  getVersion,
+  setDefaultPrinter,
+} = require('./app/modules/configuration/configurationListeners.cjs')
+const {
+  getCompany,
+  getPosCompany,
+} = require('./app/modules/company/companyListeners.cjs')
+const {
+  startSession,
+  getSellers,
+  closeSession,
+  getPosSellers,
+  getAllSellers,
+  createSeller,
+} = require('./app/modules/sellers/sellersListeners.cjs')
+const {
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  getActiveProducts,
+  getProducts,
+  getProductsByCategory,
+} = require('./app/modules/products/productsListeners.cjs')
+const {
+  getActiveDiscounts,
+  getDiscounts,
+  createDiscount,
+  updateDiscount,
+  deleteDiscount,
+  getDiscountProducts,
+  createDiscountProduct,
+} = require('./app/modules/discounts/discountsListeners.cjs')
+const {
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} = require('./app/modules/categories/categoriesListeners.cjs')
+const {
+  getBranchInfo,
+  setBranchLogo,
+  getBranchesByEmail,
+} = require('./app/modules/branches/branchesListeners.cjs')
+const {
+  getCashRegisterActive,
+  createCashRegister,
+  getCurrentCashRegisterState,
+} = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
+const {
+  createCashRegisterAudit,
+  getCashRegisterAudits,
+} = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
+const {
+  createSale,
+  getSales,
+  getSalesInTurn,
+  generateSaleFolio,
+} = require('./app/modules/sales/salesListeners.cjs')
+const {
+  getTaxes,
+  createTax,
+  deleteTax,
+} = require('./app/modules/taxes/taxesListeners.cjs')
+const {
+  getCustomers,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+} = require('./app/modules/customers/customersListeners.cjs')
+const {
+  createCashMovement,
+  getMovementsInTurn,
+} = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
+const {
+  createProvider,
+  updateProvider,
+  deleteProvider,
+  getProviders,
+  getProviderById,
+} = require('./app/modules/providers/providersListeners.cjs')
+const {
+  getPurchaseOrders,
+  createPurchaseOrder,
+  updatePurchaseOrder,
+  updatePurchaseOrderStatus,
+  updatePurchaseOrderItem,
+  updatePurchaseOrderItems,
+  deletePurchaseOrder,
+  updatePurchaseOrderDraftItems,
+} = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
+const {
+  getAiModels,
+  getAiModelById,
+  createAiModel,
+  updateAiModel,
+  deleteAiModel,
+  updateAiModelStatus,
+  setDefaultAiModel,
+} = require('./app/modules/ai_models/aiModelsListeners.cjs')
+const {
+  getPrinters,
+  printTestTicket,
+  printSaleTicket,
+  printCloseCashRegisterTicket,
+  printCloseCashRegisterReportTicket,
+} = require('./app/utils/printer/printerListeners.cjs')
 
 ipcRenderer.setMaxListeners(100)
 
@@ -123,6 +215,7 @@ contextBridge.exposeInMainWorld('electron', {
   printTestTicket,
   printSaleTicket,
   printCloseCashRegisterTicket,
+  printCloseCashRegisterReportTicket,
   // Database
   clearDatabase,
   // Extras

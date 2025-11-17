@@ -11,7 +11,8 @@
           <th>Cerrado por</th>
           <th>Saldo al corte</th>
           <th>Tipo</th>
-          <th class="w-12"/>
+          <th class="w-12" />
+          <th class="w-12" />
         </tr>
       </thead>
       <tbody>
@@ -52,6 +53,16 @@
               </button>
             </div>
           </td>
+          <td>
+            <div class="tooltip tooltip-left" data-tip="Imprimir reporte">
+              <button
+                class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
+                @click="printCashRegisterReport(cashRegisterAudit)"
+              >
+                <IconPdf class="w-4 h-4" />
+              </button>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -60,17 +71,22 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { getCashRegisterAudits } from '@/api/electron'
+import {
+  getCashRegisterAudits,
+  printCloseCashRegisterReportTicket,
+} from '@/api/electron'
 import { useDate } from '@/composables/useDate'
 import { toast } from '@/composables/useToast'
 import { Response, CashRegisterAuditDetail } from '@/api/interfaces'
 import { useCurrency } from '@/composables/useCurrency'
-import { IconEye } from '@tabler/icons-vue'
+import { IconEye, IconPdf } from '@tabler/icons-vue'
 import { useRouter } from 'vue-router'
+import { useBranch } from '@/composables/useBranch'
 
 const router = useRouter()
 const { formatDatetimeShort } = useDate()
 const { formatCurrency } = useCurrency()
+const { branch } = useBranch()
 
 const props = defineProps<{
   search: String
@@ -112,5 +128,26 @@ getAllCashRegisterAudits()
 
 const goToCashRegisterDetails = (id: string) => {
   router.push({ name: 'CashRegisterDetails', params: { id } })
+}
+
+const printCashRegisterReport = (
+  cashRegisterAudit: CashRegisterAuditDetail
+) => {
+  const payload = {
+    branch: {
+      logo: branch.value.logo,
+    },
+    cashRegister: {
+      ...cashRegisterAudit,
+    },
+  }
+  console.log(payload)
+  printCloseCashRegisterReportTicket(payload, (response: Response<any>) => {
+    if (!response.success) {
+      toast.error(response.message)
+      return
+    }
+    toast.success(response.message)
+  })
 }
 </script>
