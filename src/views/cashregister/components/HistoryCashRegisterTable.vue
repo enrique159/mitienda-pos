@@ -16,11 +16,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="(cashRegisterAudit, i) in filteredCashRegisterAudits"
-          :key="`cash-register-audit-row-${cashRegisterAudit.id}`"
-          :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'"
-        >
+        <tr v-for="(cashRegisterAudit, i) in filteredCashRegisterAudits"
+          :key="`cash-register-audit-row-${cashRegisterAudit.id}`" :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'">
           <td>
             <span class="text-sm text-black-3">{{ i + 1 }}</span>
           </td>
@@ -30,14 +27,10 @@
           <td>{{ cashRegisterAudit.closing_user_name }}</td>
           <td>{{ formatCurrency(cashRegisterAudit.balance) }}</td>
           <td>
-            <div
-              class="badge"
-              :class="
-                cashRegisterAudit.closure === 'partial'
-                  ? 'badge-warning'
-                  : 'badge-success text-white'
-              "
-            >
+            <div class="badge" :class="cashRegisterAudit.closure === 'partial'
+              ? 'badge-warning'
+              : 'badge-success text-white'
+              ">
               {{
                 cashRegisterAudit.closure === 'partial' ? 'Parcial' : 'Completo'
               }}
@@ -45,20 +38,16 @@
           </td>
           <td>
             <div class="tooltip tooltip-left" data-tip="Ver detalles">
-              <button
-                class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
-                @click="goToCashRegisterDetails(cashRegisterAudit.id)"
-              >
+              <button class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
+                @click="goToCashRegisterDetails(cashRegisterAudit.id)">
                 <IconEye class="w-4 h-4" />
               </button>
             </div>
           </td>
           <td>
             <div class="tooltip tooltip-left" data-tip="Imprimir reporte">
-              <button
-                class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
-                @click="printCashRegisterReport(cashRegisterAudit)"
-              >
+              <button class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
+                @click="printCashRegisterReport(cashRegisterAudit)">
                 <IconPdf class="w-4 h-4" />
               </button>
             </div>
@@ -130,18 +119,17 @@ const goToCashRegisterDetails = (id: string) => {
   router.push({ name: 'CashRegisterDetails', params: { id } })
 }
 
-const printCashRegisterReport = (
-  cashRegisterAudit: CashRegisterAuditDetail
-) => {
+const printCashRegisterReport = (cashRegisterAudit: CashRegisterAuditDetail) => {
   const payload = {
     branch: {
       logo: branch.value.logo,
+      name: branch.value.branch_name,
+      alias: branch.value.branch_alias,
     },
     cashRegister: {
       ...cashRegisterAudit,
     },
   }
-  console.log(payload)
   printCloseCashRegisterReportTicket(payload, (response: Response<any>) => {
     if (!response.success) {
       toast.error(response.message)
