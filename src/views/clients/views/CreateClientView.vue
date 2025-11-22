@@ -1,13 +1,13 @@
 <template>
   <div class="p-8 pt-4 w-full max-w-[1080px] mx-auto">
-    <h6 class="text-2xl font-bold mb-4">
-      Crear nuevo cliente
-    </h6>
+    <h6 class="text-2xl font-bold mb-4">Crear nuevo cliente</h6>
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="form-control w-full">
           <div class="label">
-            <span class="label-text text-black-1 font-medium required">Nombre completo</span>
+            <span class="label-text text-black-1 font-medium required"
+              >Nombre completo</span
+            >
           </div>
           <input
             id="name"
@@ -15,7 +15,7 @@
             type="text"
             placeholder="Ej. Juan Pérez"
             class="input input-bordered w-full"
-          >
+          />
           <div
             v-for="(error, index) in v$.name.$errors"
             :key="`error-name-${index}`"
@@ -35,7 +35,7 @@
             type="text"
             placeholder="Ej. XXXX1122334X5"
             class="input input-bordered w-full"
-          >
+          />
           <div
             v-for="(error, index) in v$.rfc.$errors"
             :key="`error-rfc-${index}`"
@@ -54,7 +54,7 @@
             type="text"
             placeholder="Ej. juan.perez@email.com"
             class="input input-bordered w-full"
-          >
+          />
           <div
             v-for="(error, index) in v$.email.$errors"
             :key="`error-email-${index}`"
@@ -75,7 +75,7 @@
             placeholder="Ej. 555555555"
             @keypress="validateOnlyNumbers"
             class="input input-bordered w-full"
-          >
+          />
           <div
             v-for="(error, index) in v$.phone.$errors"
             :key="`error-phone-${index}`"
@@ -114,7 +114,7 @@
               class="checkbox"
               :checked="formData.has_credit"
               @change="formData.has_credit = !formData.has_credit"
-            >
+            />
             <div class="flex flex-col items-start ml-2">
               <span class="font-semibold text-black-1 mr-2">Tiene crédito</span>
               <span class="text-sm text-black-2">
@@ -127,10 +127,14 @@
         <!-- CREDIT LIMIT -->
         <label v-if="formData.has_credit" class="form-control w-full">
           <div class="label">
-            <span class="label-text text-black-1 font-medium required">Límite de crédito</span>
+            <span class="label-text text-black-1 font-medium required"
+              >Límite de crédito</span
+            >
           </div>
           <div class="relative w-full">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+              >$</span
+            >
             <input
               id="credit_limit"
               v-model.number="formData.credit_limit"
@@ -138,7 +142,7 @@
               min="0"
               class="input input-bordered w-full pl-8"
               @keypress="validateOnlyNumbers"
-            >
+            />
           </div>
           <div
             v-for="(error, index) in v$.credit_limit.$errors"
@@ -151,7 +155,9 @@
         <!-- DAYS UNTIL DUE -->
         <label v-if="formData.has_credit" class="form-control w-full">
           <div class="label">
-            <span class="label-text text-black-1 font-medium required">Días hasta vencimiento</span>
+            <span class="label-text text-black-1 font-medium required"
+              >Días hasta vencimiento</span
+            >
           </div>
           <input
             id="days_until_due"
@@ -159,7 +165,7 @@
             type="number"
             min="1"
             class="input input-bordered w-full"
-          >
+          />
           <div
             v-for="(error, index) in v$.days_until_due.$errors"
             :key="`error-days_until_due-${index}`"
@@ -284,7 +290,9 @@ const handleSubmit = async () => {
       address: formData.address,
       has_credit: formData.has_credit,
       credit_limit: formData.has_credit ? formData.credit_limit * 100 : 0,
-      days_until_due: formData.has_credit ? formData.days_until_due : 10,
+      payment_due_date: formData.has_credit
+        ? String(formData.days_until_due)
+        : undefined,
     }
     createCustomer(newCustomer, (response: Response<any>) => {
       if (!response.success) {

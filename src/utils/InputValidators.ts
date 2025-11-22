@@ -59,10 +59,14 @@ export const validateOnlyNumbersAndLetters = (event: KeyboardEvent) => {
   baseValidator(event, /^[a-zA-Z0-9]$/)
 }
 
+// VALIDATE ONLY NUMBERS, LETTERS AND SPACES
+export const validateOnlyNumbersLettersAndSpaces = (event: KeyboardEvent) => {
+  baseValidator(event, /^[a-zA-Z0-9 ]$/)
+}
+
 // VALIDATE ONLY EMAIL
 export const validateOnlyEmail = (event: KeyboardEvent) => {
   // Note: For email validation, we're still using a simple regex for key press validation
   // A full email validation would be done on form submission with a more complex regex
   baseValidator(event, /^[a-zA-Z0-9._%+-@]$/)
 }
-

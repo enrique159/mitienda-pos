@@ -1,114 +1,72 @@
 const { contextBridge, ipcRenderer, shell } = require('electron')
-const { clearDatabase } = require('./app/utils/database/databaseListeners.cjs')
-const {
-  initialConfiguration,
-  getConfiguration,
-  getVersion,
-  setDefaultPrinter,
-} = require('./app/modules/configuration/configurationListeners.cjs')
-const {
-  getCompany,
-  getPosCompany,
-} = require('./app/modules/company/companyListeners.cjs')
-const {
-  startSession,
-  getSellers,
-  closeSession,
-  getPosSellers,
-  getAllSellers,
-  createSeller,
-} = require('./app/modules/sellers/sellersListeners.cjs')
-const {
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  getActiveProducts,
-  getProducts,
-  getProductsByCategory,
-} = require('./app/modules/products/productsListeners.cjs')
-const {
-  getActiveDiscounts,
-  getDiscounts,
-  createDiscount,
-  updateDiscount,
-  deleteDiscount,
-  getDiscountProducts,
-  createDiscountProduct,
-} = require('./app/modules/discounts/discountsListeners.cjs')
-const {
-  getCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} = require('./app/modules/categories/categoriesListeners.cjs')
-const {
-  getBranchInfo,
-  setBranchLogo,
-  getBranchesByEmail,
-} = require('./app/modules/branches/branchesListeners.cjs')
-const {
-  getCashRegisterActive,
-  createCashRegister,
-  getCurrentCashRegisterState,
-} = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
-const {
-  createCashRegisterAudit,
-  getCashRegisterAudits,
-} = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
-const {
-  createSale,
-  getSales,
-  getSalesInTurn,
-  generateSaleFolio,
-} = require('./app/modules/sales/salesListeners.cjs')
-const {
-  getTaxes,
-  createTax,
-  deleteTax,
-} = require('./app/modules/taxes/taxesListeners.cjs')
-const {
-  getCustomers,
-  createCustomer,
-  updateCustomer,
-  deleteCustomer,
-} = require('./app/modules/customers/customersListeners.cjs')
-const {
-  createCashMovement,
-  getMovementsInTurn,
-} = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
-const {
-  createProvider,
-  updateProvider,
-  deleteProvider,
-  getProviders,
-  getProviderById,
-} = require('./app/modules/providers/providersListeners.cjs')
-const {
-  getPurchaseOrders,
-  createPurchaseOrder,
-  updatePurchaseOrder,
-  updatePurchaseOrderStatus,
-  updatePurchaseOrderItem,
-  updatePurchaseOrderItems,
-  deletePurchaseOrder,
-  updatePurchaseOrderDraftItems,
-} = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
-const {
-  getAiModels,
-  getAiModelById,
-  createAiModel,
-  updateAiModel,
-  deleteAiModel,
-  updateAiModelStatus,
-  setDefaultAiModel,
-} = require('./app/modules/ai_models/aiModelsListeners.cjs')
-const {
-  getPrinters,
-  printTestTicket,
-  printSaleTicket,
-  printCloseCashRegisterTicket,
-  printCloseCashRegisterReportTicket,
-} = require('./app/utils/printer/printerListeners.cjs')
+/* DATABASE */
+const databaseListeners = require('./app/utils/database/databaseListeners.cjs')
+/* CONFIGURATION */
+const configurationListeners = require('./app/modules/configuration/configurationListeners.cjs')
+/* COMPANY */
+const companyListeners = require('./app/modules/company/companyListeners.cjs')
+/* SELLERS */
+const sellersListeners = require('./app/modules/sellers/sellersListeners.cjs')
+/* PRODUCTS */
+const productsListeners = require('./app/modules/products/productsListeners.cjs')
+/* DISCOUNTS */
+const discountsListeners = require('./app/modules/discounts/discountsListeners.cjs')
+/* CATEGORIES */
+const categoriesListeners = require('./app/modules/categories/categoriesListeners.cjs')
+/* BRANCHES */
+const branchesListeners = require('./app/modules/branches/branchesListeners.cjs')
+/* CASH REGISTERS */
+const cashRegistersListeners = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
+/* CASH REGISTER AUDITS */
+const cashRegisterAuditsListeners = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
+/* SALES */
+const salesListeners = require('./app/modules/sales/salesListeners.cjs')
+/* TAXES */
+const taxesListeners = require('./app/modules/taxes/taxesListeners.cjs')
+/* CUSTOMERS */
+const customersListeners = require('./app/modules/customers/customersListeners.cjs')
+/* CASH MOVEMENTS */
+const cashMovementsListeners = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
+/* PROVIDERS */
+const providersListeners = require('./app/modules/providers/providersListeners.cjs')
+/* PURCHASE ORDERS */
+const purchaseOrdersListeners = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
+/* AI MODELS */
+const aiModelsListeners = require('./app/modules/ai_models/aiModelsListeners.cjs')
+/* PRINTER */
+const printerListeners = require('./app/utils/printer/printerListeners.cjs')
+
+const api = {
+  ...databaseListeners,
+  ...configurationListeners,
+  ...companyListeners,
+  ...sellersListeners,
+  ...productsListeners,
+  ...discountsListeners,
+  ...categoriesListeners,
+  ...branchesListeners,
+  ...cashRegistersListeners,
+  ...cashRegisterAuditsListeners,
+  ...salesListeners,
+  ...taxesListeners,
+  ...customersListeners,
+  ...cashMovementsListeners,
+  ...providersListeners,
+  ...purchaseOrdersListeners,
+  ...aiModelsListeners,
+  ...printerListeners,
+  // Extras
+  closeApp: () => ipcRenderer.send('close_app'),
+  restartApp: () => ipcRenderer.send('restart_app'),
+  openExternalLink: (url) => shell.openExternal(url),
+  // System events
+  onSystemSuspend: (callback) => {
+    ipcRenderer.on('system-suspend', () => callback())
+  },
+  onSystemResume: (callback) => {
+    ipcRenderer.on('system-resume', () => callback())
+  },
+}
 
 ipcRenderer.setMaxListeners(100)
 
@@ -123,110 +81,4 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 })
 
-contextBridge.exposeInMainWorld('electron', {
-  // Company
-  getCompany,
-  getPosCompany,
-  // Sellers
-  createSeller,
-  getSellers,
-  getAllSellers,
-  getPosSellers,
-  startSession,
-  closeSession,
-  // Products
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  getActiveProducts,
-  getProducts,
-  getProductsByCategory,
-  // Discounts
-  getActiveDiscounts,
-  getDiscounts,
-  createDiscount,
-  getDiscountProducts,
-  createDiscountProduct,
-  updateDiscount,
-  deleteDiscount,
-  // Taxes
-  getTaxes,
-  createTax,
-  deleteTax,
-  // Categories
-  getCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  // Branches
-  getBranchInfo,
-  setBranchLogo,
-  getBranchesByEmail,
-  // Cash Registers
-  getCashRegisterActive,
-  createCashRegister,
-  getCurrentCashRegisterState,
-  // Sales
-  createSale,
-  getSales,
-  getSalesInTurn,
-  generateSaleFolio,
-  // Configuration
-  initialConfiguration,
-  getVersion,
-  getConfiguration,
-  setDefaultPrinter,
-  // Customers
-  getCustomers,
-  createCustomer,
-  updateCustomer,
-  deleteCustomer,
-  // Providers
-  createProvider,
-  updateProvider,
-  deleteProvider,
-  getProviders,
-  getProviderById,
-  // Cash Movements
-  createCashMovement,
-  getMovementsInTurn,
-  // Cash Register Audits
-  createCashRegisterAudit,
-  getCashRegisterAudits,
-  // Purchase Orders
-  getPurchaseOrders,
-  createPurchaseOrder,
-  updatePurchaseOrder,
-  updatePurchaseOrderItem,
-  updatePurchaseOrderItems,
-  deletePurchaseOrder,
-  updatePurchaseOrderStatus,
-  updatePurchaseOrderDraftItems,
-  // AI Models
-  getAiModels,
-  getAiModelById,
-  createAiModel,
-  updateAiModel,
-  deleteAiModel,
-  updateAiModelStatus,
-  setDefaultAiModel,
-  // Printer
-  getPrinters,
-  printTestTicket,
-  printSaleTicket,
-  printCloseCashRegisterTicket,
-  printCloseCashRegisterReportTicket,
-  // Database
-  clearDatabase,
-  // Extras
-  closeApp: () => ipcRenderer.send('close_app'),
-  restartApp: () => ipcRenderer.send('restart_app'),
-  openExternalLink: (url) => shell.openExternal(url),
-  // System events
-  onSystemSuspend: (callback) => {
-    ipcRenderer.on('system-suspend', () => callback())
-  },
-  onSystemResume: (callback) => {
-    ipcRenderer.on('system-resume', () => callback())
-  },
-})
+contextBridge.exposeInMainWorld('electron', api)

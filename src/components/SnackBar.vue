@@ -10,7 +10,7 @@
     <p class="text-black-2">
       {{ message }}
     </p>
-    <button class="bg-transparent hover:opacity-50 " @click="show = false">
+    <button class="bg-transparent hover:opacity-50" @click="show = false">
       <IconX size="18" />
     </button>
   </div>
@@ -23,7 +23,7 @@ import {
   IconAlertTriangleFilled,
   IconExclamationCircleFilled,
   IconCircleCheckFilled,
-  IconInfoCircleFilled
+  IconInfoCircleFilled,
 } from '@tabler/icons-vue'
 
 const props = defineProps({
@@ -32,7 +32,7 @@ const props = defineProps({
     required: true,
   },
   type: {
-    type: String as () => 'info' | 'success' | 'warning' | 'error',
+    type: String as () => 'info' | 'success' | 'warning' | 'error' | string,
     required: true,
   },
   modelValue: {
@@ -71,31 +71,31 @@ watch(show, (value) => {
 
 const backgroundColor = computed(() => {
   switch (props.type) {
-  case 'info':
-    return '#007bff'
-  case 'success':
-    return '#28a745'
-  case 'warning':
-    return '#ffc107'
-  case 'error':
-    return '#dc3545'
-  default:
-    return '#007bff'
+    case 'info':
+      return '#007bff'
+    case 'success':
+      return '#28a745'
+    case 'warning':
+      return '#ffc107'
+    case 'error':
+      return '#dc3545'
+    default:
+      return '#007bff'
   }
 })
 
 const icon = computed(() => {
   switch (props.type) {
-  case 'info':
-    return IconInfoCircleFilled
-  case 'success':
-    return IconCircleCheckFilled
-  case 'warning':
-    return IconAlertTriangleFilled
-  case 'error':
-    return IconExclamationCircleFilled
-  default:
-    return IconInfoCircleFilled
+    case 'info':
+      return IconInfoCircleFilled
+    case 'success':
+      return IconCircleCheckFilled
+    case 'warning':
+      return IconAlertTriangleFilled
+    case 'error':
+      return IconExclamationCircleFilled
+    default:
+      return IconInfoCircleFilled
   }
 })
 

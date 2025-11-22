@@ -1,11 +1,12 @@
 <template>
-  <dialog id="dialogCreateCategory" ref="dialogCreateSellerRef" class="modal"
-    @keydown.escape="closeCreateCategoryModal">
+  <dialog
+    class="modal"
+    ref="createSellerDialogRef"
+    @keydown.escape="closeCreateCategoryModal"
+  >
     <div class="modal-box min-w-[480px]">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">
-          Crear nuevo usuario / vendedor
-        </h3>
+        <h3 class="text-lg font-bold">Crear nuevo usuario / vendedor</h3>
         <div class="modal-action mt-0">
           <form method="dialog" @submit="closeCreateCategoryModal">
             <button class="close-btn">
@@ -20,100 +21,124 @@
         <!-- NAME USER / SELLER -->
         <label class="form-control w-full">
           <div class="label">
-            <span class="label-text text-black-1 font-medium required">Nombre completo</span>
+            <span class="label-text text-black-1 font-medium required"
+              >Nombre completo</span
+            >
           </div>
-          <input id="name" type="text" v-model="formData.name" placeholder="Ej. Alfonso Quintero"
-            class="input input-bordered w-full">
-
+          <input
+            id="name"
+            type="text"
+            v-model="formData.name"
+            @keydown="validateOnlyNumbersLettersAndSpaces"
+            placeholder="Ej. Alfonso Quintero"
+            class="input input-bordered w-full"
+          />
+          <input-errors :errors="v$.name.$errors" />
         </label>
 
         <label class="form-control w-full">
           <div class="label">
-            <span class="label-text text-black-1 font-medium required">PIN de acceso</span>
+            <span class="label-text text-black-1 font-medium required"
+              >PIN de acceso</span
+            >
           </div>
-          <input id="pin" type="text" v-model="formData.pin" placeholder="Ej. 1234" class="input input-bordered w-full">
+          <div class="relative">
+            <input
+              id="pin"
+              :type="showPin ? 'text' : 'password'"
+              v-model="formData.pin"
+              placeholder="Ej. 1234"
+              class="input input-bordered w-full"
+              @keydown="validateOnlyNumbers"
+            />
+            <action-button
+              @on:click="showPin = !showPin"
+              type="button"
+              class="absolute right-2 top-2"
+            >
+              <IconEye size="18" v-if="showPin" />
+              <IconEyeOff size="18" v-else />
+            </action-button>
+          </div>
+          <input-errors :errors="v$.pin.$errors" />
         </label>
-
-        <!-- PERMISSIONS CHECKLIST -->
-        <fieldset class="form-control w-full">
-          <legend class="label">
-            <span class="label-text text-black-1 font-medium required">Permisos</span>
-          </legend>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-            <label v-for="opt in permissionsOptions" :key="opt.value"
-              class="cursor-pointer inline-flex items-center space-x-2">
-              <input type="checkbox" :value="opt.value" v-model="selectedPermissions" class="checkbox" />
-              <span class="text-sm">{{ opt.label }}</span>
-            </label>
-          </div>
-          <p class="text-xs text-muted mt-2">Seleccione uno o más permisos para el usuario/vendedor {{
-            formData.permissions }}.</p>
-        </fieldset>
 
         <!-- BUTTONS -->
         <div class="flex justify-end space-x-4">
           <base-button type="button" @click="closeCreateCategoryModal">
             Cancelar
           </base-button>
-          <button type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink">
+          <button
+            type="submit"
+            class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+          >
             Guardar
           </button>
         </div>
       </form>
     </div>
+    <snack-bar
+      v-model="snack.show"
+      :message="snack.message"
+      :type="snack.type"
+    />
   </dialog>
 </template>
 
 <script lang="ts" setup>
+import SnackBar from '@/components/SnackBar.vue'
+import { useVuelidate } from '@vuelidate/core'
+import { helpers, minLength, required } from '@vuelidate/validators'
 import { ref, reactive, computed, watch } from 'vue'
 import { createSeller } from '@/api/electron'
-import { CreateSeller, Response } from '@/api/interfaces'
+import { CreateSeller, Response, Seller } from '@/api/interfaces'
 import { useBranch } from '@/composables/useBranch'
+import { IconEye, IconEyeOff } from '@tabler/icons-vue'
+import { toast } from '@/composables/useToast'
+import {
+  validateOnlyNumbersLettersAndSpaces,
+  validateOnlyNumbers,
+} from '@/utils/InputValidators'
 
-//composables
-const { branch } = useBranch()
-
-// Props
 const props = defineProps({
   modelValue: {
     type: Boolean,
     default: false,
-  }
+  },
 })
 
-// Emits
 const emit = defineEmits(['update:modelValue', 'update:table'])
 
-const permissionsOptions = [
-  { value: 1, label: 'Administrador' },
-  { value: 2, label: 'Vendedor' },
-  { value: 3, label: 'Cajero' },
-  { value: 4, label: 'Gestionar productos' },
-  { value: 5, label: 'Gestionar clientes' },
-  { value: 6, label: 'Crear/editar ventas' },
-  { value: 7, label: 'Ver reportes' },
-  { value: 8, label: 'Exportar datos' },
-  { value: 9, label: 'Configurar sistema' },
-]
+const { branch } = useBranch()
 
-const dialogCreateSellerRef = ref()
+const createSellerDialogRef = ref()
+
+const showPin = ref(false)
 const formData = reactive({
   name: '',
   pin: '',
-  permissions: 0 as number
 })
 
-const selectedPermissions = ref<number[]>([])
-
-watch(selectedPermissions, (val) => {
-  if (!val || val.length === 0) {
-    formData.permissions = 0
-    return
+const rules = computed(() => {
+  return {
+    name: {
+      required: helpers.withMessage('El campo es requerido', required),
+      minLength: helpers.withMessage(
+        `Este campo requiere al menos 6 caracteres`,
+        minLength(6)
+      ),
+    },
+    pin: {
+      required: helpers.withMessage('El campo es requerido', required),
+      minLength: helpers.withMessage(
+        `Este campo requiere al menos 4 caracteres`,
+        minLength(4)
+      ),
+    },
   }
-  const sorted = [...val].sort((a, b) => a - b)
-  formData.permissions = Number(sorted.join(''))
 })
+
+const v$ = useVuelidate(rules, formData)
 
 const show = computed({
   get: () => props.modelValue,
@@ -127,54 +152,51 @@ watch(show, (value) => {
 })
 
 const closeCreateCategoryModal = () => {
-  dialogCreateSellerRef.value.close()
+  createSellerDialogRef.value.close()
   show.value = false
 }
 
 const openCreateCategoryModal = () => {
   formData.name = ''
-  selectedPermissions.value = []
-  formData.permissions = 0
-  dialogCreateSellerRef.value.showModal()
+  formData.pin = ''
+  showPin.value = false
+  v$.value.$reset()
+  createSellerDialogRef.value.showModal()
 }
+
+// SNACKBAR
+const snack = reactive({
+  show: false,
+  message: '',
+  type: 'info',
+})
 
 const handleSubmit = async () => {
-  if (!formData.permissions || formData.permissions === 0) {
-    alert('Seleccione al menos un permiso para el usuario.')
+  const isFormCorrect = await v$.value.$validate()
+  if (!isFormCorrect) {
+    snack.type = 'warning'
+    snack.message = 'Formulario no válido, revise los errores'
+    snack.show = true
     return
   }
-  if (!branch || !branch.value || !branch.value.id_company) {
-    console.error('Branch not set or missing id_company', branch)
-    alert('Falta seleccionar la sucursal. Verifique la configuración de la tienda.')
-    return
-  }
 
-  const result = await createNewSeller()
-
-  if (result && (result as any).success) {
-    emit('update:table')
-    closeCreateCategoryModal()
-  } else {
-    // Mostrar más detalles si el backend devolvió info adicional
-    const extra = result && (result as any).response ? JSON.stringify((result as any).response) : ''
-    alert('Error al crear el vendedor: ' + ((result && (result as any).message) || 'Error desconocido') + (extra ? '\nDetalles: ' + extra : ''))
-  }
-}
-
-const createNewSeller = async () => {
-
-  const newSeller: CreateSeller = {
+  const payload: CreateSeller = {
     id_company: branch.value.id_company,
     name: formData.name,
-    pin: formData.pin,
-    permissions: formData.permissions
+    pin: formData.pin.replace(/\D/g, ''),
+    permissions: 0,
   }
 
-  return new Promise((resolve) => {
-    createSeller(newSeller as any, (response: Response<void>) => {
-      resolve(response)
-    })
+  createSeller(payload, (response: Response<Seller>) => {
+    if (!response.success) {
+      snack.type = 'error'
+      snack.message = response.message
+      snack.show = true
+      return
+    }
+    toast.success(response.message)
+    emit('update:table')
+    closeCreateCategoryModal()
   })
 }
-
 </script>

@@ -8,12 +8,15 @@ const { logger, getPaymentDueDate } = require('../../helpers/index.cjs')
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.seed = async function(knex) {
+exports.seed = async function (knex) {
   try {
-
     // Configuration
     await knex('configuration').del()
-    await knex('configuration').insert({ configured: true, mode: 'offline', enable_sync: false })
+    await knex('configuration').insert({
+      configured: true,
+      mode: 'offline',
+      enable_sync: false,
+    })
     // User
     await knex('users').del()
     await knex('users').insert({
@@ -40,7 +43,8 @@ exports.seed = async function(knex) {
       state: 'Baja California Sur', // Estado
       country: 'México', // País
       business_type: 'convenience_store', // Tipo de negocio
-      business_description: 'Una tienda de abarrotes local con productos básicos.', // Descripción
+      business_description:
+        'Una tienda de abarrotes local con productos básicos.', // Descripción
       ai_enabled: false,
     })
 
@@ -57,8 +61,8 @@ exports.seed = async function(knex) {
       logo: null, // URL del logo
       ticket_config: {
         footer_info: {
-          thank_you_message: "Muchas gracias por su compra",
-          business_url: "https://mitiendapos.mx",
+          thank_you_message: 'Muchas gracias por su compra',
+          business_url: 'https://mitiendapos.mx',
         },
       },
       timezone: 'America/Mazatlan', // Zona horaria
@@ -72,7 +76,7 @@ exports.seed = async function(knex) {
       id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002', // ID de la empresa relacionada
       name: 'Juan Perez', // Nombre
       pin: '1234', // PIN
-      permissions: 123456789, // Permisos
+      permissions: 536870911, // Permisos
       status: 'active', // Estatus
     })
 
@@ -114,14 +118,17 @@ exports.seed = async function(knex) {
         website: 'https://www.proveedor2.com', // Website
         tax_id: 'PRO123456789', // RFC
         notes: 'Notas del proveedor', // Notas
-      }])
+      },
+    ])
 
     // Products
     await knex('products').del()
-    await knex('products').insert(products.map((product) => ({
-      ...product,
-      taxes: JSON.stringify(product.taxes),
-    })))
+    await knex('products').insert(
+      products.map((product) => ({
+        ...product,
+        taxes: JSON.stringify(product.taxes),
+      }))
+    )
 
     // Customers
     await knex('customers').del()
@@ -143,7 +150,7 @@ exports.seed = async function(knex) {
   }
 }
 
-exports.requiredSeed = async function(knex) {
+exports.requiredSeed = async function (knex) {
   try {
     // Taxes
     await knex('taxes').del()

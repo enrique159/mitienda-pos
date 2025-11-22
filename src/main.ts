@@ -6,7 +6,9 @@ import './styles/style.css'
 
 declare global {
   // eslint-disable-next-line no-unused-vars
-  interface Window { electron: any; }
+  interface Window {
+    electron: any
+  }
 }
 
 // Toastify
@@ -20,13 +22,14 @@ import '@vuepic/vue-datepicker/dist/main.css'
 // Global Components
 import BaseButton from './components/buttons/BaseButton.vue'
 import DeleteButton from './components/buttons/DeleteButton.vue'
+import ActionButton from './components/buttons/ActionButton.vue'
 import PinInput from './components/inputs/PinInput.vue'
 import CurrencyInput from './components/inputs/CurrencyInput.vue'
 import CustomKbd from './components/CustomKbd.vue'
 import InputErrors from './components/InputErrors.vue'
 import StepText from './components/StepText.vue'
 import ProgressBar from './components/ProgressBar.vue'
-
+import SnackBar from './components/SnackBar.vue'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -39,6 +42,7 @@ app.use(Vue3Toastify, {
 
 app.component('BaseButton', BaseButton)
 app.component('DeleteButton', DeleteButton)
+app.component('ActionButton', ActionButton)
 app.component('PinInput', PinInput)
 app.component('CurrencyInput', CurrencyInput)
 app.component('CustomKbd', CustomKbd)
@@ -46,5 +50,6 @@ app.component('DatePicker', VueDatePicker)
 app.component('InputErrors', InputErrors)
 app.component('StepText', StepText)
 app.component('ProgressBar', ProgressBar)
+app.component('SnackBar', SnackBar)
 
 app.mount('#app')

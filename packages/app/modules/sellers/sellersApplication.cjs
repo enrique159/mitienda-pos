@@ -6,6 +6,21 @@ ipcMain.on('create_seller', async (event, seller) => {
   event.reply('create_seller', response)
 })
 
+ipcMain.on('update_seller', async (event, seller) => {
+  const response = await sellerRepository.updateSeller(seller)
+  event.reply('update_seller', response)
+})
+
+ipcMain.on('delete_seller_by_id', async (event, sellerId) => {
+  const response = await sellerRepository.deleteSellerById(sellerId)
+  event.reply('delete_seller_by_id', response)
+})
+
+ipcMain.on('update_permissions_seller', async (event, params) => {
+  const response = await sellerRepository.updatePermissionsSeller(params)
+  event.reply('update_permissions_seller', response)
+})
+
 ipcMain.on('start_session', async (event, data) => {
   const response = await sellerRepository.startSession(data)
   event.reply('start_session', response)
