@@ -59,7 +59,6 @@ import { IconEdit, IconShieldHalfFilled } from '@tabler/icons-vue'
 import { getAllSellers } from '@/api/electron'
 import { Seller, Response, SellerStatus } from '@/api/interfaces'
 import { toast } from '@/composables/useToast'
-import { userType } from '@/api/interfaces/permissions'
 
 const props = defineProps<{
   search: string

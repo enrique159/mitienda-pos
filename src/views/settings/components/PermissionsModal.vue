@@ -95,7 +95,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:table'])
 
 const show = computed({
   get: () => props.modelValue,
@@ -179,6 +179,7 @@ const handleSavePermissions = () => {
         return
       }
       toast.success('Permisos actualizados correctamente')
+      emit('update:table')
       closePermissionsModal()
     }
   )

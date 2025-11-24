@@ -43,6 +43,7 @@
       v-model="isOpenPermissionsModal"
       :permissions="currentUser?.permissions"
       :id-user="currentUser?.id"
+      @update:table="() => sellersTableRef.fetchSellers()"
     />
 
     <!-- CREATE SELLER MODAL -->
