@@ -17,6 +17,9 @@ resources/images/*
 
 database.sqlite
 
+# Electron backend TypeScript runtime output
+electron-build/
+
 
 # Editor directories and files
 .vscode/*

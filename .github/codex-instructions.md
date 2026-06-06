@@ -5,7 +5,7 @@ Purpose: keep this file short. Use it as a routing and pattern reference, then i
 ## Stack
 
 - App: Electron + Vue 3 POS.
-- Backend/local runtime: Electron main/preload, CommonJS `.cjs`, SQLite, Knex.
+- Backend/local runtime: Electron main/preload, `.ts` source with CommonJS `require`/`exports` emitted to `electron-build/**/*.cjs`, SQLite, Knex.
 - Frontend/renderer: Vue 3 SPA, TypeScript, Composition API, Pinia, Tailwind CSS 3, DaisyUI 4.
 - Backend architecture: feature-based layered modular monolith embedded in Electron.
 
@@ -13,19 +13,19 @@ If `AGENTS.md` points to `.github/references/*.md` and those files are missing, 
 
 ## Directory Map
 
-- `packages/main.cjs`: Electron entrypoint; creates window, initializes DB, registers `*Application.cjs`.
-- `packages/preload.cjs`: bridges backend APIs into `window.electron` by spreading `*Listeners.cjs`.
+- `packages/main.ts`: Electron source entrypoint; emits `electron-build/main.cjs` runtime.
+- `packages/preload.ts`: preload source; emits `electron-build/preload.cjs` runtime.
 - `packages/env.json`: Electron/backend runtime values.
-- `packages/app/database/index.cjs`: creates the local SQLite DB and registers schemas/seeds.
-- `packages/app/database/knexfile.cjs`: SQLite/Knex config.
-- `packages/app/database/schemas/*.cjs`: table definitions.
-- `packages/app/database/seeds/*.cjs`: initial/required seed data.
-- `packages/app/modules/[feature]/*Application.cjs`: `ipcMain` handlers and orchestration.
-- `packages/app/modules/[feature]/*Listeners.cjs`: `ipcRenderer` bridge methods consumed by preload.
-- `packages/app/modules/[feature]/*Repository.cjs`: Knex persistence and module-level business rules.
-- `packages/app/modules/[feature]/*Service.cjs`: optional remote API/service integration.
+- `packages/app/database/index.ts`: creates the local SQLite DB and registers schemas/seeds.
+- `packages/app/database/knexfile.ts`: SQLite/Knex config.
+- `packages/app/database/schemas/*.ts`: table definitions.
+- `packages/app/database/seeds/*.ts`: initial/required seed data.
+- `packages/app/modules/[feature]/*Application.ts`: `ipcMain` handlers and orchestration.
+- `packages/app/modules/[feature]/*Listeners.ts`: `ipcRenderer` bridge methods consumed by preload.
+- `packages/app/modules/[feature]/*Repository.ts`: Knex persistence and module-level business rules.
+- `packages/app/modules/[feature]/*Service.ts`: optional remote API/service integration.
 - `packages/app/helpers/`: response shape, logging, dates, currency, files, QR, DB cleanup.
-- `packages/app/network/Http.cjs`: remote HTTP client wrapper.
+- `packages/app/network/Http.ts`: remote HTTP client wrapper.
 - `packages/app/shared/`: backend routes, enums, errors, constants.
 - `packages/app/utils/`: backend utilities such as printer, tickets, image download, DB actions.
 - `src/api/electron/`: typed renderer wrappers around `window.electron`.
@@ -40,19 +40,25 @@ If `AGENTS.md` points to `.github/references/*.md` and those files are missing, 
 
 Renderer flow:
 
-`Vue view/store -> src/api/electron/* -> window.electron -> packages/preload.cjs -> *Listeners.cjs -> ipcMain channel -> *Application.cjs -> *Repository.cjs or *Service.cjs -> SQLite or remote API`
+`Vue view/store -> src/api/electron/* -> window.electron -> packages/preload.ts -> *Listeners.ts -> ipcMain channel -> *Application.ts -> *Repository.ts or *Service.ts -> SQLite or remote API`
 
 Naming:
 
 - Module folders: usually snake_case, e.g. `purchase_orders`, `cash_registers`.
-- Module files: follow existing module prefix style, e.g. `purchaseOrdersRepository.cjs`, `cashRegistersApplication.cjs`, `InventoriesRepository.cjs`.
+- Module files: follow existing module prefix style, e.g. `purchaseOrdersRepository.ts`, `cashRegistersApplication.ts`, `InventoriesRepository.ts`.
 - IPC channels: snake_case action names, e.g. `get_products`, `create_sale`.
 - DB tables/columns: snake_case.
 
 ## Core Conventions
 
 - Do not introduce an Express/Nest/local HTTP server for backend features; backend APIs are Electron IPC channels.
-- Keep backend files as CommonJS `.cjs`; keep renderer files as TypeScript/Vue.
+- Keep backend source files as `.ts`; generated `electron-build/**/*.cjs` files are runtime output and should not be edited.
+- Keep `require(...)` paths inside `packages` pointing to emitted `.cjs` files.
+- Keep CommonJS `require`/`exports` in Electron/backend files for now; do not convert isolated files to ESM imports to satisfy editor suggestions.
+- Keep `// @ts-nocheck` in migrated backend files until the file is intentionally typed.
+- Use `npm run electron:dev` for Vite + Electron with Electron restart on `packages/**/*.ts` changes.
+- `npm run packages:build` is transpile-only for now; full backend type-checking requires typing existing dynamic payloads/classes first.
+- Use `npm run packages:clean` to remove the generated `electron-build/` runtime folder.
 - Schema primary keys use `table.uuid('id').defaultTo(knex.fn.uuid()).primary()`.
 - Foreign keys are explicit UUID columns named `id_[entity]`, e.g. `id_company`, `id_branch`.
 - Store money as integer cents, not floats.
@@ -70,19 +76,19 @@ Naming:
 
 When adding a table:
 
-- Create `packages/app/database/schemas/[table_name].cjs`.
+- Create `packages/app/database/schemas/[table_name].ts`.
 - Export `exports.createTable = async function(knex) { ... }`.
 - Use `knex.schema.createTable('[table_name]', (table) => { ... })`.
 - Import `logger` from `../../helpers/index.cjs` and log DB errors with `{ type: 'DB', message, error }`.
 - Common fields: UUID primary key with `knex.fn.uuid()`, foreign keys, `status` enum where needed, `created_at`, `updated_at`, `synced_at`.
-- Register the schema in `packages/app/database/index.cjs` and add `schema.createTable(knex)` to the `Promise.all` in FK-safe order.
+- Register the schema in `packages/app/database/index.ts` and add `schema.createTable(knex)` to the `Promise.all` in FK-safe order.
 
 ### Seeds
 
 When adding seed data:
 
-- Reusable datasets go in `packages/app/database/seeds/[entity]_seed.cjs` as `exports.[entities] = [...]`.
-- Import datasets in `packages/app/database/seeds/init_seed.cjs`.
+- Reusable datasets go in `packages/app/database/seeds/[entity]_seed.ts` as `exports.[entities] = [...]`.
+- Import datasets in `packages/app/database/seeds/init_seed.ts`.
 - Use `exports.seed` for development seed data controlled by `env.SEED`.
 - Use `exports.requiredSeed` for data required whenever a new DB is initialized.
 - Use `await knex('[table]').del()` before replacing a full dataset.
@@ -92,30 +98,30 @@ When adding seed data:
 
 When adding renderer-to-main IPC API:
 
-- Create `packages/app/modules/[module]/[module]Listeners.cjs`.
+- Create `packages/app/modules/[module]/[module]Listeners.ts`.
 - Import `{ ipcRenderer }` from `electron`.
 - Export methods used by preload.
 - Async pattern: `removeAllListeners(channel)`, `ipcRenderer.on(channel, (_, response) => callback(response))`, then `ipcRenderer.send(channel, payload)`.
 - Use `ipcRenderer.sendSync(channel)` only for existing/strictly necessary sync reads.
-- Register the listener in `packages/preload.cjs`: require it and spread it into `api`.
+- Register the listener in `packages/preload.ts`: require the emitted `.cjs` listener and spread it into `api`.
 
 ### Application
 
 When adding main-process handlers:
 
-- Create `packages/app/modules/[module]/[module]Application.cjs`.
+- Create `packages/app/modules/[module]/[module]Application.ts`.
 - Import `{ ipcMain }` from `electron` and the module repository.
 - Register `ipcMain.on(channel, async (event, payload) => { ... })`.
 - Delegate to repositories/services and respond with `event.reply(channel, response)`.
 - Existing sync handlers use `event.returnValue = response`.
 - Transactional workflows create `const trx = await knex.transaction()`, pass `trx` to repositories, then `commit` or `rollback`.
-- Register the application in `packages/main.cjs` with `require('./app/modules/[module]/[module]Application.cjs')`.
+- Register the application in `packages/main.ts` with `require('./app/modules/[module]/[module]Application.cjs')`.
 
 ### Repository
 
 When adding persistence/business methods:
 
-- Create `packages/app/modules/[module]/[module]Repository.cjs`.
+- Create `packages/app/modules/[module]/[module]Repository.ts`.
 - Initialize Knex with `require('knex')(require('../../database/knexfile.cjs'))`.
 - Import helpers from `../../helpers/index.cjs`: commonly `response`, `logger`, `parseBoolean`, `parseArrayJson`, `parseObjectJson`.
 - Export async functions as `exports.functionName = async function (...) { ... }`.
@@ -129,7 +135,7 @@ When adding persistence/business methods:
 
 When adding remote integration:
 
-- Add `packages/app/modules/[module]/[module]Service.cjs` only for external API/service calls.
+- Add `packages/app/modules/[module]/[module]Service.ts` only for external API/service calls.
 - Import `Http` from `../../network/Http.cjs`.
 - Import route helpers from `../../shared/routes.cjs`; add a helper there if missing.
 - Import `response` and `logger` from `../../helpers/index.cjs`.
