@@ -1,7 +1,6 @@
-// @ts-nocheck
-const { v4: uuidv4 } = require('uuid')
+import { v4 as uuidv4 } from 'uuid'
 
-exports.taxes = [
+export const taxes = [
   {
     id: uuidv4(),
     id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002',
@@ -223,4 +222,3 @@ exports.taxes = [
     withheld: true,
   },
 ]
-export {}

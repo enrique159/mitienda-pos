@@ -1,6 +1,5 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const aiModelsRepository = require('./aiModelsRepository.cjs')
+import { ipcMain } from 'electron'
+import * as aiModelsRepository from './aiModelsRepository.js'
 
 /*
   ** ******** OBTENER TODOS LOS MODELOS DE IA ********
@@ -61,4 +60,3 @@ ipcMain.on('set_default_ai_model', async (event, payload) => {
   event.reply('set_default_ai_model', response)
 })
 
-export {}

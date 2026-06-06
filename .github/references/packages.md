@@ -11,26 +11,29 @@ Read this file before creating, changing, or reviewing code under `packages/`.
 | Area | Detail |
 | --- | --- |
 | Runtime | Electron main/preload |
-| Source format | TypeScript `.ts` with CommonJS `require`/`exports` |
-| Runtime output | Generated CommonJS `electron-build/**/*.cjs` |
+| Source format | Checked TypeScript `.ts` with `import`/`export` for typed files |
+| Runtime output | Generated CommonJS `electron-build/**/*.js` |
 | Architecture | Feature-based layered modular monolith embedded in Electron |
 | Transport | Electron IPC (`ipcRenderer` -> `ipcMain`) |
 | Persistence | SQLite via Knex |
-| Remote API | `packages/app/network/Http.ts` source, emitted to `.cjs` |
+| Remote API | `packages/app/network/Http.ts` source, emitted to `.js` |
 | Local files/assets | `resources/` and app-specific local paths |
 | Tests | No established automated backend test suite yet |
 
-`npm run packages:build` transpiles `.ts` sources to runtime `.cjs` files under `electron-build/` and copies required runtime JSON files. `npm run packages:clean` removes `electron-build/`. The build is intentionally transpile-only for now; full backend type-checking should be introduced after dynamic payloads/classes are typed.
+`npm run packages:build` runs `tsc -p tsconfig.electron.json`, emits runtime `.js` files under `electron-build/`, and copies required runtime JSON files. `npm run packages:clean` removes `electron-build/`. Backend TypeScript must compile cleanly without `// @ts-nocheck`.
+
+Do not use `require(...)` in `packages/**/*.ts`; use ES imports. Import multi-function modules as namespaces, for example `import * as sellersRepository from './sellersRepository.js'`.
 
 ## Map
 
-- `packages/main.ts`: Electron source entrypoint; emits `electron-build/main.cjs` for runtime.
-- `packages/preload.ts`: preload source; emits `electron-build/preload.cjs` for runtime.
+- `packages/main.ts`: Electron source entrypoint; emits `electron-build/main.js` for runtime.
+- `packages/preload.ts`: preload source; emits `electron-build/preload.js` for runtime.
 - `packages/env.json`: runtime configuration for Electron/backend code.
 - `packages/app/database/index.ts`: creates DB, tables, and seeds.
 - `packages/app/database/knexfile.ts`: SQLite/Knex configuration.
 - `packages/app/database/schemas/*.ts`: schema definitions.
 - `packages/app/database/seeds/*.ts`: seed datasets and bootstrap data.
+- `packages/app/domain/interfaces/`: schema-derived domain interfaces for backend entities.
 - `packages/app/modules/[feature]/*Application.ts`: `ipcMain` handlers.
 - `packages/app/modules/[feature]/*Listeners.ts`: `ipcRenderer` bridge methods.
 - `packages/app/modules/[feature]/*Repository.ts`: Knex persistence and module business rules.

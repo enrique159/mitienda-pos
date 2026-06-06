@@ -1,8 +1,9 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, parseBoolean } from '../../helpers/index.js'
 
-exports.getCategories = async function () {
+export async function getCategories() {
   return await knex('categories').select()
     .then((categories) => {
       if (!categories.length) {
@@ -18,7 +19,7 @@ exports.getCategories = async function () {
     })
 }
 
-exports.createCategory = async function (category) {
+export async function createCategory(category) {
   return await knex('categories').insert(category)
     .then((category) => {
       logger.info({ type: 'CREATE CATEGORY', message: `Categoria creada`, data: category })
@@ -31,7 +32,7 @@ exports.createCategory = async function (category) {
     })
 }
 
-exports.updateCategory = async function (category) {
+export async function updateCategory(category) {
   const dataToUpdate = {
     ...category,
     updated_at: knex.fn.now(),
@@ -51,7 +52,7 @@ exports.updateCategory = async function (category) {
     })
 }
 
-exports.deleteCategory = async function (id) {
+export async function deleteCategory(id) {
   return await knex('categories').where('id', id).del()
     .then((category) => {
       logger.info({ type: 'DELETE CATEGORY', message: `Categoria eliminada con éxito`, data: category })
@@ -63,4 +64,3 @@ exports.deleteCategory = async function (id) {
       return response(false, 'Error al eliminar la categoria', err)
     })
 }
-export {}

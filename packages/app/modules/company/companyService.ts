@@ -1,12 +1,11 @@
-// @ts-nocheck
-const Http = require('../../network/Http.cjs')
-const routes = require('../../shared/routes.cjs')
-const { response, logger } = require('../../helpers/index.cjs')
-const configurationRepository = require('../configuration/configurationRepository.cjs')
+import Http from '../../network/Http.js'
+import * as routes from '../../shared/routes.js'
+import { response, logger } from '../../helpers/index.js'
+import * as configurationRepository from '../configuration/configurationRepository.js'
 
 const http = new Http()
 
-exports.fetchCompany = async function () {
+export async function fetchCompany() {
   try {
     const { response: token } = await configurationRepository.getToken()
     const url = routes.getPosCompany(Http.baseUrl)
@@ -17,4 +16,3 @@ exports.fetchCompany = async function () {
     return response(false, 'Error al traer la configuración', err.errors || err.message || err)
   }
 }
-export {}

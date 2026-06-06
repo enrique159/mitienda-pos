@@ -1,9 +1,10 @@
-// @ts-nocheck
-const { generateQRCode, logger, ticketDateFormatter } = require('../../../helpers/index.cjs')
-const { getFontFaceCSS, fontName } = require('../extra/loadFonts.cjs')
-const { getImageDataUrl } = require('../extra/loadImage.cjs')
-const branchesRepository = require('../../../modules/branches/branchesRepository.cjs')
-const { ToWords } = require('to-words')
+import { generateQRCode, logger, ticketDateFormatter } from '../../../helpers/index.js'
+import { getFontFaceCSS, fontName } from '../extra/loadFonts.js'
+import { getImageDataUrl } from '../extra/loadImage.js'
+import * as branchesRepository from '../../../modules/branches/branchesRepository.js'
+import { ToWords } from 'to-words'
+
+type AnyRecord = Record<string, any>
 
 const toWords = new ToWords({
   localeCode: 'es-MX',
@@ -19,20 +20,22 @@ const toWords = new ToWords({
       fractionalUnit: {
         name: 'Centavo',
         plural: 'Centavos',
+        symbol: '¢',
       },
     },
   },
 })
 
-module.exports = class SaleTicketBuilder {
-  businessInfo = {}
-  ticketInfo = {}
-  items = []
-  paymentInfo = {}
-  customerInfo = {}
-  invoiceInfo = {}
-  footerInfo = {}
+export default class SaleTicketBuilder {
+  businessInfo: AnyRecord = {}
+  ticketInfo: AnyRecord = {}
+  items: AnyRecord[] = []
+  paymentInfo: AnyRecord = {}
+  customerInfo: AnyRecord | null = {}
+  invoiceInfo: AnyRecord = {}
+  footerInfo: AnyRecord = {}
   logoPath = ''
+  ticket = ''
 
   constructor({
     businessInfo = {
@@ -433,5 +436,3 @@ module.exports = class SaleTicketBuilder {
     return await this.build()
   }
 }
-
-export {}

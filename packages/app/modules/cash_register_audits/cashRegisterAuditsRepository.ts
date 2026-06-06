@@ -1,8 +1,9 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger } from '../../helpers/index.js'
 
-exports.createCashRegisterAudit = async function (data) {
+export async function createCashRegisterAudit(data) {
   data.cash_breakdown = data.cash_breakdown.length ? JSON.stringify(data.cash_breakdown) : null
   return await knex('cash_register_audits').insert(data).returning('*')
     .then((cashRegisterAudit) => {
@@ -15,7 +16,7 @@ exports.createCashRegisterAudit = async function (data) {
     })
 }
 
-exports.getCashRegisterAudits = async function () {
+export async function getCashRegisterAudits() {
   return await knex('cash_register_audits')
     .select(
       'cash_register_audits.*',
@@ -37,4 +38,3 @@ exports.getCashRegisterAudits = async function () {
       return response(false, 'Error al traer los cierres de caja registradoras', err)
     })
 }
-export {}

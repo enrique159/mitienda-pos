@@ -1,17 +1,15 @@
-// @ts-nocheck
-const path = require('path')
-const fs = require('fs')
-const mime = require('mime-types')
-const { app } = require('electron')
+import path from 'path'
+import fs from 'fs'
+import mime from 'mime-types'
+import { app } from 'electron'
 
 const fontFileName = 'RobotoCondensed'
-const fontName = 'Roboto Condensed'
 
-module.exports.fontName = fontName
+export const fontName = 'Roboto Condensed'
 
-module.exports.getFontFaceCSS = async () => {
+export const getFontFaceCSS = async () => {
   // Función para convertir un archivo a Data URL
-  const fileToDataUrl = (filePath) => {
+  const fileToDataUrl = (filePath: string): string => {
     try {
       const fontData = fs.readFileSync(filePath)
       const mimeType = mime.lookup(filePath) || 'application/octet-stream'
@@ -75,5 +73,3 @@ module.exports.getFontFaceCSS = async () => {
       }
     `
 }
-
-export {}

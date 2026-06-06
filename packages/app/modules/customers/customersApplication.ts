@@ -1,6 +1,5 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const customersRepository = require('./customersRepository.cjs')
+import { ipcMain } from 'electron'
+import * as customersRepository from './customersRepository.js'
 
 ipcMain.on("get_customers", async(event) => {
   const response = await customersRepository.getCustomers()
@@ -21,4 +20,3 @@ ipcMain.on("delete_customer", async(event, customerId) => {
   const response = await customersRepository.deleteCustomer(customerId)
   event.reply("delete_customer", response)
 })
-export {}

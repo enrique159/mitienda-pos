@@ -1,13 +1,14 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const branchesService = require('./branchesService.cjs')
-const { response, logger, parseBoolean, parseObjectJson } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import * as branchesService from './branchesService.js'
+import { response, logger, parseBoolean, parseObjectJson } from '../../helpers/index.js'
 
-exports.getBranchesByEmail = async function (email) {
+export async function getBranchesByEmail(email) {
   return await branchesService.fetchBranchesByEmail(email)
 }
 
-exports.saveBranch = async function (branch, trx) {
+export async function saveBranch(branch, trx) {
   const queryBuilder = trx ? knex('branches').transacting(trx) : knex('branches')
   return await queryBuilder.insert(branch).returning('*')
     .then((branch) => {
@@ -19,7 +20,7 @@ exports.saveBranch = async function (branch, trx) {
     })
 }
 
-exports.getBranchInfo = async function () {
+export async function getBranchInfo() {
   return await knex('branches').select().first()
     .then((branch) => {
       if (!branch) {
@@ -41,7 +42,7 @@ exports.getBranchInfo = async function () {
     })
 }
 
-exports.setBranchLogo = async function (image) {
+export async function setBranchLogo(image) {
   const branch = await knex('branches').select().first()
   if (!branch) {
     logger.error({ type: 'SET BRANCH LOGO', message: 'No se encontró la sucursal' })
@@ -63,4 +64,3 @@ exports.setBranchLogo = async function (image) {
       return response(false, 'Error al actualizar el logo de la sucursal', err)
     })
 }
-export {}

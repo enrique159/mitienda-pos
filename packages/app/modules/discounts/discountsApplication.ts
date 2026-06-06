@@ -1,6 +1,5 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const discountsRepository = require('./discountsRepository.cjs')
+import { ipcMain } from 'electron'
+import * as discountsRepository from './discountsRepository.js'
 
 ipcMain.on('get_active_discounts', async (event) => {
   const response = await discountsRepository.getActiveDiscounts()
@@ -36,4 +35,3 @@ ipcMain.on('create_discount_product', async (event, discountId, productsId) => {
   const response = await discountsRepository.createDiscountProduct(discountId, productsId)
   event.reply('create_discount_product', response)
 })
-export {}

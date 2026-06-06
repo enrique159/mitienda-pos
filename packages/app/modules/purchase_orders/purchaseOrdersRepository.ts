@@ -1,11 +1,12 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger } from '../../helpers/index.js'
 
 /*
   ** ******** OBTENER ÓRDENES DE COMPRA ********
 */
-exports.getPurchaseOrders = async function () {
+export async function getPurchaseOrders() {
   try {
     const purchaseOrders = await knex('purchase_orders').select().orderBy('created_at', 'desc')
     if (!purchaseOrders.length) {
@@ -37,7 +38,7 @@ exports.getPurchaseOrders = async function () {
 /*
   ** ******** CREAR UNA ORDEN DE COMPRA ********
 */
-exports.createPurchaseOrder = async function (purchaseOrder, trx) {
+export async function createPurchaseOrder(purchaseOrder, trx) {
   const dataToInsert = {
     ...purchaseOrder,
     ordered_at: purchaseOrder.status === 'sent' ? knex.fn.now() : null,
@@ -56,7 +57,7 @@ exports.createPurchaseOrder = async function (purchaseOrder, trx) {
     })
 }
 
-exports.createPurchaseOrderItem = async function (purchaseOrderItem, trx) {
+export async function createPurchaseOrderItem(purchaseOrderItem, trx) {
   const queryBuilder = trx ? knex('purchase_order_items').transacting(trx) : knex('purchase_order_items')
   return await queryBuilder.insert(purchaseOrderItem)
     .then((item) => {
@@ -72,7 +73,7 @@ exports.createPurchaseOrderItem = async function (purchaseOrderItem, trx) {
 /*
   ** ******** ACTUALIZAR UNA ORDEN DE COMPRA ********
 */
-exports.updatePurchaseOrder = async function (id, purchaseOrder) {
+export async function updatePurchaseOrder(id, purchaseOrder) {
   const dataToUpdate = {
     ...purchaseOrder,
     updated_at: knex.fn.now(),
@@ -97,7 +98,7 @@ exports.updatePurchaseOrder = async function (id, purchaseOrder) {
 /*
   ** ******** ACTUALIZAR EL ESTADO DE COMPRA ********
 */
-exports.updatePurchaseOrderStatus = async function (id, status) {
+export async function updatePurchaseOrderStatus(id, status) {
   const dataToUpdate = {
     status,
     updated_at: knex.fn.now(),
@@ -124,7 +125,7 @@ exports.updatePurchaseOrderStatus = async function (id, status) {
 /*
   ** ******** ACTUALIZAR UN ITEM DE ORDEN DE COMPRA ********
 */
-exports.updatePurchaseOrderItem = async function (id, purchaseOrderItem) {
+export async function updatePurchaseOrderItem(id, purchaseOrderItem) {
   const dataToUpdate = {
     ...purchaseOrderItem,
     updated_at: knex.fn.now(),
@@ -148,7 +149,7 @@ exports.updatePurchaseOrderItem = async function (id, purchaseOrderItem) {
 /*
   ** ******** ACTUALIZAR TODOS LOS ITEMS DE UNA ORDEN DE COMPRA ********
 */
-exports.updatePurchaseOrderItems = async function (items) {
+export async function updatePurchaseOrderItems(items) {
   try {
     // Use a transaction to ensure all updates succeed or fail together
     const result = await knex.transaction(async (trx) => {
@@ -191,7 +192,7 @@ exports.updatePurchaseOrderItems = async function (items) {
 /*
   ** ******** ELIMINAR UNA ORDEN DE COMPRA ********
 */
-exports.deletePurchaseOrder = async function (id, trx) {
+export async function deletePurchaseOrder(id, trx) {
   const queryBuilder = trx ? knex('purchase_orders').transacting(trx) : knex('purchase_orders')
   return await queryBuilder.where('id', id).del()
     .then((deleted) => {
@@ -213,7 +214,7 @@ exports.deletePurchaseOrder = async function (id, trx) {
 /*
   ** ******** ELIMINAR TODOS LOS ITEMS DE UNA ORDEN DE COMPRA ********
 */
-exports.deletePurchaseOrderItems = async function (purchaseOrderId, trx) {
+export async function deletePurchaseOrderItems(purchaseOrderId, trx) {
   const queryBuilder = trx ? knex('purchase_order_items').transacting(trx) : knex('purchase_order_items')
   return await queryBuilder.where('id_purchase_order', purchaseOrderId).del()
     .then((deleted) => {
@@ -227,4 +228,3 @@ exports.deletePurchaseOrderItems = async function (purchaseOrderId, trx) {
     })
 }
 
-export {}

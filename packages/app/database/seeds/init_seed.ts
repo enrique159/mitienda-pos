@@ -1,15 +1,15 @@
-// @ts-nocheck
-const { v4: uuidv4 } = require('uuid')
-const { products } = require('./products_seed.cjs')
-const { categories } = require('./categories_seed.cjs')
-const { taxes } = require('./taxes_seed.cjs')
-const { logger, getPaymentDueDate } = require('../../helpers/index.cjs')
+import { v4 as uuidv4 } from 'uuid'
+import { products } from './products_seed.js'
+import { categories } from './categories_seed.js'
+import { taxes } from './taxes_seed.js'
+import { logger, getPaymentDueDate } from '../../helpers/index.js'
+import { Knex } from 'knex'
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.seed = async function (knex) {
+export async function seed(knex: Knex) {
   try {
     // Configuration
     await knex('configuration').del()
@@ -151,7 +151,7 @@ exports.seed = async function (knex) {
   }
 }
 
-exports.requiredSeed = async function (knex) {
+export async function requiredSeed(knex: Knex) {
   try {
     // Taxes
     await knex('taxes').del()
@@ -161,5 +161,3 @@ exports.requiredSeed = async function (knex) {
     logger.error({ type: 'DB SEEDS', message: `${error}`, error })
   }
 }
-
-export {}

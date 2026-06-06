@@ -1,11 +1,8 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const {
-  response,
-  logger,
-  camelToSnakeCase,
-} = require('../../helpers/index.cjs')
-const sellersService = require('./sellersService.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, camelToSnakeCase } from '../../helpers/index.js'
+import * as sellersService from './sellersService.js'
 
 const mapDataToSeller = (data) => ({
   id: data.id,
@@ -27,7 +24,7 @@ const mapDataToSellerSimple = (data) => ({
  * Guarda los vendedores en la base de datos
  * @param { Seller[] } sellers
  */
-exports.saveSellers = async function (sellers) {
+export async function saveSellers(sellers) {
   return await knex('sellers')
     .insert(sellers)
     .returning('*')
@@ -48,7 +45,7 @@ exports.saveSellers = async function (sellers) {
  * Guarda un vendedor en la base de datos
  * @param { Seller } seller
  */
-exports.createSeller = async function (seller) {
+export async function createSeller(seller) {
   return await knex('sellers')
     .insert(seller)
     .returning('*')
@@ -74,7 +71,7 @@ exports.createSeller = async function (seller) {
  * Actualiza un vendedor en la base de datos
  * @param { Seller } seller
  */
-exports.updateSeller = async function (seller) {
+export async function updateSeller(seller) {
   return await knex('sellers')
     .update(seller)
     .where('id', seller.id)
@@ -101,7 +98,7 @@ exports.updateSeller = async function (seller) {
  * Actualiza los permisos de un vendedor
  * @param { { id: string, permissions: string[] } } params
  */
-exports.updatePermissionsSeller = async function (params) {
+export async function updatePermissionsSeller(params) {
   return await knex('sellers')
     .update({ permissions: params.permissions || 0 })
     .where('id', params.id)
@@ -128,7 +125,7 @@ exports.updatePermissionsSeller = async function (params) {
  * Elimina un vendedor de la base de datos
  * @param { string } sellerId
  */
-exports.deleteSellerById = async function (sellerId) {
+export async function deleteSellerById(sellerId) {
   // Primero se revisa si hay algun otro vendedor activo, si no hay ninguno, no se puede eliminar
   const sellers = await knex('sellers').select().where('status', 'active')
   console.log('sellers', sellers)
@@ -171,7 +168,7 @@ exports.deleteSellerById = async function (sellerId) {
  * Inicia una sesión de vendedor
  * @param { { id: string, pin: string } } data
  */
-exports.startSession = async function (data) {
+export async function startSession(data) {
   const seller = await knex('sellers').select().where('id', data.id).first()
   if (!seller) {
     logger.error({
@@ -197,7 +194,7 @@ exports.startSession = async function (data) {
  * Cierra una sesión de vendedor
  * @param { string } sellerId
  */
-exports.closeSession = async function (sellerId) {
+export async function closeSession(sellerId) {
   try {
     const seller = await knex('sellers').select().where('id', sellerId).first()
     if (!seller) {
@@ -224,7 +221,7 @@ exports.closeSession = async function (sellerId) {
  * Obtiene todos los vendedores activos
  * @returns { Response<SellerSimple[]> }
  */
-exports.getSellers = async function () {
+export async function getSellers() {
   const sellers = await knex('sellers').select().where('status', 'active')
   if (!sellers.length) {
     logger.error({ type: 'GET SELLERS', message: 'Vendedores no encontrados' })
@@ -241,7 +238,7 @@ exports.getSellers = async function () {
  * Obtiene todos los vendedores sin resctricción (todos)
  * @returns { Response<Seller[]> }
  */
-exports.getAllSellers = async function () {
+export async function getAllSellers() {
   const sellers = await knex('sellers').select().whereNot('status', 'deleted')
   if (!sellers.length) {
     logger.error({
@@ -257,7 +254,7 @@ exports.getAllSellers = async function () {
  * Obtiene un vendedor por su id
  * @param { string } sellerId
  */
-exports.getSellerById = async function (sellerId) {
+export async function getSellerById(sellerId) {
   const seller = await knex('sellers').select().where('id', sellerId).first()
   if (!seller) {
     logger.error({
@@ -274,14 +271,14 @@ exports.getSellerById = async function (sellerId) {
  * ☁️ Obtiene todos los vendedores activos de la base de datos de la nube
  * @returns { Response<Seller[]> }
  */
-exports.getPosSellers = async function () {
+export async function getPosSellers() {
   const responseFetch = await sellersService.fetchSellers()
   if (!responseFetch.success) {
     return responseFetch
   }
   try {
     const sellers = responseFetch.response.map(camelToSnakeCase)
-    return await this.saveSellers(sellers)
+    return await saveSellers(sellers)
   } catch (err) {
     logger.error({
       type: 'GET POS SELLERS ERROR',
@@ -291,5 +288,3 @@ exports.getPosSellers = async function () {
     return response(false, 'Error al obtener los vendedores', err)
   }
 }
-
-export {}

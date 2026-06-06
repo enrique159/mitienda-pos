@@ -16,7 +16,7 @@ Read this file before creating, changing, or reviewing code under `src/`.
 | State | Pinia stores, mostly Composition API style |
 | UI | Tailwind CSS 3 + DaisyUI 4 + shared local components |
 | Icons | `@tabler/icons-vue` |
-| Backend bridge | `window.electron` exposed by `electron-build/preload.cjs` emitted from `packages/preload.ts` |
+| Backend bridge | `window.electron` exposed by `electron-build/preload.js` emitted from `packages/preload.ts` |
 | Tests | No established automated frontend test suite yet |
 
 ## Map

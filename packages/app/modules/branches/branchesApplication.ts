@@ -1,7 +1,6 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const branchesRepository = require('./branchesRepository.cjs')
-const { selectFile, saveFile } = require('../../helpers/index.cjs')
+import { ipcMain } from 'electron'
+import * as branchesRepository from './branchesRepository.js'
+import { selectFile, saveFile } from '../../helpers/index.js'
 
 ipcMain.on('get_branch_info', async (event) => {
   const response = await branchesRepository.getBranchInfo()
@@ -41,4 +40,3 @@ ipcMain.on('get_branches_by_email', async (event, email) => {
   event.reply('get_branches_by_email', response)
 })
 
-export {}

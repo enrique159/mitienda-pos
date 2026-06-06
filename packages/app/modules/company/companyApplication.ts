@@ -1,6 +1,5 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const companyRepository = require('./companyRepository.cjs')
+import { ipcMain } from 'electron'
+import * as companyRepository from './companyRepository.js'
 
 ipcMain.on('get_pos_company', async (event) => {
   const response = await companyRepository.getPosCompany()
@@ -11,4 +10,3 @@ ipcMain.on('get_company', async (event) => {
   const response = await companyRepository.getCompany()
   event.reply('get_company', response)
 })
-export {}

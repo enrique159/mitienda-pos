@@ -1,7 +1,6 @@
-// @ts-nocheck
-const { v4: uuidv4 } = require('uuid')
+import { v4 as uuidv4 } from 'uuid'
 
-exports.products = [
+export const products = [
   {
     id: uuidv4(),
     id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002',
@@ -246,4 +245,3 @@ exports.products = [
     is_composite: false,
   },
 ]
-export {}

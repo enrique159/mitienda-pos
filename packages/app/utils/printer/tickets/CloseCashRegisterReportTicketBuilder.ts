@@ -1,22 +1,17 @@
-// @ts-nocheck
-const logger = require('../../../helpers/logger.cjs')
-const { getFontFaceCSS, fontName } = require('../extra/loadFonts.cjs')
-const { getImageDataUrl } = require('../extra/loadImage.cjs')
-const {
-  ticketDateFormatter,
-  ticketDateFormatterTimezone,
-  getToday,
-} = require('../../../helpers/datetime.cjs')
-const { formatCurrency } = require('../../../helpers/currency.cjs')
-const {
-  getSellerById,
-} = require('../../../modules/sellers/sellersRepository.cjs')
+import logger from '../../../helpers/logger.js'
+import { getFontFaceCSS, fontName } from '../extra/loadFonts.js'
+import { getImageDataUrl } from '../extra/loadImage.js'
+import { ticketDateFormatter, ticketDateFormatterTimezone, getToday } from '../../../helpers/datetime.js'
+import { formatCurrency } from '../../../helpers/currency.js'
+import { getSellerById } from '../../../modules/sellers/sellersRepository.js'
 
-module.exports = class CloseCashRegisterTicketBuilder {
+type AnyRecord = Record<string, any>
+
+export default class CloseCashRegisterTicketBuilder {
   ticket = ''
   logoPath = ''
-  branchInfo = {}
-  cashRegisterInfo = {}
+  branchInfo: AnyRecord = {}
+  cashRegisterInfo: AnyRecord = {}
 
   constructor(payload) {
     this.logoPath = payload.branch.logo
@@ -134,7 +129,7 @@ module.exports = class CloseCashRegisterTicketBuilder {
     const info = this.cashRegisterInfo
     
     // Parsear el JSON de cash_breakdown
-    let cashBreakdown = []
+    let cashBreakdown: AnyRecord[] = []
     try {
       cashBreakdown = typeof info.cash_breakdown === 'string' 
         ? JSON.parse(info.cash_breakdown) 
@@ -778,5 +773,3 @@ module.exports = class CloseCashRegisterTicketBuilder {
     return await this.build()
   }
 }
-
-export {}

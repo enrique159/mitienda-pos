@@ -1,12 +1,14 @@
-// @ts-nocheck
-const { BaseError } = require('./BaseError.cjs')
+import { BaseError } from './BaseError'
+import type { NetworkStatusCode } from '../enums/networkStatusCode'
 
 class Exception extends BaseError {
+  statusCode: NetworkStatusCode | number
+
   constructor(
-    statusCode,
-    errors,
-    warnings,
-    dataErrors
+    statusCode: NetworkStatusCode | number,
+    errors: unknown | unknown[] = [],
+    warnings: unknown | unknown[] = [],
+    dataErrors: unknown | unknown[] = []
   ) {
     super(errors, warnings, dataErrors)
     this.name = 'Exception'
@@ -15,6 +17,5 @@ class Exception extends BaseError {
   }
 }
 
-module.exports = Exception
+export = Exception
 
-export {}

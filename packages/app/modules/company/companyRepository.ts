@@ -1,7 +1,8 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean, camelToSnakeCase } = require('../../helpers/index.cjs')
-const companyService = require('./companyService.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, parseBoolean, camelToSnakeCase } from '../../helpers/index.js'
+import * as companyService from './companyService.js'
 
 const normalizeCompany = (company) => {
   return {
@@ -10,21 +11,21 @@ const normalizeCompany = (company) => {
   }
 }
 
-exports.getPosCompany = async function () {
+export async function getPosCompany() {
   const responseFetch = await companyService.fetchCompany()
   if (!responseFetch.success) {
     return responseFetch
   }
   try {
     const company = camelToSnakeCase(responseFetch.response)
-    return await this.saveCompany(company)
+    return await saveCompany(company)
   } catch (err) {
     logger.error({ type: 'GET POS COMPANY ERROR', message: `${err}`, data: err })
     return response(false, 'Error al obtener la empresa', err)
   }
 }
 
-exports.saveCompany = async function (company) {
+export async function saveCompany(company) {
   return await knex('company').insert(company).returning('*')
     .then((company) => {
       return response(true, 'Empresa guardada', normalizeCompany(company[0]))
@@ -35,7 +36,7 @@ exports.saveCompany = async function (company) {
     })
 }
 
-exports.getCompany = async function () {
+export async function getCompany() {
   return await knex('company').select().first()
     .then((company) => {
       return response(true, 'Empresa encontrada', normalizeCompany(company || {}))
@@ -45,5 +46,3 @@ exports.getCompany = async function () {
       return response(false, 'Error al obtener la información de la empresa', err)
     })
 }
-
-export {}

@@ -1,6 +1,7 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean, getUTCToday, getToday } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, parseBoolean, getUTCToday, getToday } from '../../helpers/index.js'
 
 function normalizeSale(sale) {
   return {
@@ -13,7 +14,7 @@ function normalizeSale(sale) {
 /*
   ** ******** CREACION DE UNA VENTA ********
 */
-exports.createSale = async function (sale, trx) {
+export async function createSale(sale, trx) {
   const queryBuilder = trx ? knex('sales').transacting(trx) : knex('sales')
   return await queryBuilder.insert(sale).returning('id')
     .then((sale) => {
@@ -26,7 +27,7 @@ exports.createSale = async function (sale, trx) {
     })
 }
 
-exports.createSaleDetail = async function (saleDetail, trx) {
+export async function createSaleDetail(saleDetail, trx) {
   saleDetail.taxes = saleDetail.taxes.length ? JSON.stringify(saleDetail.taxes) : []
   const queryBuilder = trx ? knex('sale_details').transacting(trx) : knex('sale_details')
   return await queryBuilder.insert(saleDetail)
@@ -39,7 +40,7 @@ exports.createSaleDetail = async function (saleDetail, trx) {
     })
 }
 
-exports.createSalePayment = async function (salePayment, trx) {
+export async function createSalePayment(salePayment, trx) {
   const queryBuilder = trx ? knex('sale_payments').transacting(trx) : knex('sale_payments')
   return await queryBuilder.insert(salePayment)
     .then((salePayment) => {
@@ -55,7 +56,7 @@ exports.createSalePayment = async function (salePayment, trx) {
 /*
   ** ******** OBTENER VENTAS ********
 */
-exports.getSales = async function () {
+export async function getSales() {
   try {
     const sales = await knex('sales').select().orderBy('created_at', 'desc')
     if (!sales.length) {
@@ -88,7 +89,7 @@ exports.getSales = async function () {
 /*
   ** ******** OBTENER VENTAS DE TURNO ********
 */
-exports.getSalesInTurn = async function (idCashRegister) {
+export async function getSalesInTurn(idCashRegister) {
   try {
     const sales = await knex('sales').where('id_cash_register', idCashRegister).select().orderBy('created_at', 'desc')
     if (!sales.length) {
@@ -119,7 +120,7 @@ exports.getSalesInTurn = async function (idCashRegister) {
 /*
   ** ******** GENERAR EL SIGUIENTE FOLIO DE VENTA ********
 */
-exports.generateSaleFolio = async function () {
+export async function generateSaleFolio() {
   try {
     const todayString = getToday()
     const timestamp = Math.floor((Date.now() / 1000) % 1000000)
@@ -131,4 +132,3 @@ exports.generateSaleFolio = async function () {
     return response(false, 'Error al generar el folio de la venta', err)
   }
 }
-export {}

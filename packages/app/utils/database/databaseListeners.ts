@@ -1,9 +1,7 @@
-// @ts-nocheck
-const { ipcRenderer } = require('electron')
+import { ipcRenderer } from 'electron'
 
-exports.clearDatabase = function (payload, callback) {
+export function clearDatabase(payload, callback) {
   ipcRenderer.removeAllListeners('clear_database')
   ipcRenderer.on('clear_database', (_, response) => callback(response))
   ipcRenderer.send('clear_database', payload)
 }
-export {}

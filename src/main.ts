@@ -3,11 +3,12 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router/index'
 import './styles/style.css'
+import type { ElectronApi } from '../packages/app/shared/electronApi'
 
 declare global {
   // eslint-disable-next-line no-unused-vars
   interface Window {
-    electron: any
+    electron: ElectronApi
   }
 }
 

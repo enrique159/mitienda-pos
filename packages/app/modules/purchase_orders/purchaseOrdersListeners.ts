@@ -1,10 +1,9 @@
-// @ts-nocheck
-const { ipcRenderer } = require('electron')
+import { ipcRenderer } from 'electron'
 
 /*
   ** ******** OBTENER TODAS LAS ÓRDENES DE COMPRA ********
 */
-exports.getPurchaseOrders = function (callback) {
+export function getPurchaseOrders(callback) {
   ipcRenderer.removeAllListeners('get_purchase_orders')
   ipcRenderer.on('get_purchase_orders', (_, response) => callback(response))
   ipcRenderer.send('get_purchase_orders')
@@ -13,7 +12,7 @@ exports.getPurchaseOrders = function (callback) {
 /*
   ** ******** CREAR UNA ORDEN DE COMPRA CON SUS ITEMS ********
 */
-exports.createPurchaseOrder = function (data, callback) {
+export function createPurchaseOrder(data, callback) {
   ipcRenderer.removeAllListeners('create_purchase_order')
   ipcRenderer.on('create_purchase_order', (_, response) => callback(response))
   ipcRenderer.send('create_purchase_order', data)
@@ -22,7 +21,7 @@ exports.createPurchaseOrder = function (data, callback) {
 /*
   ** ******** ACTUALIZAR UNA ORDEN DE COMPRA ********
 */
-exports.updatePurchaseOrder = function (data, callback) {
+export function updatePurchaseOrder(data, callback) {
   ipcRenderer.removeAllListeners('update_purchase_order')
   ipcRenderer.on('update_purchase_order', (_, response) => callback(response))
   ipcRenderer.send('update_purchase_order', data)
@@ -31,7 +30,7 @@ exports.updatePurchaseOrder = function (data, callback) {
 /*
   ** ******** ACTUALIZAR EL ESTADO DE ORDEN DE COMPRA ********
 */
-exports.updatePurchaseOrderStatus = function (data, callback) {
+export function updatePurchaseOrderStatus(data, callback) {
   ipcRenderer.removeAllListeners('update_purchase_order_status')
   ipcRenderer.on('update_purchase_order_status', (_, response) => callback(response))
   ipcRenderer.send('update_purchase_order_status', data)
@@ -40,7 +39,7 @@ exports.updatePurchaseOrderStatus = function (data, callback) {
 /*
   ** ******** ACTUALIZAR UN ITEM DE ORDEN DE COMPRA ********
 */
-exports.updatePurchaseOrderItem = function (data, callback) {
+export function updatePurchaseOrderItem(data, callback) {
   ipcRenderer.removeAllListeners('update_purchase_order_item')
   ipcRenderer.on('update_purchase_order_item', (_, response) => callback(response))
   ipcRenderer.send('update_purchase_order_item', data)
@@ -49,7 +48,7 @@ exports.updatePurchaseOrderItem = function (data, callback) {
 /*
   ** ******** ACTUALIZAR TODOS LOS ITEMS DE UNA ORDEN DE COMPRA ********
 */
-exports.updatePurchaseOrderItems = function (data, callback) {
+export function updatePurchaseOrderItems(data, callback) {
   ipcRenderer.removeAllListeners('update_purchase_order_items')
   ipcRenderer.on('update_purchase_order_items', (_, response) => callback(response))
   ipcRenderer.send('update_purchase_order_items', data)
@@ -58,7 +57,7 @@ exports.updatePurchaseOrderItems = function (data, callback) {
 /*
   ** ******** ACTUALIZAR ITEMS DE UNA ORDEN DE COMPRA EN DRAFT ********
 */
-exports.updatePurchaseOrderDraftItems = function (data, callback) {
+export function updatePurchaseOrderDraftItems(data, callback) {
   ipcRenderer.removeAllListeners('update_purchase_order_draft_items')
   ipcRenderer.on('update_purchase_order_draft_items', (_, response) => callback(response))
   ipcRenderer.send('update_purchase_order_draft_items', data)
@@ -67,10 +66,9 @@ exports.updatePurchaseOrderDraftItems = function (data, callback) {
 /*
   ** ******** ELIMINAR UNA ORDEN DE COMPRA ********
 */
-exports.deletePurchaseOrder = function (id, callback) {
+export function deletePurchaseOrder(id, callback) {
   ipcRenderer.removeAllListeners('delete_purchase_order')
   ipcRenderer.on('delete_purchase_order', (_, response) => callback(response))
   ipcRenderer.send('delete_purchase_order', id)
 }
 
-export {}

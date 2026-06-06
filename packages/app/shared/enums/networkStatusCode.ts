@@ -1,5 +1,4 @@
-// @ts-nocheck
-const NetworkStatusCode = {
+export const NetworkStatusCode = {
   CONTINUE: 100,
   SWITCHING_PROTOCOLS: 101,
   PROCESSING: 102,
@@ -61,8 +60,7 @@ const NetworkStatusCode = {
   LOOP_DETECTED: 508,
   NOT_EXTENDED: 510,
   NETWORK_AUTHENTICATION_REQUIRED: 511,
-}
+} as const
 
-module.exports = { NetworkStatusCode }
+export type NetworkStatusCode = typeof NetworkStatusCode[keyof typeof NetworkStatusCode]
 
-export {}

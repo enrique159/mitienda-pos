@@ -1,12 +1,12 @@
-// @ts-nocheck
-const { app } = require('electron')
-const fs = require('fs')
-const path = require('path')
-const https = require('https')
-const http = require('http')
-const { response } = require('../../helpers/index.cjs')
+import { app } from 'electron'
+import fs from 'fs'
+import path from 'path'
+import https from 'https'
+import http from 'http'
+import { response } from '../../helpers/index.js'
+import type { AppResponse } from '../../shared/types.js'
 
-exports.downloadImage = (url) => {
+export const downloadImage = (url: string): Promise<AppResponse<any>> => {
   return new Promise((resolve) => {
     try {
       // Extraer el nombre del archivo del URL
@@ -62,5 +62,3 @@ exports.downloadImage = (url) => {
     }
   })
 }
-
-export {}

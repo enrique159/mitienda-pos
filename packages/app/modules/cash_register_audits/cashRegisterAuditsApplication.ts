@@ -1,8 +1,9 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const cashRegisterAuditsRepository = require('./cashRegisterAuditsRepository.cjs')
-const cashRegisterRepository = require('../cash_registers/cashRegistersRepository.cjs')
+import { ipcMain } from 'electron'
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import * as cashRegisterAuditsRepository from './cashRegisterAuditsRepository.js'
+import * as cashRegisterRepository from '../cash_registers/cashRegistersRepository.js'
 
 const ClosureType = Object.freeze({
   FULL: 'full',
@@ -20,7 +21,7 @@ ipcMain.on("create_cash_register_audit", async(event, data) => {
     if (!updateResponse.success) {
       response.success = false
       response.message = updateResponse.message
-      response.data = updateResponse.data
+      response.response = updateResponse.response
     }
   }
   event.reply("create_cash_register_audit", response)
@@ -30,4 +31,3 @@ ipcMain.on("get_cash_register_audits", async(event) => {
   const cashRegisterAudits = await cashRegisterAuditsRepository.getCashRegisterAudits()
   event.returnValue = cashRegisterAudits
 })
-export {}

@@ -1,10 +1,9 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const printer = require('./printer.cjs')
-const SaleTicketBuilder = require('./tickets/SaleTicketBuilder.cjs')
-const TestTicketBuilder = require('./tickets/TestTicketBuilder.cjs')
-const CloseCashRegisterReportTicketBuilder = require('./tickets/CloseCashRegisterReportTicketBuilder.cjs')
-const CloseCashRegisterTicketBuilder = require('./tickets/CloseCashRegisterTicketBuilder.cjs')
+import { ipcMain } from 'electron'
+import * as printer from './printer.js'
+import SaleTicketBuilder from './tickets/SaleTicketBuilder.js'
+import TestTicketBuilder from './tickets/TestTicketBuilder.js'
+import CloseCashRegisterReportTicketBuilder from './tickets/CloseCashRegisterReportTicketBuilder.js'
+import CloseCashRegisterTicketBuilder from './tickets/CloseCashRegisterTicketBuilder.js'
 
 ipcMain.on('get_printers', async (event) => {
   const list = await printer.getPrinters()
@@ -56,4 +55,3 @@ ipcMain.on(
   }
 )
 
-export {}

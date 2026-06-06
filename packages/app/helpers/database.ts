@@ -1,25 +1,18 @@
-// @ts-nocheck
-const knex = require('knex')(require('../database/knexfile.cjs'))
-const logger = require('./logger.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../database/knexfile'
+import logger from './logger'
 
-const response = (success, message, response) => ({ success, message, response })
+const knex = knexFactory(knexConfig)
+const response = (success: boolean, message: string, response: any) => ({ success, message, response })
 
-/**
- * Limpia todas las tablas de la base de datos
- * @param {Object} trx - Transacción de Knex (opcional)
- * @returns {Promise<{success: boolean, message: string, response: *}>}
- */
-exports.cleanAllTables = async function (payload) {
+export async function cleanAllTables(payload: any) {
   const transaction = payload.trx || await knex.transaction()
 
   try {
-    // Desactivar restricciones de clave foránea temporalmente
     await transaction.raw('PRAGMA foreign_keys = OFF;')
 
-    // Obtener todas las tablas de la base de datos
     const tables = await transaction.raw("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")
 
-    // Truncar cada tabla excepto las excluidas
     for (const tableObj of tables) {
       const tableName = tableObj.name
       if (!payload.excludedTables.includes(tableName)) {
@@ -27,15 +20,12 @@ exports.cleanAllTables = async function (payload) {
       }
     }
 
-    // Verificar si existe la tabla sqlite_sequence antes de intentar limpiarla
     const sequenceExists = await transaction.raw("SELECT name FROM sqlite_master WHERE type='table' AND name='sqlite_sequence';")
 
     if (sequenceExists && sequenceExists.length > 0) {
-      // Reiniciar todas las secuencias de autoincremento de una vez
-      await transaction.raw(`DELETE FROM sqlite_sequence;`)
+      await transaction.raw('DELETE FROM sqlite_sequence;')
     }
 
-    // Reactivar restricciones de clave foránea
     await transaction.raw('PRAGMA foreign_keys = ON;')
 
     if (!payload.trx) {
@@ -51,5 +41,3 @@ exports.cleanAllTables = async function (payload) {
     return response(false, 'Error al limpiar las tablas', err)
   }
 }
-
-export {}

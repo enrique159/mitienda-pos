@@ -1,20 +1,29 @@
-// @ts-nocheck
-const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron')
-const path = require('path')
-const env = require('./env.json')
-const initDB = require('./app/database/index.cjs')
-const dev = env.NODE_ENV === 'development'
-process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
+import { app, BrowserWindow, ipcMain, powerMonitor } from 'electron'
+import path from 'path'
+import * as env from './env.json'
 
-function createWindow() {
-  // Create the browser window.
+type InitDatabase = () => Promise<void>
+
+declare global {
+  // eslint-disable-next-line no-var
+  var mainWindow: BrowserWindow | undefined
+}
+
+import initDBModule from './app/database/index.js'
+
+const initDB = initDBModule as InitDatabase
+const dev = env.NODE_ENV === 'development'
+
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
+
+function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 1200,
     minHeight: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.cjs'),
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: true,
       nodeIntegrationInWorker: true,
@@ -27,12 +36,10 @@ function createWindow() {
       : `file://${path.join(__dirname, '../dist/index.html')}`
   )
   if (dev) {
-    // eslint-disable-next-line no-console
     console.log('[electron]: Opening DevTools')
     mainWindow.webContents.openDevTools()
   }
 
-  // Store mainWindow reference to use it later
   global.mainWindow = mainWindow
 }
 
@@ -77,23 +84,21 @@ ipcMain.on('get_version', (event) => {
   event.reply('get_version', app.getVersion())
 })
 
-require('./app/utils/database/databaseApplication.cjs')
-require('./app/utils/printer/printerApplication.cjs')
-require('./app/modules/sellers/sellersApplication.cjs')
-require('./app/modules/products/productsApplication.cjs')
-require('./app/modules/discounts/discountsApplication.cjs')
-require('./app/modules/branches/branchesApplication.cjs')
-require('./app/modules/cash_registers/cashRegistersApplication.cjs')
-require('./app/modules/configuration/configurationApplication.cjs')
-require('./app/modules/sales/salesApplication.cjs')
-require('./app/modules/customers/customersApplication.cjs')
-require('./app/modules/categories/categoriesApplication.cjs')
-require('./app/modules/taxes/taxesApplication.cjs')
-require('./app/modules/cash_movements/cashMovementsApplication.cjs')
-require('./app/modules/cash_register_audits/cashRegisterAuditsApplication.cjs')
-require('./app/modules/providers/providersApplication.cjs')
-require('./app/modules/purchase_orders/purchaseOrdersApplication.cjs')
-require('./app/modules/company/companyApplication.cjs')
-require('./app/modules/ai_models/aiModelsApplication.cjs')
-
-export {}
+import './app/utils/database/databaseApplication.js'
+import './app/utils/printer/printerApplication.js'
+import './app/modules/sellers/sellersApplication.js'
+import './app/modules/products/productsApplication.js'
+import './app/modules/discounts/discountsApplication.js'
+import './app/modules/branches/branchesApplication.js'
+import './app/modules/cash_registers/cashRegistersApplication.js'
+import './app/modules/configuration/configurationApplication.js'
+import './app/modules/sales/salesApplication.js'
+import './app/modules/customers/customersApplication.js'
+import './app/modules/categories/categoriesApplication.js'
+import './app/modules/taxes/taxesApplication.js'
+import './app/modules/cash_movements/cashMovementsApplication.js'
+import './app/modules/cash_register_audits/cashRegisterAuditsApplication.js'
+import './app/modules/providers/providersApplication.js'
+import './app/modules/purchase_orders/purchaseOrdersApplication.js'
+import './app/modules/company/companyApplication.js'
+import './app/modules/ai_models/aiModelsApplication.js'

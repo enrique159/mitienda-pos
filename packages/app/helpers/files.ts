@@ -1,11 +1,11 @@
-// @ts-nocheck
-const { app, dialog } = require('electron')
-const logger = require('./logger.cjs')
-const path = require('path')
-const fs = require('fs')
-const sharp = require('sharp')
+import { app, dialog } from 'electron'
+import logger from './logger'
+import path from 'path'
+import fs from 'fs'
+import sharp from 'sharp'
+import type { Metadata } from 'sharp'
 
-exports.saveFile = (bucket, sourcePath, name) => {
+export const saveFile = (bucket: string, sourcePath: string, name: string) => {
   try {
     const basePath = path.resolve(
       app.getAppPath().replace('app.asar', ''),
@@ -26,13 +26,13 @@ exports.saveFile = (bucket, sourcePath, name) => {
     fs.writeFileSync(destinationPath, fileData)
 
     return { success: true, message: 'Archivo guardado', response: destinationPath }
-  } catch (error) {
+  } catch (error: any) {
     logger.error({ type: 'SAVE FILE ERROR', message: error.message, data: error })
     return { success: false, message: 'Error al guardar el archivo', response: error.message }
   }
 }
 
-exports.selectFile = async () => {
+export const selectFile = async (): Promise<any> => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'],
     filters: [{ name: 'Imágenes', extensions: ['jpg', 'png'] }],
@@ -47,11 +47,11 @@ exports.selectFile = async () => {
 
   const filePath = filePaths[0]
 
-  const image = await sharp(filePath)
+  const image: Metadata | null = await sharp(filePath)
     .metadata()
     .catch((err) => {
       logger.error({ type: 'SELECT FILE ERROR', message: err.message, data: err })
-      return false
+      return null
     })
 
   if (!image) {
@@ -62,7 +62,7 @@ exports.selectFile = async () => {
     return { success: false, message: 'La imagen debe tener un tamaño máximo de 1024x1024px', response: null }
   }
 
-  if (image.size > 2 * 1024 * 1024) {
+  if ((image.size ?? 0) > 2 * 1024 * 1024) {
     return { success: false, message: 'La imagen debe tener un tamaño máximo de 2MB', response: null }
   }
 
@@ -73,5 +73,3 @@ exports.selectFile = async () => {
     return { success: false, message: 'Error al leer el archivo', response: err }
   }
 }
-
-export {}

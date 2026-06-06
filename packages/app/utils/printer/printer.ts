@@ -1,14 +1,16 @@
-// @ts-nocheck
-const electron = require('electron')
-const { logger, response } = require('../../helpers/index.cjs')
-const fsPromises = require('fs/promises')
-const path = require('path')
-const os = require('os')
-const fs = require('fs')
+import * as electron from 'electron'
+import { logger, response } from '../../helpers/index.js'
+import fsPromises from 'fs/promises'
+import path from 'path'
+import os from 'os'
+import fs from 'fs'
 
-exports.getPrinters = () => {
+export const getPrinters = () => {
   const { BrowserWindow } = electron
-  let printWindow = BrowserWindow.getFocusedWindow()
+  const printWindow = BrowserWindow.getFocusedWindow()
+  if (!printWindow) {
+    return Promise.resolve(response(false, 'No hay ventana activa para obtener impresoras', []))
+  }
   return printWindow.webContents
     .getPrintersAsync()
     .then((printers) => {
@@ -74,26 +76,27 @@ function getStatusText(printer) {
  * @param {TicketBuilder} builderInstance - Instancia de TicketBuilder
  * @returns { Promise<Response<{ success: boolean, message: string, data: any }>> }
  */
-exports.printTicket = async (printerName, builderInstance) => {
+export const printTicket = async (printerName, builderInstance) => {
   const { BrowserWindow } = electron
-  let printWindow = new BrowserWindow({
+  let printWindow: electron.BrowserWindow | null = new BrowserWindow({
     show: false,
   })
+  const activePrintWindow = printWindow
 
   try {
     // Esperar a que se genere el ticket con las fuentes cargadas
     const rawDocument = await builderInstance.generateTicket()
 
     return new Promise((resolve, reject) => {
-      printWindow.on('closed', function () {
+      activePrintWindow.on('closed', function () {
         printWindow = null
       })
-      printWindow.loadURL(
+      activePrintWindow.loadURL(
         `data:text/html;charset=utf-8,${encodeURIComponent(rawDocument)}`
       )
 
-      printWindow.webContents.on('did-finish-load', () => {
-        printWindow.webContents.print(
+      activePrintWindow.webContents.on('did-finish-load', () => {
+        activePrintWindow.webContents.print(
           {
             copies: 1,
             silent: true,
@@ -136,7 +139,7 @@ exports.printTicket = async (printerName, builderInstance) => {
       })
 
       // Manejar errores de carga
-      printWindow.webContents.on(
+      activePrintWindow.webContents.on(
         'did-fail-load',
         (event, errorCode, errorDescription) => {
           const error = new Error(
@@ -173,14 +176,15 @@ exports.printTicket = async (printerName, builderInstance) => {
  * @param {TicketBuilder} builderInstance - Instancia de TicketBuilder
  * @returns { Promise<Response<{ success: boolean, message: string, data: string }>> }
  */
-exports.printTicketToPDF = async (builderInstance) => {
+export const printTicketToPDF = async (builderInstance) => {
   const { BrowserWindow } = electron
-  let printWindow = new BrowserWindow({
+  let printWindow: electron.BrowserWindow | null = new BrowserWindow({
     show: false,
     webPreferences: {
       defaultEncoding: 'UTF-8',
     },
   })
+  const activePrintWindow = printWindow
 
   try {
     // Esperar a que se genere el ticket con las fuentes cargadas
@@ -188,15 +192,15 @@ exports.printTicketToPDF = async (builderInstance) => {
     const fileName = builderInstance.getTicketName()
 
     return new Promise((resolve, reject) => {
-      printWindow.on('closed', () => {
+      activePrintWindow.on('closed', () => {
         printWindow = null
       })
-      printWindow.loadURL(
+      activePrintWindow.loadURL(
         `data:text/html;charset=utf-8,${encodeURIComponent(rawDocument)}`
       )
 
       // Manejar errores de carga
-      printWindow.webContents.on(
+      activePrintWindow.webContents.on(
         'did-fail-load',
         (event, errorCode, errorDescription) => {
           const error = new Error(
@@ -220,7 +224,7 @@ exports.printTicketToPDF = async (builderInstance) => {
         }
       )
 
-      printWindow.webContents.on('did-finish-load', async () => {
+      activePrintWindow.webContents.on('did-finish-load', async () => {
         const dirPath = path.join(
           os.homedir(),
           'Desktop',
@@ -235,7 +239,7 @@ exports.printTicketToPDF = async (builderInstance) => {
           }
 
           // Generar el PDF
-          const data = await printWindow.webContents.printToPDF({
+          const data = await activePrintWindow.webContents.printToPDF({
             pageSize: {
               width: 3.15, // 80mm en pulgadas (80 / 25.4)
               height: 11.69, // Altura de papel A4 en pulgadas
@@ -283,14 +287,15 @@ exports.printTicketToPDF = async (builderInstance) => {
  * @param {LetterBuilder} builderInstance - Instancia de LetterBuilder
  * @returns { Promise<Response<{ success: boolean, message: string, data: string }>> }
  */
-exports.printDocumentToPDF = async (builderInstance) => {
+export const printDocumentToPDF = async (builderInstance) => {
   const { BrowserWindow } = electron
-  let printWindow = new BrowserWindow({
+  let printWindow: electron.BrowserWindow | null = new BrowserWindow({
     show: false,
     webPreferences: {
       defaultEncoding: 'UTF-8',
     },
   })
+  const activePrintWindow = printWindow
 
   try {
     // Esperar a que se genere el ticket con las fuentes cargadas
@@ -298,15 +303,15 @@ exports.printDocumentToPDF = async (builderInstance) => {
     const fileName = builderInstance.getTicketName()
 
     return new Promise((resolve, reject) => {
-      printWindow.on('closed', () => {
+      activePrintWindow.on('closed', () => {
         printWindow = null
       })
-      printWindow.loadURL(
+      activePrintWindow.loadURL(
         `data:text/html;charset=utf-8,${encodeURIComponent(rawDocument)}`
       )
 
       // Manejar errores de carga
-      printWindow.webContents.on(
+      activePrintWindow.webContents.on(
         'did-fail-load',
         (event, errorCode, errorDescription) => {
           const error = new Error(
@@ -330,7 +335,7 @@ exports.printDocumentToPDF = async (builderInstance) => {
         }
       )
 
-      printWindow.webContents.on('did-finish-load', async () => {
+      activePrintWindow.webContents.on('did-finish-load', async () => {
         const dirPath = path.join(
           os.homedir(),
           'Desktop',
@@ -345,7 +350,7 @@ exports.printDocumentToPDF = async (builderInstance) => {
           }
 
           // Generar el PDF
-          const data = await printWindow.webContents.printToPDF({
+          const data = await activePrintWindow.webContents.printToPDF({
             pageSize: {
               width: 8.5, // Ancho de papel carta en pulgadas
               height: 11, // Altura de papel carta en pulgadas
@@ -390,5 +395,3 @@ exports.printDocumentToPDF = async (builderInstance) => {
     return response(false, 'Error al generar el PDF del documento', error)
   }
 }
-
-export {}

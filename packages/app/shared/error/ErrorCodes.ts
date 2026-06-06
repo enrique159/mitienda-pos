@@ -1,5 +1,4 @@
-// @ts-nocheck
-const { ErrorCategory } = require('../enums/errorCategory.cjs')
+import { ErrorCategory } from '../enums/errorCategory'
 
 const ErrorCodes = {
   ERR0000: {
@@ -220,6 +219,4 @@ const ErrorCodes = {
   },
 }
 
-module.exports = ErrorCodes
-
-export {}
+export = ErrorCodes

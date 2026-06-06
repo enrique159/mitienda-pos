@@ -5,7 +5,7 @@ Purpose: keep this file short. Use it as a routing and pattern reference, then i
 ## Stack
 
 - App: Electron + Vue 3 POS.
-- Backend/local runtime: Electron main/preload, `.ts` source with CommonJS `require`/`exports` emitted to `electron-build/**/*.cjs`, SQLite, Knex.
+- Backend/local runtime: Electron main/preload, checked `.ts` source with TypeScript imports emitted by `tsc` to `electron-build/**/*.js`, SQLite, Knex.
 - Frontend/renderer: Vue 3 SPA, TypeScript, Composition API, Pinia, Tailwind CSS 3, DaisyUI 4.
 - Backend architecture: feature-based layered modular monolith embedded in Electron.
 
@@ -13,13 +13,14 @@ If `AGENTS.md` points to `.github/references/*.md` and those files are missing, 
 
 ## Directory Map
 
-- `packages/main.ts`: Electron source entrypoint; emits `electron-build/main.cjs` runtime.
-- `packages/preload.ts`: preload source; emits `electron-build/preload.cjs` runtime.
+- `packages/main.ts`: Electron source entrypoint; emits `electron-build/main.js` runtime.
+- `packages/preload.ts`: preload source; emits `electron-build/preload.js` runtime.
 - `packages/env.json`: Electron/backend runtime values.
 - `packages/app/database/index.ts`: creates the local SQLite DB and registers schemas/seeds.
 - `packages/app/database/knexfile.ts`: SQLite/Knex config.
 - `packages/app/database/schemas/*.ts`: table definitions.
 - `packages/app/database/seeds/*.ts`: initial/required seed data.
+- `packages/app/domain/interfaces/`: schema-derived backend domain interfaces and shared entity types.
 - `packages/app/modules/[feature]/*Application.ts`: `ipcMain` handlers and orchestration.
 - `packages/app/modules/[feature]/*Listeners.ts`: `ipcRenderer` bridge methods consumed by preload.
 - `packages/app/modules/[feature]/*Repository.ts`: Knex persistence and module-level business rules.
@@ -52,18 +53,20 @@ Naming:
 ## Core Conventions
 
 - Do not introduce an Express/Nest/local HTTP server for backend features; backend APIs are Electron IPC channels.
-- Keep backend source files as `.ts`; generated `electron-build/**/*.cjs` files are runtime output and should not be edited.
-- Keep `require(...)` paths inside `packages` pointing to emitted `.cjs` files.
-- Keep CommonJS `require`/`exports` in Electron/backend files for now; do not convert isolated files to ESM imports to satisfy editor suggestions.
-- Keep `// @ts-nocheck` in migrated backend files until the file is intentionally typed.
+- Keep backend source files as `.ts`; generated `electron-build/**/*.js` files are runtime output and should not be edited.
+- Prefer TypeScript `import`/`export` and shared types in checked backend files.
+- Do not use `require(...)` in `packages/**/*.ts`; use ES imports, namespace imports for legacy object exports, or side-effect imports.
+- Do not add `// @ts-nocheck`; fix TypeScript errors at the source or type the module boundary explicitly.
 - Use `npm run electron:dev` for Vite + Electron with Electron restart on `packages/**/*.ts` changes.
-- `npm run packages:build` is transpile-only for now; full backend type-checking requires typing existing dynamic payloads/classes first.
+- `npm run packages:build` runs `tsc -p tsconfig.electron.json` and fails on checked TypeScript errors.
 - Use `npm run packages:clean` to remove the generated `electron-build/` runtime folder.
 - Schema primary keys use `table.uuid('id').defaultTo(knex.fn.uuid()).primary()`.
 - Foreign keys are explicit UUID columns named `id_[entity]`, e.g. `id_company`, `id_branch`.
 - Store money as integer cents, not floats.
+- Leave user code comments intact; if you add new comments, use `//` for single-line or `/** */` for multi-line, and avoid `/* */` which can be confused with commented-out code.
 - Use `created_at`, `updated_at`, and `synced_at` on syncable tables; set `synced_at: null` after local updates.
 - Boolean and JSON values read from SQLite must be normalized in repositories with helpers such as `parseBoolean`, `parseArrayJson`, and `parseObjectJson`.
+- Backend domain interfaces live in `packages/app/domain/interfaces/`; schemas are the source of truth for field names, nullability, enums, and money/date conventions.
 - Repositories return the shared `response(success, message, data)` shape; do not return raw Knex results directly to IPC.
 - IPC listener/application channel names must match exactly, and preload must expose the listener function through `window.electron`.
 - Frontend API wrappers in `src/api/electron/` should call `window.electron.*`; stores/views should prefer those wrappers over direct IPC access.
@@ -77,11 +80,22 @@ Naming:
 When adding a table:
 
 - Create `packages/app/database/schemas/[table_name].ts`.
-- Export `exports.createTable = async function(knex) { ... }`.
+- Export `export async function createTable(knex: Knex) { ... }`.
 - Use `knex.schema.createTable('[table_name]', (table) => { ... })`.
-- Import `logger` from `../../helpers/index.cjs` and log DB errors with `{ type: 'DB', message, error }`.
+- Import `logger` from `../../helpers/index` and log DB errors with `{ type: 'DB', message, error }`.
 - Common fields: UUID primary key with `knex.fn.uuid()`, foreign keys, `status` enum where needed, `created_at`, `updated_at`, `synced_at`.
 - Register the schema in `packages/app/database/index.ts` and add `schema.createTable(knex)` to the `Promise.all` in FK-safe order.
+
+### Domain Interface
+
+When adding or changing a persisted entity:
+
+- Update the schema first; the schema is the source of truth.
+- Add or update the matching file in `packages/app/domain/interfaces/`.
+- Export row interfaces using DB column names (`snake_case`) and schema nullability.
+- Export create/update helper aliases only when they map directly to schema-derived fields.
+- Use shared primitives from `packages/app/domain/interfaces/common.ts`, especially `UUID`, `Timestamp`, `JsonColumn<T>`, `CreateEntity<T>`, and `UpdateEntity<T>`.
+- Import domain types from `packages/app/domain/interfaces/index.ts` in repositories/services when needed.
 
 ### Seeds
 
@@ -103,7 +117,7 @@ When adding renderer-to-main IPC API:
 - Export methods used by preload.
 - Async pattern: `removeAllListeners(channel)`, `ipcRenderer.on(channel, (_, response) => callback(response))`, then `ipcRenderer.send(channel, payload)`.
 - Use `ipcRenderer.sendSync(channel)` only for existing/strictly necessary sync reads.
-- Register the listener in `packages/preload.ts`: require the emitted `.cjs` listener and spread it into `api`.
+- Register the listener in `packages/preload.ts`: import the listener and spread it into `api`.
 
 ### Application
 
@@ -115,15 +129,15 @@ When adding main-process handlers:
 - Delegate to repositories/services and respond with `event.reply(channel, response)`.
 - Existing sync handlers use `event.returnValue = response`.
 - Transactional workflows create `const trx = await knex.transaction()`, pass `trx` to repositories, then `commit` or `rollback`.
-- Register the application in `packages/main.ts` with `require('./app/modules/[module]/[module]Application.cjs')`.
+- Register the application in `packages/main.ts` with a runtime `.js` side-effect import.
 
 ### Repository
 
 When adding persistence/business methods:
 
 - Create `packages/app/modules/[module]/[module]Repository.ts`.
-- Initialize Knex with `require('knex')(require('../../database/knexfile.cjs'))`.
-- Import helpers from `../../helpers/index.cjs`: commonly `response`, `logger`, `parseBoolean`, `parseArrayJson`, `parseObjectJson`.
+- Initialize Knex from `../../database/knexfile`.
+- Import helpers from `../../helpers/index`: commonly `response`, `logger`, `parseBoolean`, `parseArrayJson`, `parseObjectJson`.
 - Export async functions as `exports.functionName = async function (...) { ... }`.
 - Always return `response(success, message, data)`.
 - Log failures with `logger.error({ type, message: \`${err}\`, data: err })`.
@@ -136,9 +150,9 @@ When adding persistence/business methods:
 When adding remote integration:
 
 - Add `packages/app/modules/[module]/[module]Service.ts` only for external API/service calls.
-- Import `Http` from `../../network/Http.cjs`.
-- Import route helpers from `../../shared/routes.cjs`; add a helper there if missing.
-- Import `response` and `logger` from `../../helpers/index.cjs`.
+- Import `Http` from `../../network/Http`.
+- Import route helpers from `../../shared/routes`; add a helper there if missing.
+- Import `response` and `logger` from `../../helpers/index`.
 - Use `const http = new Http()` and build URLs with `Http.baseUrl`.
 - If auth is required, get headers via `configurationRepository.getToken()`.
 - Catch errors and return `response(false, message, err.errors || err.message || err)`.

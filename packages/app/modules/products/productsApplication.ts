@@ -1,6 +1,5 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const productsRepository = require('./productsRepository.cjs')
+import { ipcMain } from 'electron'
+import * as productsRepository from './productsRepository.js'
 
 ipcMain.on('create_product', async (event, product) => {
   const response = await productsRepository.createProduct(product)
@@ -31,4 +30,3 @@ ipcMain.on('get_products_by_category', async (event, categoryId) => {
   const response = await productsRepository.getProductsByCategory(categoryId)
   event.reply('get_products_by_category', response)
 })
-export {}

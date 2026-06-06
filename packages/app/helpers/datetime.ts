@@ -1,41 +1,39 @@
-// @ts-nocheck
-const dayjs = require('dayjs')
-const utc = require('dayjs/plugin/utc')
-const timezone = require('dayjs/plugin/timezone')
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezonePlugin from 'dayjs/plugin/timezone'
 
 dayjs.extend(utc)
-dayjs.extend(timezone)
+dayjs.extend(timezonePlugin)
 
-exports.getDatetime = function () {
+export function getDatetime(): string {
   return dayjs().format('YYYY-MM-DD HH:mm:ss')
 }
 
-exports.getToday = function () {
+export function getToday(): string {
   return dayjs().format('YYYYMMDD')
 }
 
-exports.getUTCToday = function () {
+export function getUTCToday(): string {
   return dayjs().utc().format('YYYY-MM-DD 00:00:00')
 }
 
-exports.getDatetimeForFile = function () {
+export function getDatetimeForFile(): string {
   return dayjs().format('YYYY-MM-DD_HH-mm-ss')
 }
 
-exports.getPaymentDueDate = function () {
+export function getPaymentDueDate(): string {
   return dayjs().add(10, 'days').format('DD')
 }
 
-exports.ticketDateFormatter = function (date) {
+export function ticketDateFormatter(date: Date | string): string {
   return date instanceof Date
     ? dayjs(date).format('DD/MM/YYYY hh:mm A')
     : date
 }
 
-exports.ticketDateFormatterTimezone = function (dateString, timezone) {
+export function ticketDateFormatterTimezone(dateString?: string | null, timezone?: string | null): string {
   if (!dateString || !timezone) return ''
   const parsed = dayjs.utc(dateString, 'YYYY-MM-DD HH:mm:ss').tz(timezone)
   return parsed.format('DD/MM/YYYY hh:mm A')
 }
 
-export {}

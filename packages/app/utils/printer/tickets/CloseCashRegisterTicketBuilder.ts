@@ -1,18 +1,18 @@
-// @ts-nocheck
-const logger = require('../../../helpers/logger.cjs')
-const { getFontFaceCSS, fontName } = require('../extra/loadFonts.cjs')
-const { getImageDataUrl } = require('../extra/loadImage.cjs')
-const { ticketDateFormatter, ticketDateFormatterTimezone, getToday } = require('../../../helpers/datetime.cjs')
-const { getSellerById } = require('../../../modules/sellers/sellersRepository.cjs')
+import logger from '../../../helpers/logger.js'
+import { getFontFaceCSS, fontName } from '../extra/loadFonts.js'
+import { getImageDataUrl } from '../extra/loadImage.js'
+import { ticketDateFormatter, ticketDateFormatterTimezone, getToday } from '../../../helpers/datetime.js'
+import { getSellerById } from '../../../modules/sellers/sellersRepository.js'
 
+type AnyRecord = Record<string, any>
 
-module.exports = class CloseCashRegisterTicketBuilder {
+export default class CloseCashRegisterTicketBuilder {
   ticket = ''
   logoPath = ''
-  businessInfo = {}
-  ticketInfo = {}
-  items = []
-  totals = []
+  businessInfo: AnyRecord = {}
+  ticketInfo: AnyRecord = {}
+  items: AnyRecord[] = []
+  totals: AnyRecord[] = []
 
   constructor({
     businessInfo = {
@@ -261,5 +261,3 @@ module.exports = class CloseCashRegisterTicketBuilder {
     return await this.build()
   }
 }
-
-export {}

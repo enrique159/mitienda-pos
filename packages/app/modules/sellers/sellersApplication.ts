@@ -1,6 +1,5 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const sellerRepository = require('./sellersRepository.cjs')
+import { ipcMain } from 'electron'
+import * as sellerRepository from './sellersRepository.js'
 
 ipcMain.on('create_seller', async (event, seller) => {
   const response = await sellerRepository.createSeller(seller)
@@ -47,4 +46,3 @@ ipcMain.on('get_pos_sellers', async (event) => {
   event.reply('get_pos_sellers', response)
 })
 
-export {}

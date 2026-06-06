@@ -1,30 +1,36 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const providersRepository = require('./providersRepository.cjs')
+import { ipcMain, type IpcMainEvent } from 'electron'
+import type { UUID } from '../../shared/types'
+import type { CreateProvider, UpdateProvider } from '../../shared/providerTypes'
+import {
+  createProvider,
+  deleteProvider,
+  getProviderById,
+  getProviders,
+  updateProvider,
+} from './providersRepository'
 
-ipcMain.on('create_provider', async (event, provider) => {
-  const res = await providersRepository.createProvider(provider)
+ipcMain.on('create_provider', async (event: IpcMainEvent, provider: CreateProvider) => {
+  const res = await createProvider(provider)
   event.reply('create_provider', res)
 })
 
-ipcMain.on('update_provider', async (event, data) => {
-  const res = await providersRepository.updateProvider(data)
+ipcMain.on('update_provider', async (event: IpcMainEvent, data: UpdateProvider) => {
+  const res = await updateProvider(data)
   event.reply('update_provider', res)
 })
 
-ipcMain.on('delete_provider', async (event, id) => {
-  const res = await providersRepository.deleteProvider(id)
+ipcMain.on('delete_provider', async (event: IpcMainEvent, id: UUID) => {
+  const res = await deleteProvider(id)
   event.reply('delete_provider', res)
 })
 
-ipcMain.on('get_providers', async (event) => {
-  const res = await providersRepository.getProviders()
+ipcMain.on('get_providers', async (event: IpcMainEvent) => {
+  const res = await getProviders()
   event.reply('get_providers', res)
 })
 
-ipcMain.on('get_provider_by_id', async (event, id) => {
-  const res = await providersRepository.getProviderById(id)
+ipcMain.on('get_provider_by_id', async (event: IpcMainEvent, id: UUID) => {
+  const res = await getProviderById(id)
   event.reply('get_provider_by_id', res)
 })
 
-export {}

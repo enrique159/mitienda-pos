@@ -1,7 +1,8 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
-exports.getCustomers = async function () {
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger } from '../../helpers/index.js'
+export async function getCustomers() {
   try {
     // 1. Obtener todos los clientes
     const customers = await knex('customers').select().orderBy('created_at', 'desc')
@@ -16,8 +17,8 @@ exports.getCustomers = async function () {
       .groupBy('id_customer')
 
     // 3. Crear un mapa id_customer -> used_credit
-    const creditMap = {}
-    creditSums.forEach((row) => {
+    const creditMap: Record<string, number> = {}
+    creditSums.forEach((row: any) => {
       creditMap[row.id_customer] = Number(row.used_credit) || 0
     })
 
@@ -34,7 +35,7 @@ exports.getCustomers = async function () {
   }
 }
 
-exports.createCustomer = async function (customer) {
+export async function createCustomer(customer) {
   return await knex('customers').insert(customer)
     .then((customer) => {
       logger.info({ type: 'CREATE CUSTOMER', message: `Cliente creado`, data: customer })
@@ -46,7 +47,7 @@ exports.createCustomer = async function (customer) {
     })
 }
 
-exports.updateCustomer = async function (customer) {
+export async function updateCustomer(customer) {
   const dataToUpdate = {
     ...customer,
     updated_at: knex.fn.now(),
@@ -65,7 +66,7 @@ exports.updateCustomer = async function (customer) {
     })
 }
 
-exports.deleteCustomer = async function (customerId) {
+export async function deleteCustomer(customerId) {
   return await knex('customers').where('id', customerId).del()
     .then((customer) => {
       logger.info({ type: 'DELETE CUSTOMER', message: `Cliente eliminado`, data: customer })
@@ -76,4 +77,3 @@ exports.deleteCustomer = async function (customerId) {
       return response(false, 'Error al eliminar el cliente', err)
     })
 }
-export {}

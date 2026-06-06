@@ -1,5 +1,4 @@
-// @ts-nocheck
-exports.categories = [
+export const categories = [
   {
     id: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac129301',
     id_company: 'b2e1c1a4-8c3a-11ec-a8a3-0242ac120002',
@@ -57,4 +56,3 @@ exports.categories = [
     status: 'active',
   },
 ]
-export {}

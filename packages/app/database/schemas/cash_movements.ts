@@ -1,10 +1,10 @@
-// @ts-nocheck
-const { logger } = require('../../helpers/index.cjs')
+import { Knex } from 'knex'
+import { logger } from '../../helpers/index.js'
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.createTable = async function(knex) {
+export async function createTable(knex: Knex) {
   await knex.schema.createTable('cash_movements', (table) => {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary() // ID único
     table.uuid('id_cash_register').notNullable().references('cash_registers.id') // Relación con la caja registradora
@@ -22,4 +22,3 @@ exports.createTable = async function(knex) {
     console.error(err)
   })
 }
-export {}

@@ -1,6 +1,7 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean, parseArrayJson } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, parseBoolean, parseArrayJson } from '../../helpers/index.js'
 
 function normalizeDiscount(discount) {
   let schedule = []
@@ -20,7 +21,7 @@ function normalizeDiscount(discount) {
 /**
  * Obtiene todos los descuentos activos
  */
-exports.getActiveDiscounts = async function () {
+export async function getActiveDiscounts() {
   return await knex('discounts').select().where('status', 'active')
     .then((discounts) => {
       if (!discounts.length) {
@@ -39,7 +40,7 @@ exports.getActiveDiscounts = async function () {
 /**
  * Obtiene todos los descuentos
  */
-exports.getDiscounts = async function () {
+export async function getDiscounts() {
   return await knex('discounts').select()
     .then((discounts) => {
       return response(true, 'Descuentos encontrados', discounts.map(normalizeDiscount))
@@ -54,7 +55,7 @@ exports.getDiscounts = async function () {
 /**
  * Crear un descuento
  */
-exports.createDiscount = async function (discount) {
+export async function createDiscount(discount) {
   discount.schedule = discount?.schedule?.length > 0 ? JSON.stringify(discount.schedule) : null
   discount.start_date = discount.start_date.toISOString().slice(0, 10)
   if (discount.end_date) {
@@ -78,7 +79,7 @@ exports.createDiscount = async function (discount) {
 /**
  * Actualizar un descuento
  */
-exports.updateDiscount = async function (discount) {
+export async function updateDiscount(discount) {
   discount.schedule = discount?.schedule?.length > 0 ? JSON.stringify(discount.schedule) : null
   discount.start_date = discount.start_date.toISOString().slice(0, 10)
   if (discount.end_date) {
@@ -98,7 +99,7 @@ exports.updateDiscount = async function (discount) {
 /**
  * Eliminar un descuento
  */
-exports.deleteDiscount = async function (discountId) {
+export async function deleteDiscount(discountId) {
   return await knex('discounts').where('id', discountId).del()
     .then((discount) => {
       return response(true, 'Descuento eliminado', discount)
@@ -114,7 +115,7 @@ exports.deleteDiscount = async function (discountId) {
 /*
  * Obtiene todos los id de productos asociados a un descuento
 */
-exports.getDiscountProducts = async function (discountId) {
+export async function getDiscountProducts(discountId) {
   return await knex('products_discounts').select('id_product').where('id_discount', discountId)
     .then((discounts) => {
       return response(true, 'Descuento encontrados', discounts)
@@ -129,7 +130,7 @@ exports.getDiscountProducts = async function (discountId) {
 /*
  * Asociar descuento a productos
 */
-exports.createDiscountProduct = async function (discountId, productsId) {
+export async function createDiscountProduct(discountId, productsId) {
   const trx = await knex.transaction()
   try {
     // First delete all existing associations for this discount
@@ -152,4 +153,3 @@ exports.createDiscountProduct = async function (discountId, productsId) {
     return response(false, 'Error al asociar el descuento a productos', err)
   }
 }
-export {}

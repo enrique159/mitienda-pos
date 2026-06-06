@@ -1,6 +1,5 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const cashRegisterRepository = require('./cashRegistersRepository.cjs')
+import { ipcMain } from 'electron'
+import * as cashRegisterRepository from './cashRegistersRepository.js'
 
 ipcMain.on("get_cash_register_active", async(event) => {
   const currentCashRegister = await cashRegisterRepository.getCashRegisterActive()
@@ -18,4 +17,3 @@ ipcMain.on("create_cash_register", async(event, data) => {
 })
 
 
-export {}

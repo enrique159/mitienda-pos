@@ -1,6 +1,7 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, parseBoolean } from '../../helpers/index.js'
 
 const normalizeTax = function (tax) {
   return {
@@ -10,7 +11,7 @@ const normalizeTax = function (tax) {
   }
 }
 
-exports.getTaxes = async function () {
+export async function getTaxes() {
   try {
     const taxes = await knex('taxes').select().orderBy('code', 'asc')
     return response(true, 'Impuestos encontrados', taxes.map(normalizeTax))
@@ -20,7 +21,7 @@ exports.getTaxes = async function () {
   }
 }
 
-exports.createTax = async function (data) {
+export async function createTax(data) {
   try {
     const tax = await knex('taxes').insert(data)
     return response(true, 'Impuesto creado', tax)
@@ -30,7 +31,7 @@ exports.createTax = async function (data) {
   }
 }
 
-exports.deleteTax = async function (id) {
+export async function deleteTax(id) {
   try {
     const tax = await knex('taxes').where('id', id).del()
     return response(true, 'Impuesto eliminado', tax)
@@ -39,4 +40,3 @@ exports.deleteTax = async function (id) {
     return response(false, 'Error al eliminar el impuesto', error)
   }
 }
-export {}

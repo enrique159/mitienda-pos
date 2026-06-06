@@ -1,6 +1,7 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean, parseArrayJson } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, parseBoolean, parseArrayJson } from '../../helpers/index.js'
 
 function normalizeProduct(product) {
   let taxes = []
@@ -28,7 +29,7 @@ function normalizeProduct(product) {
  * @param {string} productId 
  * @returns 
  */
-exports.getProductById = async function (productId) {
+export async function getProductById(productId) {
   return await knex('products').where('id', productId).first()
     .then((product) => {
       if (!product) {
@@ -47,7 +48,7 @@ exports.getProductById = async function (productId) {
 /**
  * Obtiene todos los productos para la sección de products
  */
-exports.getProducts = async function () {
+export async function getProducts() {
   return await knex('products')
     .select('products.*', 'providers.name as provider', 'categories.name as category')
     .leftJoin('providers', 'products.id_provider', 'providers.id')
@@ -70,7 +71,7 @@ exports.getProducts = async function () {
 /**
  * Obtiene todos los productos activos
  */
-exports.getActiveProducts = async function () {
+export async function getActiveProducts() {
   return await knex('products')
     .select('products.*', 'providers.name as provider', 'categories.name as category')
     .leftJoin('products_discounts', 'products.id', 'products_discounts.id_product')
@@ -111,7 +112,7 @@ exports.getActiveProducts = async function () {
     })
 }
 
-exports.getProductsByCategory = async function (categoryId) {
+export async function getProductsByCategory(categoryId) {
   return await knex('products')
     .select('products.*', 'providers.name as provider', 'categories.name as category')
     .leftJoin('products_discounts', 'products.id', 'products_discounts.id_product')
@@ -153,7 +154,7 @@ exports.getProductsByCategory = async function (categoryId) {
     })
 }
 
-exports.createProduct = async function (product) {
+export async function createProduct(product) {
   product.taxes = JSON.stringify(product.taxes || [])
   if (product.barcode) {
     const existingProduct = await knex('products').select().where('barcode', product.barcode)
@@ -174,7 +175,7 @@ exports.createProduct = async function (product) {
     })
 }
 
-exports.updateProduct = async function (product) {
+export async function updateProduct(product) {
   product.taxes = JSON.stringify(product.taxes || [])
   return await knex('products').where('id', product.id).update(product)
     .then((product) => {
@@ -188,7 +189,7 @@ exports.updateProduct = async function (product) {
     })
 }
 
-exports.updateStockProduct = async function (productId, stock, trx) {
+export async function updateStockProduct(productId, stock, trx) {
   const queryBuilder = trx ? knex('products').transacting(trx) : knex('products')
   return await queryBuilder.where('id', productId).update({ stock })
     .then((product) => {
@@ -202,7 +203,7 @@ exports.updateStockProduct = async function (productId, stock, trx) {
     })
 }
 
-exports.deleteProduct = async function (productId) {
+export async function deleteProduct(productId) {
   return await knex('products').where('id', productId).del()
     .then((product) => {
       logger.info({ type: 'DELETE PRODUCT', message: 'Producto eliminado exitosamente', data: product })
@@ -214,4 +215,3 @@ exports.deleteProduct = async function (productId) {
       return response(false, 'Error al eliminar el producto', err)
     })
 }
-export {}

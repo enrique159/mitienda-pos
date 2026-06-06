@@ -1,36 +1,37 @@
-// @ts-nocheck
-const fs = require('fs')
-const path = require('path')
-const os = require('os')
-const knex = require('knex')(require('./knexfile.cjs'))
-const seeds = require('./seeds/init_seed.cjs')
-const { logger } = require('../helpers/index.cjs')
-const env = require('../../env.json')
+import fs from 'fs'
+import path from 'path'
+import os from 'os'
+import knexFactory from 'knex'
+import knexConfig from './knexfile.js'
+const knex = knexFactory(knexConfig)
+import * as seeds from './seeds/init_seed.js'
+import { logger } from '../helpers/index.js'
+import * as env from '../../env.json'
 // Importing schemas
-const configuration = require('./schemas/configuration.cjs')
-const users = require('./schemas/users.cjs')
-const company = require('./schemas/company.cjs')
-const branch = require('./schemas/branches.cjs')
-const sellers = require('./schemas/sellers.cjs')
-const branches_sellers = require('./schemas/branches_sellers.cjs')
-const providers = require('./schemas/providers.cjs')
-const products = require('./schemas/products.cjs')
-const discounts = require('./schemas/discounts.cjs')
-const productsDiscounts = require('./schemas/products_discounts.cjs')
-const purchaseOrders = require('./schemas/purchase_orders.cjs')
-const purchaseOrderItems = require('./schemas/purchase_order_items.cjs')
-const taxes = require('./schemas/taxes.cjs')
-const categories = require('./schemas/categories.cjs')
-const cashRegisters = require('./schemas/cash_registers.cjs')
-const cashMovements = require('./schemas/cash_movements.cjs')
-const cashRegisterAudits = require('./schemas/cash_register_audits.cjs')
-const customers = require('./schemas/customers.cjs')
-const sales = require('./schemas/sales.cjs')
-const saleDetails = require('./schemas/sale_details.cjs')
-const salePayments = require('./schemas/sale_payments.cjs')
-const aiModels = require('./schemas/ai_models.cjs')
-const inventories = require('./schemas/iventories.cjs')
-const inventoryItems = require('./schemas/inventory_items.cjs')
+import * as configuration from './schemas/configuration.js'
+import * as users from './schemas/users.js'
+import * as company from './schemas/company.js'
+import * as branch from './schemas/branches.js'
+import * as sellers from './schemas/sellers.js'
+import * as branches_sellers from './schemas/branches_sellers.js'
+import * as providers from './schemas/providers.js'
+import * as products from './schemas/products.js'
+import * as discounts from './schemas/discounts.js'
+import * as productsDiscounts from './schemas/products_discounts.js'
+import * as purchaseOrders from './schemas/purchase_orders.js'
+import * as purchaseOrderItems from './schemas/purchase_order_items.js'
+import * as taxes from './schemas/taxes.js'
+import * as categories from './schemas/categories.js'
+import * as cashRegisters from './schemas/cash_registers.js'
+import * as cashMovements from './schemas/cash_movements.js'
+import * as cashRegisterAudits from './schemas/cash_register_audits.js'
+import * as customers from './schemas/customers.js'
+import * as sales from './schemas/sales.js'
+import * as saleDetails from './schemas/sale_details.js'
+import * as salePayments from './schemas/sale_payments.js'
+import * as aiModels from './schemas/ai_models.js'
+import * as inventories from './schemas/iventories.js'
+import * as inventoryItems from './schemas/inventory_items.js'
 
 const dev = env.NODE_ENV === 'development'
 const seed = env.SEED
@@ -92,6 +93,4 @@ const initDB = async() => {
   }
 }
 
-module.exports = initDB
-
-export {}
+export default initDB

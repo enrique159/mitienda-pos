@@ -1,11 +1,10 @@
-// @ts-nocheck
-const Http = require('../../network/Http.cjs')
-const { initialConfiguration } = require('../../shared/routes.cjs')
-const { response, logger } = require('../../helpers/index.cjs')
+import Http from '../../network/Http.js'
+import { initialConfiguration } from '../../shared/routes.js'
+import { response, logger } from '../../helpers/index.js'
 
 const http = new Http()
 
-exports.fetchInitialConfiguration = async function (payload) {
+export async function fetchInitialConfiguration(payload) {
   try {
     const url = initialConfiguration(Http.baseUrl)
     const apiResponse = await http.post(url, { data: payload })
@@ -15,4 +14,3 @@ exports.fetchInitialConfiguration = async function (payload) {
     return response(false, 'Error en la configuración inicial', err.errors || err.message || err)
   }
 }
-export {}

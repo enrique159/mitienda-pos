@@ -1,6 +1,5 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const categoriesRepository = require('./categoriesRepository.cjs')
+import { ipcMain } from 'electron'
+import * as categoriesRepository from './categoriesRepository.js'
 
 
 ipcMain.on('get_categories', async (event) => {
@@ -22,4 +21,3 @@ ipcMain.on('delete_category', async (event, id) => {
   const response = await categoriesRepository.deleteCategory(id)
   event.reply('delete_category', response)
 })
-export {}

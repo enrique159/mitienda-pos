@@ -1,40 +1,38 @@
-// @ts-nocheck
-const { ipcRenderer } = require('electron')
+import { ipcRenderer } from 'electron'
 
-exports.getActiveDiscounts = () => ipcRenderer.sendSync('get_active_discounts')
-exports.getDiscounts = function (callback) {
+export const getActiveDiscounts = () => ipcRenderer.sendSync('get_active_discounts')
+export function getDiscounts(callback) {
   ipcRenderer.removeAllListeners('get_discounts')
   ipcRenderer.on('get_discounts', (_, response) => callback(response))
   ipcRenderer.send('get_discounts')
 }
 
-exports.createDiscount = function (discount, callback) {
+export function createDiscount(discount, callback) {
   ipcRenderer.removeAllListeners('create_discount')
   ipcRenderer.on('create_discount', (_, response) => callback(response))
   ipcRenderer.send('create_discount', discount)
 }
 
-exports.updateDiscount = function (discount, callback) {
+export function updateDiscount(discount, callback) {
   ipcRenderer.removeAllListeners('update_discount')
   ipcRenderer.on('update_discount', (_, response) => callback(response))
   ipcRenderer.send('update_discount', discount)
 }
 
-exports.deleteDiscount = function (discountId, callback) {
+export function deleteDiscount(discountId, callback) {
   ipcRenderer.removeAllListeners('delete_discount')
   ipcRenderer.on('delete_discount', (_, response) => callback(response))
   ipcRenderer.send('delete_discount', discountId)
 }
 
-exports.getDiscountProducts = function (discountId, callback) {
+export function getDiscountProducts(discountId, callback) {
   ipcRenderer.removeAllListeners('get_discount_products')
   ipcRenderer.on('get_discount_products', (_, response) => callback(response))
   ipcRenderer.send('get_discount_products', discountId)
 }
 
-exports.createDiscountProduct = function (discountId, productsId, callback) {
+export function createDiscountProduct(discountId, productsId, callback) {
   ipcRenderer.removeAllListeners('create_discount_product')
   ipcRenderer.on('create_discount_product', (_, response) => callback(response))
   ipcRenderer.send('create_discount_product', discountId, productsId)
 }
-export {}

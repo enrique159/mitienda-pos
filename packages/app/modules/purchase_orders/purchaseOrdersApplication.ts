@@ -1,8 +1,9 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const purchaseOrdersRepository = require('./purchaseOrdersRepository.cjs')
-const { response, logger } = require('../../helpers/index.cjs')
+import { ipcMain } from 'electron'
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import * as purchaseOrdersRepository from './purchaseOrdersRepository.js'
+import { response, logger } from '../../helpers/index.js'
 
 /*
   ** ******** OBTENER TODAS LAS ÓRDENES DE COMPRA ********
@@ -17,7 +18,7 @@ ipcMain.on('get_purchase_orders', async (event) => {
 */
 ipcMain.on('create_purchase_order', async (event, payload) => {
   const { purchaseOrder, items } = payload
-  let responseValue = null
+  let responseValue: any = null
   const trx = await knex.transaction()
 
   try {
@@ -79,7 +80,7 @@ ipcMain.on('update_purchase_order_items', async (event, items) => {
   ** ******** ELIMINAR UNA ORDEN DE COMPRA ********
 */
 ipcMain.on('delete_purchase_order', async (event, id) => {
-  let responseValue = null
+  let responseValue: any = null
   const trx = await knex.transaction()
 
   try {
@@ -112,7 +113,7 @@ ipcMain.on('delete_purchase_order', async (event, id) => {
 */
 ipcMain.on('update_purchase_order_draft_items', async (event, params) => {
   const { purchaseOrderId, items } = params
-  let responseValue = null
+  let responseValue: any = null
   const trx = await knex.transaction()
 
   try {
@@ -138,5 +139,3 @@ ipcMain.on('update_purchase_order_draft_items', async (event, params) => {
 
   event.reply('update_purchase_order_draft_items', responseValue)
 })
-
-export {}

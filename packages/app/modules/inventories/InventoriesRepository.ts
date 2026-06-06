@@ -1,17 +1,13 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const {
-  response,
-  logger,
-  parseBoolean,
-  parseArrayJson,
-} = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, parseBoolean, parseArrayJson } from '../../helpers/index.js'
 
 /**
  * Obtiene los inventarios
  * @returns { Promise<Response<Inventory[]>> }
  */
-exports.getInventories = async function () {
+export async function getInventories() {
   return await knex('inventories')
     .select()
     .then((inventories) => {
@@ -28,4 +24,3 @@ exports.getInventories = async function () {
     })
 }
 
-export {}

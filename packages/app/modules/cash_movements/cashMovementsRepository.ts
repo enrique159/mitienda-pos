@@ -1,8 +1,9 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger } from '../../helpers/index.js'
 
-exports.createCashMovement = async function (data) {
+export async function createCashMovement(data) {
   return await knex('cash_movements').insert(data).returning('*')
     .then((cashMovement) => {
       const cashMovementData = Array.isArray(cashMovement) ? cashMovement[0] : cashMovement
@@ -17,7 +18,7 @@ exports.createCashMovement = async function (data) {
 /*
   ** ******** OBTENER MOVIMIENTOS DE CAJA ACTUAL ********
 */
-exports.getMovementsInTurn = async function (cashRegisterId) {
+export async function getMovementsInTurn(cashRegisterId) {
   try {
     const cashMovements = await knex('cash_movements').where('id_cash_register', cashRegisterId).orderBy('created_at', 'desc')
     const sellers = await knex('sellers').select('*')
@@ -36,4 +37,3 @@ exports.getMovementsInTurn = async function (cashRegisterId) {
     return response(false, 'Error al obtener los movimientos de caja registradora', err)
   }    
 }
-export {}

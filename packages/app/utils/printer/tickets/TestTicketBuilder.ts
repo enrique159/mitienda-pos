@@ -1,9 +1,8 @@
-// @ts-nocheck
-const { getFontFaceCSS, fontName } = require('../extra/loadFonts.cjs')
-const { getImageDataUrl } = require('../extra/loadImage.cjs')
-const { getDatetimeForFile } = require('../../../helpers/index.cjs')
+import { getFontFaceCSS, fontName } from '../extra/loadFonts.js'
+import { getImageDataUrl } from '../extra/loadImage.js'
+import { getDatetimeForFile } from '../../../helpers/index.js'
 
-module.exports = class TestTicketBuilder {
+export default class TestTicketBuilder {
   constructor() { }
 
   logoPath = ''
@@ -196,4 +195,3 @@ module.exports = class TestTicketBuilder {
   }
 }
 
-export {}

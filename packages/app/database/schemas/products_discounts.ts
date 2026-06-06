@@ -1,10 +1,10 @@
-// @ts-nocheck
-const { logger } = require('../../helpers/index.cjs')
+import { Knex } from 'knex'
+import { logger } from '../../helpers/index.js'
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.createTable = async function(knex) {
+export async function createTable(knex: Knex) {
   await knex.schema.createTable('products_discounts', (table) => {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary()
     table.uuid('id_product').references('products.id').notNullable()
@@ -17,4 +17,3 @@ exports.createTable = async function(knex) {
     console.error(err)
   })
 }
-export {}

@@ -1,6 +1,5 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const { getTaxes, createTax, deleteTax } = require('./taxesRepository.cjs')
+import { ipcMain } from 'electron'
+import { getTaxes, createTax, deleteTax } from './taxesRepository.js'
 
 ipcMain.on('get_taxes', async (event) => {
   const response = await getTaxes()
@@ -16,4 +15,3 @@ ipcMain.on('delete_tax', async (event, id) => {
   const response = await deleteTax(id)
   event.reply('delete_tax', response)
 })
-export {}

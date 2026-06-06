@@ -5,12 +5,12 @@
   "type": "module",
   "author": "Enrique Marín Hirales",
   "license": "MIT",
-  "main": "electron-build/main.cjs",
+  "main": "electron-build/main.js",
   "scripts": {
     "vite:dev": "vite --host --mode dev",
     "dev:local": "vite  --host",
     "dev": "npm run electron:dev",
-    "build": "vue-tsc --noEmit && npm run packages:build && vite build",
+    "build": "npm run packages:build && vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "packages:build": "node ./scripts/build-electron-packages.cjs",
     "packages:clean": "node ./scripts/clean-electron-packages.cjs",
@@ -20,11 +20,11 @@
     "electron:pack": "npm run packages:build && electron-builder --dir",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none npm run vite:dev\" \"npm run electron:watch\"",
     "electron:builder": "npm run packages:build && electron-builder",
-    "build:for:electron": "vue-tsc --noEmit && npm run packages:build && cross-env ELECTRON=true vite build",
+    "build:for:electron": "npm run packages:build && vue-tsc --noEmit && cross-env ELECTRON=true vite build",
     "app:build": "npm run prepare:dir && npm run build:for:electron && npm run electron:builder",
     "prepare:dir": "node ./scripts/prepare-dir.js",
-    "migrate:latest": "npm run packages:build && knex migrate:latest --knexfile electron-build/app/database/knexfile.cjs",
-    "migrate:make": "npm run packages:build && knex migrate:make --knexfile electron-build/app/database/knexfile.cjs"
+    "migrate:latest": "npm run packages:build && knex migrate:latest --knexfile electron-build/app/database/knexfile.js",
+    "migrate:make": "npm run packages:build && knex migrate:make --knexfile electron-build/app/database/knexfile.js"
   },
   "dependencies": {
     "@google/genai": "1.25.0",

@@ -1,11 +1,12 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean, cleanAllTables } = require('../../helpers/index.cjs')
-const configurationService = require('./configurationService.cjs')
-const branchRepository = require('../branches/branchesRepository.cjs')
-const { downloadImage } = require('../../utils/images/downloadImage.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, parseBoolean, cleanAllTables } from '../../helpers/index.js'
+import * as configurationService from './configurationService.js'
+import * as branchRepository from '../branches/branchesRepository.js'
+import { downloadImage } from '../../utils/images/downloadImage.js'
 
-exports.initialConfiguration = async function (payload) {
+export async function initialConfiguration(payload) {
   const responseFetch = await configurationService.fetchInitialConfiguration(payload)
 
   if (!responseFetch.success) {
@@ -26,8 +27,8 @@ exports.initialConfiguration = async function (payload) {
 
   // Download branch image
   if (branch.image) {
-    const { success, response } = await downloadImage(branch.image)
-    branch.image = success ? response.filename : null
+    const imageResponse = await downloadImage(branch.image)
+    branch.image = imageResponse.success ? imageResponse.response.filename : null
   }
 
   const branchPayload = {
@@ -45,7 +46,7 @@ exports.initialConfiguration = async function (payload) {
   const trx = await knex.transaction()
   try {
     await cleanAllTables({ excludedTables: ['taxes'], trx })
-    await exports.saveConfiguration(configuration, trx)
+    await saveConfiguration(configuration, trx)
     await branchRepository.saveBranch(branchPayload, trx)
     await trx.commit()
     return response(true, 'Configuración guardada', { configuration, branch: branchPayload })
@@ -56,7 +57,11 @@ exports.initialConfiguration = async function (payload) {
   }
 }
 
-exports.saveConfiguration = async function (payload, trx) {
+export async function initialSync() {
+  return response(true, 'Sincronización inicial completada')
+}
+
+export async function saveConfiguration(payload, trx) {
   const queryBuilder = trx ? knex('configuration').transacting(trx) : knex('configuration')
   try {
     await queryBuilder.insert(payload)
@@ -67,7 +72,7 @@ exports.saveConfiguration = async function (payload, trx) {
   }
 }
 
-exports.getConfiguration = async function () {
+export async function getConfiguration() {
   return await knex('configuration').select().first()
     .then((configuration) => {
       if (!configuration) {
@@ -86,7 +91,7 @@ exports.getConfiguration = async function () {
     })
 }
 
-exports.setDefaultPrinter = async function (printerName) {
+export async function setDefaultPrinter(printerName) {
   return await knex('configuration').update({ default_printer: printerName || null })
     .then(() => {
       return response(true, 'Impresora por defecto actualizada')
@@ -97,7 +102,7 @@ exports.setDefaultPrinter = async function (printerName) {
     })
 }
 
-exports.getToken = async function () {
+export async function getToken() {
   return await knex('configuration').select('token').first()
     .then((token) => {
       if (!token) {
@@ -113,4 +118,3 @@ exports.getToken = async function () {
       return response(false, 'Error al traer el token', err)
     })
 }
-export {}

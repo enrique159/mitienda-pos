@@ -1,10 +1,9 @@
-// @ts-nocheck
-const safeDivide = (value, divisor, decimals = 2) => {
+const safeDivide = (value: number, divisor: number, decimals = 2): number => {
   const factor = Math.pow(10, decimals)
   return Math.round((value / divisor + Number.EPSILON) * factor) / factor
 }
 
-exports.formatCurrency = (value, currency = 'MXN') => {
+export const formatCurrency = (value: number, currency = 'MXN'): string => {
   const adjustedValue = safeDivide(value, 100)
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',
@@ -13,7 +12,7 @@ exports.formatCurrency = (value, currency = 'MXN') => {
   }).format(adjustedValue)
 }
 
-exports.formatWithoutSymbol = (value) => {
+export const formatWithoutSymbol = (value: number): string => {
   const adjustedValue = safeDivide(value, 100)
   return new Intl.NumberFormat('es-MX', {
     style: 'decimal',
@@ -23,7 +22,7 @@ exports.formatWithoutSymbol = (value) => {
   }).format(adjustedValue)
 }
 
-exports.formatCurrencySimple = (value, currency = 'MXN') => {
+export const formatCurrencySimple = (value: number, currency = 'MXN'): string => {
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',
     currency,
@@ -31,4 +30,3 @@ exports.formatCurrencySimple = (value, currency = 'MXN') => {
   }).format(value)
 }
 
-export {}

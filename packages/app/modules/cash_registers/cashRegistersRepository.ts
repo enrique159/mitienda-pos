@@ -1,11 +1,12 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger } from '../../helpers/index.js'
 
 /**
  * Crea una caja registradora
  */
-exports.createCashRegister = async function (data) {
+export async function createCashRegister(data) {
   return await knex('cash_registers').insert(data).returning('*')
     .then((cashRegister) => {
       const cashRegisterData = Array.isArray(cashRegister) ? cashRegister[0] : cashRegister
@@ -20,7 +21,7 @@ exports.createCashRegister = async function (data) {
 /**
  * Obtiene la caja registradora activa
  */
-exports.getCashRegisterActive = async function () {
+export async function getCashRegisterActive() {
   return await knex('cash_registers').select('cash_registers.*', 'open_sellers.name as open_user_name', 'close_sellers.name as close_user_name')
     .leftJoin('sellers as open_sellers', 'open_sellers.id', 'cash_registers.id_user_opening')
     .leftJoin('sellers as close_sellers', 'close_sellers.id', 'cash_registers.id_user_closing')
@@ -42,9 +43,9 @@ exports.getCashRegisterActive = async function () {
 /**
  * Obtiene el estado actual de la caja registradora
  */
-exports.getCurrentCashRegisterState = async function () {
+export async function getCurrentCashRegisterState() {
   try {
-    const cashRegister = await this.getCashRegisterActive()
+    const cashRegister = await getCashRegisterActive()
     if (!cashRegister.success) {
       return response(false, 'Error al traer el estado actual de la caja registradora', null)
     }
@@ -99,7 +100,7 @@ exports.getCurrentCashRegisterState = async function () {
 /*
  * Cierre de caja registradora
  */
-exports.closeCashRegister = async function (data) {
+export async function closeCashRegister(data) {
   return await knex('cash_registers').where('id', data.id).update(data).returning('*')
     .then((cashRegister) => {
       const cashRegisterData = Array.isArray(cashRegister) ? cashRegister[0] : cashRegister
@@ -110,5 +111,3 @@ exports.closeCashRegister = async function (data) {
       return response(false, 'Error al cerrar la caja registradora', err)
     })
 }
-
-export {}

@@ -1,7 +1,6 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const configurationRepository = require('./configurationRepository.cjs')
-const logger = require('../../helpers/logger.cjs')
+import { ipcMain } from 'electron'
+import * as configurationRepository from './configurationRepository.js'
+import logger from '../../helpers/logger.js'
 
 ipcMain.on('initial_configuration', async (event, payload) => {
   const response = await configurationRepository.initialConfiguration(payload)
@@ -22,4 +21,3 @@ ipcMain.on('set_default_printer', async (event, printerName) => {
   const response = await configurationRepository.setDefaultPrinter(printerName)
   event.reply('set_default_printer', response)
 })
-export {}

@@ -1,14 +1,15 @@
-// @ts-nocheck
-const { ipcMain } = require('electron')
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const salesRepository = require('./salesRepository.cjs')
-const productsRepository = require('../products/productsRepository.cjs')
-const { response, logger } = require('../../helpers/index.cjs')
+import { ipcMain } from 'electron'
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import * as salesRepository from './salesRepository.js'
+import * as productsRepository from '../products/productsRepository.js'
+import { response, logger } from '../../helpers/index.js'
 
 
 ipcMain.on('create_sale', async (event, payload) => {
   const { sale, details, payments } = payload
-  let responseValue = null
+  let responseValue: any = null
   const trx = await knex.transaction()
 
   try {
@@ -57,5 +58,3 @@ ipcMain.on('generate_sale_folio', async (event) => {
   const response = await salesRepository.generateSaleFolio()
   event.returnValue = response
 })
-
-export {}

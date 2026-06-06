@@ -1,34 +1,33 @@
-// @ts-nocheck
-const { ipcRenderer } = require('electron')
+import { ipcRenderer, type IpcRendererEvent } from 'electron'
+import type { AppResponse, IpcCallback, UUID } from '../../shared/types'
+import type { CreateProvider, Provider, UpdateProvider } from '../../shared/providerTypes'
 
-exports.createProvider = function (provider, callback) {
-  ipcRenderer.removeAllListeners('create_provider')
-  ipcRenderer.on('create_provider', (_, response) => callback(response))
+const listenOnce = <T>(channel: string, callback: IpcCallback<T>): void => {
+  ipcRenderer.removeAllListeners(channel)
+  ipcRenderer.on(channel, (_: IpcRendererEvent, response: T) => callback(response))
+}
+
+export function createProvider(provider: CreateProvider, callback: IpcCallback<AppResponse<Provider[]>>): void {
+  listenOnce('create_provider', callback)
   ipcRenderer.send('create_provider', provider)
 }
 
-exports.updateProvider = function (data, callback) {
-  ipcRenderer.removeAllListeners('update_provider')
-  ipcRenderer.on('update_provider', (_, response) => callback(response))
+export function updateProvider(data: UpdateProvider, callback: IpcCallback<AppResponse<Provider[]>>): void {
+  listenOnce('update_provider', callback)
   ipcRenderer.send('update_provider', data)
 }
 
-exports.deleteProvider = function (id, callback) {
-  ipcRenderer.removeAllListeners('delete_provider')
-  ipcRenderer.on('delete_provider', (_, response) => callback(response))
+export function deleteProvider(id: UUID, callback: IpcCallback<AppResponse<Provider>>): void {
+  listenOnce('delete_provider', callback)
   ipcRenderer.send('delete_provider', id)
 }
 
-exports.getProviders = function (callback) {
-  ipcRenderer.removeAllListeners('get_providers')
-  ipcRenderer.on('get_providers', (_, response) => callback(response))
+export function getProviders(callback: IpcCallback<AppResponse<Provider[]>>): void {
+  listenOnce('get_providers', callback)
   ipcRenderer.send('get_providers')
 }
 
-exports.getProviderById = function (id, callback) {
-  ipcRenderer.removeAllListeners('get_provider_by_id')
-  ipcRenderer.on('get_provider_by_id', (_, response) => callback(response))
+export function getProviderById(id: UUID, callback: IpcCallback<AppResponse<Provider | null>>): void {
+  listenOnce('get_provider_by_id', callback)
   ipcRenderer.send('get_provider_by_id', id)
 }
-
-export {}

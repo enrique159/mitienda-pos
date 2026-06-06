@@ -1,11 +1,10 @@
-// @ts-nocheck
-const Http = require('../../network/Http.cjs')
-const { getBranchesByEmail } = require('../../shared/routes.cjs')
-const { response, logger } = require('../../helpers/index.cjs')
+import Http from '../../network/Http.js'
+import { getBranchesByEmail } from '../../shared/routes.js'
+import { response, logger } from '../../helpers/index.js'
 
 const http = new Http()
 
-exports.fetchBranchesByEmail = async function (email) {
+export async function fetchBranchesByEmail(email) {
   try {
     const url = getBranchesByEmail(Http.baseUrl)
     const apiResponse = await http.post(url, { data: { email } })
@@ -15,4 +14,3 @@ exports.fetchBranchesByEmail = async function (email) {
     return response(false, 'Error al traer las sucursales', err.errors || err.message || err)
   }
 }
-export {}

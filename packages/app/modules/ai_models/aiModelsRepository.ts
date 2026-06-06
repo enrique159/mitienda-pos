@@ -1,8 +1,10 @@
-// @ts-nocheck
-const knex = require('knex')(require('../../database/knexfile.cjs'))
-const { response, logger, parseBoolean } = require('../../helpers/index.cjs')
+import knexFactory from 'knex'
+import knexConfig from '../../database/knexfile.js'
+const knex = knexFactory(knexConfig)
+import { response, logger, parseBoolean } from '../../helpers/index.js'
+import { ActiveStatus, AiModel, CreateAiModel, UpdateAiModel } from '../../domain/interfaces'
 
-function normalizeAiModel(aiModel) {
+function normalizeAiModel(aiModel: Partial<AiModel>) {
   return {
     ...aiModel,
     default: parseBoolean(aiModel.default),
@@ -11,7 +13,7 @@ function normalizeAiModel(aiModel) {
 /*
   ** ******** OBTENER MODELOS DE IA ********
 */
-exports.getAiModels = async function () {
+export async function getAiModels() {
   try {
     const aiModels = await knex('ai_models').select().orderBy('created_at', 'desc')
     if (!aiModels.length) {
@@ -30,7 +32,7 @@ exports.getAiModels = async function () {
 /*
   ** ******** OBTENER MODELO DE IA POR ID ********
 */
-exports.getAiModelById = async function (id) {
+export async function getAiModelById(id: string) {
   try {
     const aiModel = await knex('ai_models').where('id', id).first()
     if (!aiModel) {
@@ -49,7 +51,7 @@ exports.getAiModelById = async function (id) {
 /*
   ** ******** CREAR UN MODELO DE IA ********
 */
-exports.createAiModel = async function (aiModel) {
+export async function createAiModel(aiModel: CreateAiModel) {
   const dataToInsert = {
     ...aiModel,
     synced_at: null,
@@ -64,10 +66,10 @@ exports.createAiModel = async function (aiModel) {
         .update({ default: false, updated_at: knex.fn.now() })
     }
 
-    const [id] = await knex('ai_models').insert(dataToInsert).returning('id')
+    const [createdAiModel] = await knex('ai_models').insert(dataToInsert).returning('*')
 
-    logger.info({ type: 'CREATE AI MODEL', message: 'Modelo de IA creado', data: { id } })
-    return response(true, 'Modelo de IA creado', normalizeAiModel({ id, ...aiModel }))
+    logger.info({ type: 'CREATE AI MODEL', message: 'Modelo de IA creado', data: { id: createdAiModel.id } })
+    return response(true, 'Modelo de IA creado', normalizeAiModel(createdAiModel))
   } catch (err) {
     console.log(err)
     logger.error({ type: 'CREATE AI MODEL ERROR', message: `${err}`, data: err })
@@ -78,7 +80,7 @@ exports.createAiModel = async function (aiModel) {
 /*
   ** ******** ACTUALIZAR UN MODELO DE IA ********
 */
-exports.updateAiModel = async function (id, aiModel) {
+export async function updateAiModel(id: string, aiModel: UpdateAiModel) {
   const dataToUpdate = {
     ...aiModel,
     updated_at: knex.fn.now(),
@@ -112,7 +114,7 @@ exports.updateAiModel = async function (id, aiModel) {
 /*
   ** ******** ELIMINAR UN MODELO DE IA ********
 */
-exports.deleteAiModel = async function (id) {
+export async function deleteAiModel(id: string) {
   try {
     // Verificar si el modelo es el predeterminado
     const aiModel = await knex('ai_models').where('id', id).first()
@@ -145,7 +147,7 @@ exports.deleteAiModel = async function (id) {
 /*
   ** ******** CAMBIAR ESTADO DE UN MODELO DE IA ********
 */
-exports.updateAiModelStatus = async function (id, status) {
+export async function updateAiModelStatus(id: string, status: ActiveStatus) {
   try {
     const updated = await knex('ai_models')
       .where('id', id)
@@ -172,7 +174,7 @@ exports.updateAiModelStatus = async function (id, status) {
 /*
   ** ******** ESTABLECER MODELO DE IA POR DEFECTO ********
 */
-exports.setDefaultAiModel = async function (id, companyId) {
+export async function setDefaultAiModel(id: string, companyId: string) {
   try {
     // Primero desactivamos cualquier modelo por defecto
     await knex('ai_models')
@@ -202,5 +204,3 @@ exports.setDefaultAiModel = async function (id, companyId) {
     return response(false, 'Error al establecer el modelo de IA como predeterminado', err)
   }
 }
-
-export {}

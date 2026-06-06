@@ -1,13 +1,12 @@
-// @ts-nocheck
-const path = require('path')
-const fs = require('fs')
-const mime = require('mime-types')
-const { app } = require('electron')
-const logger = require('../../../helpers/logger.cjs')
+import path from 'path'
+import fs from 'fs'
+import mime from 'mime-types'
+import { app } from 'electron'
+import logger from '../../../helpers/logger.js'
 
 
-module.exports.getImageDataUrl = (imageFileName) => {
-  const fileToDataUrl = (filePath) => {
+export const getImageDataUrl = (imageFileName: string): string => {
+  const fileToDataUrl = (filePath: string): string => {
     try {
       const imageFileData = fs.readFileSync(filePath)
       const mimeType = mime.lookup(filePath) || 'application/octet-stream'
@@ -28,5 +27,3 @@ module.exports.getImageDataUrl = (imageFileName) => {
 
   return fileToDataUrl(imagePath)
 }
-
-export {}

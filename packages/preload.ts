@@ -1,41 +1,24 @@
-// @ts-nocheck
-const { contextBridge, ipcRenderer, shell } = require('electron')
-/* DATABASE */
-const databaseListeners = require('./app/utils/database/databaseListeners.cjs')
-/* CONFIGURATION */
-const configurationListeners = require('./app/modules/configuration/configurationListeners.cjs')
-/* COMPANY */
-const companyListeners = require('./app/modules/company/companyListeners.cjs')
-/* SELLERS */
-const sellersListeners = require('./app/modules/sellers/sellersListeners.cjs')
-/* PRODUCTS */
-const productsListeners = require('./app/modules/products/productsListeners.cjs')
-/* DISCOUNTS */
-const discountsListeners = require('./app/modules/discounts/discountsListeners.cjs')
-/* CATEGORIES */
-const categoriesListeners = require('./app/modules/categories/categoriesListeners.cjs')
-/* BRANCHES */
-const branchesListeners = require('./app/modules/branches/branchesListeners.cjs')
-/* CASH REGISTERS */
-const cashRegistersListeners = require('./app/modules/cash_registers/cashRegistersListeners.cjs')
-/* CASH REGISTER AUDITS */
-const cashRegisterAuditsListeners = require('./app/modules/cash_register_audits/cashRegisterAuditsListeners.cjs')
-/* SALES */
-const salesListeners = require('./app/modules/sales/salesListeners.cjs')
-/* TAXES */
-const taxesListeners = require('./app/modules/taxes/taxesListeners.cjs')
-/* CUSTOMERS */
-const customersListeners = require('./app/modules/customers/customersListeners.cjs')
-/* CASH MOVEMENTS */
-const cashMovementsListeners = require('./app/modules/cash_movements/cashMovementsListeners.cjs')
-/* PROVIDERS */
-const providersListeners = require('./app/modules/providers/providersListeners.cjs')
-/* PURCHASE ORDERS */
-const purchaseOrdersListeners = require('./app/modules/purchase_orders/purchaseOrdersListeners.cjs')
-/* AI MODELS */
-const aiModelsListeners = require('./app/modules/ai_models/aiModelsListeners.cjs')
-/* PRINTER */
-const printerListeners = require('./app/utils/printer/printerListeners.cjs')
+import { contextBridge, ipcRenderer, shell } from 'electron'
+import type { ElectronApi } from './app/shared/electronApi'
+import * as providersListeners from './app/modules/providers/providersListeners'
+
+import * as databaseListeners from './app/utils/database/databaseListeners.js'
+import * as configurationListeners from './app/modules/configuration/configurationListeners.js'
+import * as companyListeners from './app/modules/company/companyListeners.js'
+import * as sellersListeners from './app/modules/sellers/sellersListeners.js'
+import * as productsListeners from './app/modules/products/productsListeners.js'
+import * as discountsListeners from './app/modules/discounts/discountsListeners.js'
+import * as categoriesListeners from './app/modules/categories/categoriesListeners.js'
+import * as branchesListeners from './app/modules/branches/branchesListeners.js'
+import * as cashRegistersListeners from './app/modules/cash_registers/cashRegistersListeners.js'
+import * as cashRegisterAuditsListeners from './app/modules/cash_register_audits/cashRegisterAuditsListeners.js'
+import * as salesListeners from './app/modules/sales/salesListeners.js'
+import * as taxesListeners from './app/modules/taxes/taxesListeners.js'
+import * as customersListeners from './app/modules/customers/customersListeners.js'
+import * as cashMovementsListeners from './app/modules/cash_movements/cashMovementsListeners.js'
+import * as purchaseOrdersListeners from './app/modules/purchase_orders/purchaseOrdersListeners.js'
+import * as aiModelsListeners from './app/modules/ai_models/aiModelsListeners.js'
+import * as printerListeners from './app/utils/printer/printerListeners.js'
 
 const api = {
   ...databaseListeners,
@@ -56,25 +39,27 @@ const api = {
   ...purchaseOrdersListeners,
   ...aiModelsListeners,
   ...printerListeners,
-  // Extras
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),
-  openExternalLink: (url) => shell.openExternal(url),
-  // System events
-  onSystemSuspend: (callback) => {
-    ipcRenderer.on('system-suspend', () => callback())
+  openExternalLink: (url: string) => shell.openExternal(url),
+  onSystemSuspend: (callback: () => void) => {
+    const listener = () => callback()
+    ipcRenderer.on('system-suspend', listener)
+    return () => ipcRenderer.removeListener('system-suspend', listener)
   },
-  onSystemResume: (callback) => {
-    ipcRenderer.on('system-resume', () => callback())
+  onSystemResume: (callback: () => void) => {
+    const listener = () => callback()
+    ipcRenderer.on('system-resume', listener)
+    return () => ipcRenderer.removeListener('system-resume', listener)
   },
-}
+} as ElectronApi
 
 ipcRenderer.setMaxListeners(100)
 
 window.addEventListener('DOMContentLoaded', () => {
-  const replaceText = (selector, text) => {
+  const replaceText = (selector: string, text?: string) => {
     const element = document.getElementById(selector)
-    if (element) element.innerText = text
+    if (element && text) element.innerText = text
   }
 
   for (const dependency of ['chrome', 'node', 'electron']) {
@@ -83,5 +68,3 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 contextBridge.exposeInMainWorld('electron', api)
-
-export {}
