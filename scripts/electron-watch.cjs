@@ -6,7 +6,6 @@ const { spawn } = require('child_process')
 const root = path.resolve(__dirname, '..')
 const packagesDir = path.join(root, 'packages')
 const electronPath = require('electron')
-const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 const watchedExtensions = new Set(['.ts', '.json'])
 
 let electronProcess = null
@@ -31,6 +30,10 @@ const run = (command, args) => new Promise((resolve, reject) => {
       return
     }
     reject(new Error(`${command} ${args.join(' ')} exited with code ${code}`))
+  })
+
+  child.on('error', (error) => {
+    reject(error)
   })
 })
 
@@ -80,6 +83,11 @@ const startElectron = () => {
       electronProcess = null
     }
   })
+
+  electronProcess.on('error', (error) => {
+    log(error.message)
+    electronProcess = null
+  })
 }
 
 const buildAndRestart = async () => {
@@ -89,7 +97,7 @@ const buildAndRestart = async () => {
   try {
     log('Building packages TypeScript...')
     await stopElectron()
-    await run(npmCommand, ['run', 'packages:build'])
+    await run(process.execPath, [path.join(root, 'scripts', 'build-electron-packages.cjs')])
     log('Starting Electron...')
     startElectron()
   } catch (error) {

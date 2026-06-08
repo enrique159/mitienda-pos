@@ -5,7 +5,6 @@ const { spawnSync } = require('child_process')
 const root = path.resolve(__dirname, '..')
 const packagesDir = path.join(root, 'packages')
 const buildDir = path.join(root, 'electron-build')
-const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 
 const run = (command, args) => {
   const result = spawnSync(command, args, {
@@ -13,6 +12,11 @@ const run = (command, args) => {
     stdio: 'inherit',
     env: process.env,
   })
+
+  if (result.error) {
+    console.error(result.error.message)
+    process.exit(1)
+  }
 
   if (result.status !== 0) {
     process.exit(result.status ?? 1)
@@ -26,8 +30,9 @@ const copyFile = (sourcePath) => {
   fs.copyFileSync(sourcePath, outputPath)
 }
 
-run(npmCommand, ['run', 'packages:clean'])
-run('npx', ['--no-install', 'tsc', '-p', 'tsconfig.electron.json'])
+fs.rmSync(buildDir, { recursive: true, force: true })
+
+run(process.execPath, [require.resolve('typescript/bin/tsc'), '-p', 'tsconfig.electron.json'])
 
 copyFile(path.join(packagesDir, 'env.json'))
 copyFile(path.join(packagesDir, 'package.json'))

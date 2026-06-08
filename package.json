@@ -15,6 +15,7 @@
     "packages:build": "node ./scripts/build-electron-packages.cjs",
     "packages:clean": "node ./scripts/clean-electron-packages.cjs",
     "packages:check": "tsc -p tsconfig.electron.json --noEmit",
+    "native:rebuild": "node ./scripts/rebuild-native-deps.cjs",
     "electron": "wait-on tcp:5173 && npm run packages:build && cross-env electron .",
     "electron:watch": "node ./scripts/electron-watch.cjs",
     "electron:pack": "npm run packages:build && electron-builder --dir",
