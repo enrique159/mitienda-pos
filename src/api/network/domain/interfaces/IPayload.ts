@@ -1,4 +1,4 @@
-import { type IHttpSettings } from '@/app/network/domain/interfaces/IHttpSettings'
+import { type IHttpSettings } from '@/api/network/domain/interfaces/IHttpSettings'
 
 export interface IPayload<T> {
   data?: T

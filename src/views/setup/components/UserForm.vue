@@ -182,7 +182,7 @@ const handleSubmit = async () => {
   const isFormValid = await v$.value.$validate()
 
   if (!isFormValid) {
-    return toast.warning('Por favor, corrige los errores en el formulario')
+    return toast.warn('Por favor, corrige los errores en el formulario')
   }
 
   const data = {

@@ -317,7 +317,7 @@ const fetchBranchesByEmail = async () => {
           }
         })
       } else {
-        for (const error of response.response) {
+        for (const error of response.response as unknown as string[]) {
           toast.error(error)
         }
       }

@@ -1,5 +1,5 @@
-import { type NetworkMessage } from '@/app/network/domain/interfaces/NetworkMessage'
-import { type MetaPage } from '@/app/network/domain/interfaces/FetchPage'
+import { type NetworkMessage } from '@/api/network/domain/interfaces/NetworkMessage'
+import { type MetaPage } from '@/api/network/domain/interfaces/FetchPage'
 
 export interface Response<T> {
   meta?: MetaPage

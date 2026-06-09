@@ -18,6 +18,7 @@ import * as customersListeners from './app/modules/customers/customersListeners.
 import * as cashMovementsListeners from './app/modules/cash_movements/cashMovementsListeners.js'
 import * as purchaseOrdersListeners from './app/modules/purchase_orders/purchaseOrdersListeners.js'
 import * as aiModelsListeners from './app/modules/ai_models/aiModelsListeners.js'
+import * as reportsListeners from './app/modules/reports/reportsListeners.js'
 import * as printerListeners from './app/utils/printer/printerListeners.js'
 
 const api = {
@@ -38,6 +39,7 @@ const api = {
   ...providersListeners,
   ...purchaseOrdersListeners,
   ...aiModelsListeners,
+  ...reportsListeners,
   ...printerListeners,
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),

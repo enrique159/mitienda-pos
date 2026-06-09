@@ -1,5 +1,5 @@
-import { type IPayload } from '@/app/network/domain/interfaces/IPayload'
-import { type Response } from '@/app/network/domain/interfaces/Response'
+import { type IPayload } from '@/api/network/domain/interfaces/IPayload'
+import { type Response } from '@/api/network/domain/interfaces/Response'
 
 export interface IHttp {
   get<T, U>(url: string, payload?: IPayload<T>): Promise<Response<U>>
