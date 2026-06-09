@@ -344,9 +344,9 @@ import SnackBar from '@/components/SnackBar.vue'
 import { useProduct } from '@/composables/useProduct'
 import { useCurrency } from '@/composables/useCurrency'
 import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical, IconSearch, IconUser, IconX, IconPlus } from '@tabler/icons-vue'
-import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response, TaxDetail } from '@/api/interfaces'
+import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response, TaxDetail, Product } from '@/api/interfaces'
 import { getPaymentMethodName } from '@/utils/Payments'
-import { createSale, printSaleTicket, setBranchLogo } from '@/api/electron'
+import { createSale, getAllProducts, getProducts, printSaleTicket, setBranchLogo } from '@/api/electron'
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useBranch } from '@/composables/useBranch'
 import { useCashRegister } from '@/composables/useCashRegister'
@@ -371,6 +371,8 @@ const {
   currentCartProductsWithDiscount,
   currentCartTaxesPerProduct,
   clearCurrentCart,
+  setAllProducts,
+  setProducts,
 } = useProduct()
 
 const { company } = useCompany()
@@ -685,6 +687,7 @@ const createCurrentSale = () => {
     if (response.success) {
       toast.success('Venta realizada con éxito')
       handlePrintTicket()
+      reloadProducts()
       closePaymentModal()
       generateFolio()
       clearCurrentCart()
@@ -692,6 +695,20 @@ const createCurrentSale = () => {
       getAllCustomers()
     } else {
       showSnackbarPaymentError('Ha ocurrido un error al realizar la venta', 'error')
+    }
+  })
+}
+
+const reloadProducts = () => {
+  getAllProducts((response: Response<Product[]>) => {
+    if (response.success) {
+      setAllProducts(response.response)
+    }
+  })
+
+  getProducts((response: Response<Product[]>) => {
+    if (response.success) {
+      setProducts(response.response)
     }
   })
 }

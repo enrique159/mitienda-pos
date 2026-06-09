@@ -3,7 +3,7 @@ import knexFactory from 'knex'
 import knexConfig from '../../database/knexfile.js'
 const knex = knexFactory(knexConfig)
 import * as purchaseOrdersRepository from './purchaseOrdersRepository.js'
-import { response, logger } from '../../helpers/index.js'
+import { response as buildResponse, logger } from '../../helpers/index.js'
 
 /*
   ** ******** OBTENER TODAS LAS ÓRDENES DE COMPRA ********
@@ -22,20 +22,26 @@ ipcMain.on('create_purchase_order', async (event, payload) => {
   const trx = await knex.transaction()
 
   try {
-    const response = await purchaseOrdersRepository.createPurchaseOrder(purchaseOrder, trx)
-    responseValue = response
-    if (response.success) {
-      const purchaseOrderId = response.response.id
-      for (const item of items) {
-        item.id_purchase_order = purchaseOrderId
-        await purchaseOrdersRepository.createPurchaseOrderItem(item, trx)
-      }
-      await trx.commit()
+    const purchaseOrderResponse = await purchaseOrdersRepository.createPurchaseOrder(purchaseOrder, trx)
+    responseValue = purchaseOrderResponse
+    if (!purchaseOrderResponse.success) {
+      throw new Error(purchaseOrderResponse.message)
     }
+
+    const purchaseOrderId = purchaseOrderResponse.response.id
+    for (const item of items) {
+      item.id_purchase_order = purchaseOrderId
+      const itemResponse = await purchaseOrdersRepository.createPurchaseOrderItem(item, trx)
+      if (!itemResponse.success) {
+        throw new Error(itemResponse.message)
+      }
+    }
+
+    await trx.commit()
   } catch (error) {
     await trx.rollback()
     logger.error({ type: 'CREATE PURCHASE ORDER ERROR', message: `${error}`, data: error })
-    responseValue = response(false, 'Error al crear la orden de compra', null)
+    responseValue = buildResponse(false, 'Error al crear la orden de compra', null)
   }
 
   event.reply('create_purchase_order', responseValue)
@@ -97,12 +103,12 @@ ipcMain.on('delete_purchase_order', async (event, id) => {
       }
     } else {
       await trx.rollback()
-      responseValue = response(false, 'Error al eliminar los items de la orden de compra', null)
+      responseValue = buildResponse(false, 'Error al eliminar los items de la orden de compra', null)
     }
   } catch (error) {
     await trx.rollback()
     logger.error({ type: 'DELETE PURCHASE ORDER ERROR', message: `${error}`, data: error })
-    responseValue = response(false, 'Error al eliminar la orden de compra', null)
+    responseValue = buildResponse(false, 'Error al eliminar la orden de compra', null)
   }
 
   event.reply('delete_purchase_order', responseValue)
@@ -123,18 +129,21 @@ ipcMain.on('update_purchase_order_draft_items', async (event, params) => {
       // Then create the new items
       for (const item of items) {
         item.id_purchase_order = purchaseOrderId
-        await purchaseOrdersRepository.createPurchaseOrderItem(item, trx)
+        const itemResponse = await purchaseOrdersRepository.createPurchaseOrderItem(item, trx)
+        if (!itemResponse.success) {
+          throw new Error(itemResponse.message)
+        }
       }
       await trx.commit()
-      responseValue = response(true, 'Items de orden de compra actualizados', items)
+      responseValue = buildResponse(true, 'Items de orden de compra actualizados', items)
     } else {
       await trx.rollback()
-      responseValue = response(false, 'Error al eliminar los items de la orden de compra', null)
+      responseValue = buildResponse(false, 'Error al eliminar los items de la orden de compra', null)
     }
   } catch (error) {
     await trx.rollback()
     logger.error({ type: 'DELETE PURCHASE ORDER ITEMS ERROR', message: `${error}`, data: error })
-    responseValue = response(false, 'Error al eliminar los items de la orden de compra', null)
+    responseValue = buildResponse(false, 'Error al eliminar los items de la orden de compra', null)
   }
 
   event.reply('update_purchase_order_draft_items', responseValue)

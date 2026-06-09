@@ -2,6 +2,15 @@ import knexFactory from 'knex'
 import knexConfig from '../../database/knexfile.js'
 const knex = knexFactory(knexConfig)
 import { response, logger } from '../../helpers/index.js'
+import * as productsRepository from '../products/productsRepository.js'
+
+function getReceivedQuantity(quantity) {
+  const parsedQuantity = Number(quantity ?? 0)
+  if (!Number.isFinite(parsedQuantity) || parsedQuantity < 0) {
+    throw new Error('Cantidad recibida inválida')
+  }
+  return parsedQuantity
+}
 
 /*
   ** ******** OBTENER ÓRDENES DE COMPRA ********
@@ -126,20 +135,61 @@ export async function updatePurchaseOrderStatus(id, status) {
   ** ******** ACTUALIZAR UN ITEM DE ORDEN DE COMPRA ********
 */
 export async function updatePurchaseOrderItem(id, purchaseOrderItem) {
-  const dataToUpdate = {
-    ...purchaseOrderItem,
-    updated_at: knex.fn.now(),
-    synced_at: null,
-  }
   try {
-    const updated = await knex('purchase_order_items').where('id', id).update(dataToUpdate)
-    if (updated) {
-      logger.info({ type: 'UPDATE PURCHASE ORDER ITEM', message: 'Item de orden de compra actualizado', data: { id, ...purchaseOrderItem } })
-      return response(true, 'Item de orden de compra actualizado', { id, ...purchaseOrderItem })
-    } else {
-      logger.error({ type: 'UPDATE PURCHASE ORDER ITEM', message: 'Item de orden de compra no encontrado' })
-      return response(false, 'Item de orden de compra no encontrado', null)
-    }
+    let updatedItem = { id, ...purchaseOrderItem }
+
+    await knex.transaction(async (trx) => {
+      const currentItem = await trx('purchase_order_items')
+        .where('id', id)
+        .first()
+
+      if (!currentItem) {
+        throw new Error('Item de orden de compra no encontrado')
+      }
+
+      const dataToUpdate = {
+        ...purchaseOrderItem,
+        updated_at: trx.fn.now(),
+        synced_at: null,
+      }
+      const shouldUpdateReceivedQuantity = Object.prototype.hasOwnProperty.call(
+        purchaseOrderItem,
+        'quantity_received'
+      )
+      const currentReceivedQuantity = getReceivedQuantity(currentItem.quantity_received)
+      const newReceivedQuantity = shouldUpdateReceivedQuantity
+        ? getReceivedQuantity(purchaseOrderItem.quantity_received)
+        : currentReceivedQuantity
+
+      if (shouldUpdateReceivedQuantity) {
+        dataToUpdate.quantity_received = newReceivedQuantity
+        updatedItem = { ...updatedItem, quantity_received: newReceivedQuantity }
+      }
+
+      const updated = await trx('purchase_order_items')
+        .where('id', id)
+        .update(dataToUpdate)
+
+      if (!updated) {
+        throw new Error('Item de orden de compra no encontrado')
+      }
+
+      const receivedQuantityDelta = newReceivedQuantity - currentReceivedQuantity
+      if (receivedQuantityDelta !== 0) {
+        const stockResponse = await productsRepository.adjustStockProduct(
+          currentItem.id_product,
+          receivedQuantityDelta,
+          trx
+        )
+
+        if (!stockResponse.success) {
+          throw new Error(stockResponse.message)
+        }
+      }
+    })
+
+    logger.info({ type: 'UPDATE PURCHASE ORDER ITEM', message: 'Item de orden de compra actualizado', data: updatedItem })
+    return response(true, 'Item de orden de compra actualizado', updatedItem)
   } catch (err) {
     console.log(err)
     logger.error({ type: 'UPDATE PURCHASE ORDER ITEM ERROR', message: `${err}`, data: err })
@@ -151,25 +201,43 @@ export async function updatePurchaseOrderItem(id, purchaseOrderItem) {
 */
 export async function updatePurchaseOrderItems(items) {
   try {
-    // Use a transaction to ensure all updates succeed or fail together
-    const result = await knex.transaction(async (trx) => {
-      const updatePromises = items.map(async (item) => {
+    await knex.transaction(async (trx) => {
+      for (const item of items) {
+        const currentItem = await trx('purchase_order_items')
+          .where('id', item.id)
+          .first()
+
+        if (!currentItem) {
+          throw new Error('Item de orden de compra no encontrado')
+        }
+
+        const currentReceivedQuantity = getReceivedQuantity(currentItem.quantity_received)
+        const newReceivedQuantity = getReceivedQuantity(item.quantity_received)
+        const receivedQuantityDelta = newReceivedQuantity - currentReceivedQuantity
         const dataToUpdate = {
-          quantity_received: item.quantity_received,
+          quantity_received: newReceivedQuantity,
           incidence: item.incidence,
           note: item.note,
           updated_at: trx.fn.now(),
           synced_at: null,
         }
 
-        // Update each item individually by its ID
-        return await trx('purchase_order_items')
+        await trx('purchase_order_items')
           .where('id', item.id)
           .update(dataToUpdate)
-      })
 
-      // Execute all updates in parallel
-      return await Promise.all(updatePromises)
+        if (receivedQuantityDelta !== 0) {
+          const stockResponse = await productsRepository.adjustStockProduct(
+            currentItem.id_product,
+            receivedQuantityDelta,
+            trx
+          )
+
+          if (!stockResponse.success) {
+            throw new Error(stockResponse.message)
+          }
+        }
+      }
     })
 
     logger.info({
@@ -227,4 +295,3 @@ export async function deletePurchaseOrderItems(purchaseOrderId, trx) {
       return response(false, 'Error al eliminar los items de la orden de compra', err)
     })
 }
-

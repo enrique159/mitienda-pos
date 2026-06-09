@@ -4,7 +4,7 @@ import knexConfig from '../../database/knexfile.js'
 const knex = knexFactory(knexConfig)
 import * as salesRepository from './salesRepository.js'
 import * as productsRepository from '../products/productsRepository.js'
-import { response, logger } from '../../helpers/index.js'
+import { response as buildResponse, logger } from '../../helpers/index.js'
 
 
 ipcMain.on('create_sale', async (event, payload) => {
@@ -13,32 +13,40 @@ ipcMain.on('create_sale', async (event, payload) => {
   const trx = await knex.transaction()
 
   try {
-    const response = await salesRepository.createSale(sale, trx)
-    responseValue = response
-    if (response.success) {
-      const idSale = response.response.id
-      for (const detail of details) {
-        detail.id_sale = idSale
-        await salesRepository.createSaleDetail(detail, trx)
-        // Update stock
-        const { response: currentProduct } = await productsRepository.getProductById(detail.id_product)
-        if (currentProduct.unlimited_stock) {
-          continue
-        }
-        const currentStock = currentProduct.stock
-        const newStock = Math.max(0, currentStock - detail.quantity)
-        await productsRepository.updateStockProduct(detail.id_product, newStock, trx)
-      }
-      for (const payment of payments) {
-        payment.id_sale = idSale
-        await salesRepository.createSalePayment(payment, trx)
-      }
-      await trx.commit()
+    const saleResponse = await salesRepository.createSale(sale, trx)
+    responseValue = saleResponse
+    if (!saleResponse.success) {
+      throw new Error(saleResponse.message)
     }
+
+    const idSale = saleResponse.response.id
+    for (const detail of details) {
+      detail.id_sale = idSale
+
+      const detailResponse = await salesRepository.createSaleDetail(detail, trx)
+      if (!detailResponse.success) {
+        throw new Error(detailResponse.message)
+      }
+
+      const stockResponse = await productsRepository.adjustStockProduct(detail.id_product, -detail.quantity, trx)
+      if (!stockResponse.success) {
+        throw new Error(stockResponse.message)
+      }
+    }
+
+    for (const payment of payments) {
+      payment.id_sale = idSale
+      const paymentResponse = await salesRepository.createSalePayment(payment, trx)
+      if (!paymentResponse.success) {
+        throw new Error(paymentResponse.message)
+      }
+    }
+
+    await trx.commit()
   } catch (error) {
     await trx.rollback()
     logger.error({ type: 'CREATE SALE ERROR', message: `${error}`, data: error })
-    responseValue = response(false, 'Error al crear la venta', null)
+    responseValue = buildResponse(false, 'Error al crear la venta', null)
   }
 
   event.reply('create_sale', responseValue)
