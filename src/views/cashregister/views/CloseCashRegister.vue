@@ -174,14 +174,18 @@
         <div class="grid grid-cols-2 gap-2">
           <button
             class="btn bg-brand-orange hover:bg-brand-orange/80 text-white"
+            :disabled="isClosingCashRegister"
             @click="handleCreateCashRegisterAudit(Closure.Partial)"
           >
+            <span v-if="isClosingCashRegister && closureSelected === Closure.Partial" class="loading loading-spinner loading-sm" />
             Cierre parcial
           </button>
           <button
             class="btn btn-neutral"
+            :disabled="isClosingCashRegister"
             @click="handleCreateCashRegisterAudit(Closure.Full)"
           >
+            <span v-if="isClosingCashRegister && closureSelected === Closure.Full" class="loading loading-spinner loading-sm" />
             Cierre total
           </button>
         </div>
@@ -189,7 +193,7 @@
     </section>
   </div>
 
-  <confirm-audit-modal v-model="showConfirmAuditModal" @confirm:audit="handleConfirmAudit" />
+  <confirm-audit-modal v-model="showConfirmAuditModal" :loading="isClosingCashRegister" @confirm:audit="handleConfirmAudit" />
 </template>
 
 <script setup lang="ts">
@@ -363,7 +367,9 @@ const removeCardAmount = () => {
 // SHOW CONFIRM AUDIT MODAL
 const showConfirmAuditModal = ref(false)
 const closureSelected = ref<Closure>(Closure.Partial)
+const isClosingCashRegister = ref(false)
 const handleCreateCashRegisterAudit = (closure: Closure) => {
+  if (isClosingCashRegister.value) return
   showConfirmAuditModal.value = true
   closureSelected.value = closure
 }
@@ -400,12 +406,16 @@ const prepareCashRegisterAudit = (): CreateCashRegisterAudit => {
 }
 
 const handleConfirmAudit = () => {
+  if (isClosingCashRegister.value) return
+  isClosingCashRegister.value = true
   const payload = prepareCashRegisterAudit()
   closeCashRegister(payload, (response: Response<CashRegisterAudit>) => {
     if (!response.success) {
+      isClosingCashRegister.value = false
       return toast.error('No se pudo cerrar la caja')
     }
     toast.success('Caja cerrada exitosamente')
+    showConfirmAuditModal.value = false
     handlePrintTicket()
     logout()
     router.push({ name: 'SignInAsUser' })

@@ -38,3 +38,8 @@ export function printCloseCashRegisterReportTicket(payload, callback) {
   ipcRenderer.send('print_close_cash_register_report_ticket', payload)
 }
 
+export function printReportDocument(payload, callback) {
+  ipcRenderer.removeAllListeners('print_report_document')
+  ipcRenderer.on('print_report_document', (_, response) => callback(response))
+  ipcRenderer.send('print_report_document', payload)
+}

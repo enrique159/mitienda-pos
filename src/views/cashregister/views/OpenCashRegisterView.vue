@@ -28,6 +28,15 @@
           <delete-button @on:click="deleteStartAmount" />
         </div>
         <pin-input @input="editStartAmount" @enter="saveNewQuantity" />
+        <base-button
+          button-type="primary"
+          class="mt-4 min-w-40"
+          :loading="isOpeningCashRegister"
+          loading-text="Abriendo..."
+          @click="saveNewQuantity"
+        >
+          Abrir caja
+        </base-button>
       </div>
     </div>
   </div>
@@ -52,6 +61,7 @@ const router = useRouter()
 
 const startAmount = ref<string>('')
 const inputStartAmountRef = ref()
+const isOpeningCashRegister = ref(false)
 
 const editStartAmount = (value: string) => {
   startAmount.value += value
@@ -64,6 +74,8 @@ const backspaceStartAmount = () => {
 const deleteStartAmount = () =>  startAmount.value = ''
 
 const saveNewQuantity = () => {
+  if (isOpeningCashRegister.value) return
+  isOpeningCashRegister.value = true
   const params: Partial<CashRegister> = {
     id_branch: branch.value.id,
     id_company: branch.value.id_company,
@@ -72,6 +84,7 @@ const saveNewQuantity = () => {
   }
   openCashRegister(params, (response: Response<CashRegister>) => {
     if (!response.success) {
+      isOpeningCashRegister.value = false
       toast.error(response.message)
       return
     }

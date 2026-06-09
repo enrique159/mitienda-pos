@@ -277,9 +277,11 @@
             </div>
             <button
               class="btn btn-lg bg-brand-pink hover:bg-brand-orange text-white w-3/4"
+              :disabled="isCreatingSale"
               @click="createCurrentSale"
             >
-              Pagar
+              <span v-if="isCreatingSale" class="loading loading-spinner loading-sm" />
+              {{ isCreatingSale ? 'Procesando...' : 'Pagar' }}
             </button>
           </div>
         </div>
@@ -605,6 +607,7 @@ const validateCustomerCredit = () => {
 */
 
 const createCurrentSale = () => {
+  if (isCreatingSale.value) return
   if (currentCart.value.length === 0) return
   if (!cashRegister.value) return
   if (isPaidAmountLowerThanTotal.value && !customerCurrentSale.value) {
@@ -676,7 +679,9 @@ const createCurrentSale = () => {
     ],
   }
 
+  isCreatingSale.value = true
   createSale(payload, (response: Response<any>) => {
+    isCreatingSale.value = false
     if (response.success) {
       toast.success('Venta realizada con éxito')
       handlePrintTicket()
@@ -692,6 +697,7 @@ const createCurrentSale = () => {
 }
 
 const printTicket = ref(true)
+const isCreatingSale = ref(false)
 
 const getStatusSale = () => {
   let paidAmount = 0

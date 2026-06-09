@@ -47,6 +47,8 @@
       <div class="flex justify-between align-items">
         <base-button
           class="flex items-center gap-2"
+          :loading="isPrintingTestTicket"
+          loading-text="Imprimiendo..."
           @click="handlePrintTicket"
         >
           <IconPrinter size="18" />
@@ -56,6 +58,8 @@
           button-type="secondary"
           class="flex items-center gap-2"
           :disabled="isDefaultPrinterSelected"
+          :loading="isSavingDefaultPrinter"
+          loading-text="Guardando..."
           @click="handleSaveChanges"
         >
           <IconDeviceDesktopDown size="18" />
@@ -162,6 +166,8 @@
           <base-button
             type="submit"
             :disabled="areChangesInTicketInfo"
+            :loading="isSavingTicketInfo"
+            loading-text="Guardando..."
             class="flex items-center gap-2"
           >
             <IconDeviceDesktopDown size="18" />
@@ -204,6 +210,9 @@ const isDefaultPrinterSelected = computed(() => {
 })
 
 const loadingPrinters = ref(false)
+const isSavingDefaultPrinter = ref(false)
+const isPrintingTestTicket = ref(false)
+const isSavingTicketInfo = ref(false)
 const loadPrinters = async () => {
   loadingPrinters.value = true
   getPrinters((response: Response<Printer[]>) => {
@@ -224,7 +233,10 @@ const handleDefaultPrinterChange = (event: Event) => {
 }
 
 const handleSaveChanges = () => {
+  if (isSavingDefaultPrinter.value) return
+  isSavingDefaultPrinter.value = true
   setDefaultPrinter(selectedPrinter.value?.name || null, (response: Response<any>) => {
+    isSavingDefaultPrinter.value = false
     if (!response.success) {
       toast.error(response.message)
       return
@@ -235,7 +247,10 @@ const handleSaveChanges = () => {
 }
 
 const handlePrintTicket = () => {
+  if (isPrintingTestTicket.value) return
+  isPrintingTestTicket.value = true
   printTestTicket(selectedPrinter.value?.name || '', (response: Response<any>) => {
+    isPrintingTestTicket.value = false
     if (!response.success) {
       toast.error(response.message)
       return
@@ -271,10 +286,15 @@ const infoTicketRules = {
 const vInfoTicket$ = useVuelidate(infoTicketRules, formDataInfoTicket)
 
 const handleSubmitInfoTicket = async () => {
+  if (isSavingTicketInfo.value) return
   const isFormValid = await vInfoTicket$.value.$validate()
   if (!isFormValid) {
     return toast.warn('Formulario no válido, revise los errores')
   }
+  isSavingTicketInfo.value = true
+  setTimeout(() => {
+    isSavingTicketInfo.value = false
+  }, 300)
 }
 
 // Al montar la vista se iguala la información de la sucursal a los inputs

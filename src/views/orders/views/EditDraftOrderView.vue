@@ -17,17 +17,21 @@
       <div class="flex items-center gap-2">
         <button
           class="btn btn-ghost text-black-2"
+          :disabled="savingOrderStatus !== null"
           @click="handleEditOrder(PurchaseOrderStatus.DRAFT)"
         >
-          <icon-device-desktop-down size="18" />
-          Guardar como borrador
+          <span v-if="savingOrderStatus === PurchaseOrderStatus.DRAFT" class="loading loading-spinner loading-sm" />
+          <icon-device-desktop-down v-else size="18" />
+          {{ savingOrderStatus === PurchaseOrderStatus.DRAFT ? 'Guardando...' : 'Guardar como borrador' }}
         </button>
         <button
           class="btn bg-brand-orange text-white shadow-none hover:bg-brand-pink hover:border-brand-pink"
+          :disabled="savingOrderStatus !== null"
           @click="handleEditOrder(PurchaseOrderStatus.SENT)"
         >
-          <icon-arrow-right class="w-4 h-4" />
-          Crear pedido
+          <span v-if="savingOrderStatus === PurchaseOrderStatus.SENT" class="loading loading-spinner loading-sm" />
+          <icon-arrow-right v-else class="w-4 h-4" />
+          {{ savingOrderStatus === PurchaseOrderStatus.SENT ? 'Creando...' : 'Crear pedido' }}
         </button>
       </div>
     </div>
@@ -234,6 +238,7 @@ const { user } = useUser()
 const { providers } = useProvider()
 const { allProducts } = useProduct()
 const router = useRouter()
+const savingOrderStatus = ref<PurchaseOrderStatus | null>(null)
 // Providers
 const dialogProviderAlertRef = ref()
 const dialogAddItemToSupplyRef = ref()
@@ -334,6 +339,8 @@ const clearValues = () => {
 
 // HANDLE EDIT ORDER
 const handleEditOrder = (status: PurchaseOrderStatus) => {
+  if (savingOrderStatus.value) return
+  savingOrderStatus.value = status
   const payload: {
     purchaseOrderId: string
     items: Array<CreatePurchaseOrderItem>
@@ -353,6 +360,7 @@ const handleEditOrder = (status: PurchaseOrderStatus) => {
     payload,
     (response: Response<CreatePurchaseOrderItem>) => {
       if (!response.success) {
+        savingOrderStatus.value = null
         toast.error(response.message)
         return
       }
@@ -369,6 +377,7 @@ const handleUpdatePurchaseOrderStatus = (status: PurchaseOrderStatus) => {
     status,
   }
   updatePurchaseOrderStatus(payload, (response: Response<PurchaseOrder>) => {
+    savingOrderStatus.value = null
     if (!response.success) {
       toast.error(response.message)
       return

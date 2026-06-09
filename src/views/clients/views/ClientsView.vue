@@ -228,12 +228,14 @@
             >
               Cancelar
             </base-button>
-            <button
+            <base-button
               type="submit"
-              class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+              button-type="primary"
+              :loading="isSavingCustomer"
+              loading-text="Guardando..."
             >
               Guardar
-            </button>
+            </base-button>
           </div>
         </form>
       </div>
@@ -298,6 +300,7 @@ const deleteCustomerHandler = async (customerId: string) => {
 const showEditCustomerModal = ref(false)
 const dialogEditCustomerRef = ref()
 const selectedCustomer = ref<Customer | null>(null)
+const isSavingCustomer = ref(false)
 const customerToEdit = reactive({
   name: '',
   rfc: '',
@@ -349,6 +352,7 @@ const toggleStatus = () => {
 }
 
 const handleSubmit = async () => {
+  if (isSavingCustomer.value) return
   try {
     if (!selectedCustomer.value) {
       toast.warn('Seleccione un cliente para editar')
@@ -367,7 +371,9 @@ const handleSubmit = async () => {
       address: customerToEdit.address,
       status: customerToEdit.status === 'active' ? 'active' : 'inactive',
     }
+    isSavingCustomer.value = true
     updateCustomer(updatedCustomer, (response: Response<any>) => {
+      isSavingCustomer.value = false
       if (!response.success) {
         toast.error(response.message)
         return

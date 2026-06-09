@@ -3,6 +3,7 @@
     title="Compras y proveedores"
     :rows="reportData.tables.purchases"
     :columns="columns.purchases"
+    :export-pdf-loading="isExportingPdf('Compras y proveedores').value"
     @view-detail="selectedRow = $event"
     @export-csv="exportCsv('Compras y proveedores', reportData.tables.purchases, columns.purchases)"
     @export-pdf="exportPdf('Compras y proveedores', reportData.tables.purchases, columns.purchases)"
@@ -21,5 +22,5 @@ import { useReports } from '@/composables/useReports'
 const selectedRow = ref<Record<string, any> | null>(null)
 const { reportData } = useReports()
 const columns = useReportColumns()
-const { exportCsv, exportPdf } = useReportExport()
+const { exportCsv, exportPdf, isExportingPdf } = useReportExport()
 </script>

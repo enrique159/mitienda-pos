@@ -17,3 +17,7 @@ export const printCloseCashRegisterReportTicket = async (
   payload: any,
   callback: any
 ) => window.electron.printCloseCashRegisterReportTicket(payload, callback)
+export const printReportDocument = async (
+  payload: any,
+  callback: any
+) => window.electron.printReportDocument(payload, callback)

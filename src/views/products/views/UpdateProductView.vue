@@ -394,12 +394,14 @@
         >
           Cancelar
         </base-button>
-        <button
+        <base-button
           type="submit"
-          class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+          button-type="primary"
+          :loading="isUpdatingProduct"
+          loading-text="Guardando..."
         >
           Guardar
-        </button>
+        </base-button>
       </div>
     </form>
   </div>
@@ -613,6 +615,7 @@ const maxTwoDecimals = (value: number) => {
 }
 
 const v$ = useVuelidate(rules, formData)
+const isUpdatingProduct = ref(false)
 
 // Methods
 const toggleUnlimitedStock = () => {
@@ -634,6 +637,7 @@ const taxMaping = (tax: Tax): ProductTax => {
 
 
 const handleSubmit = async () => {
+  if (isUpdatingProduct.value) return
   try {
     const isFormCorrect = await v$.value.$validate()
     if (!isFormCorrect) {
@@ -653,7 +657,9 @@ const handleSubmit = async () => {
       id_company: branch.value.id_company,
     }
 
+    isUpdatingProduct.value = true
     updateProduct(payload, (response: Response<void>) => {
+      isUpdatingProduct.value = false
       if (!response.success) {
         toast.error(response.message)
         return
@@ -663,6 +669,7 @@ const handleSubmit = async () => {
       toast.success('Producto actualizado exitosamente')
     })
   } catch (error) {
+    isUpdatingProduct.value = false
     console.error('Error updating product:', error)
     toast.error('Error al actualizar el producto')
   }

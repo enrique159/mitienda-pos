@@ -68,12 +68,14 @@
           <base-button type="button" @click="closeCreateCategoryModal">
             Cancelar
           </base-button>
-          <button
+          <base-button
             type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+            button-type="primary"
+            :loading="isCreatingSeller"
+            loading-text="Guardando..."
           >
             Guardar
-          </button>
+          </base-button>
         </div>
       </form>
     </div>
@@ -114,6 +116,7 @@ const { branch } = useBranch()
 const createSellerDialogRef = ref()
 
 const showPin = ref(false)
+const isCreatingSeller = ref(false)
 const formData = reactive({
   name: '',
   pin: '',
@@ -172,6 +175,7 @@ const snack = reactive({
 })
 
 const handleSubmit = async () => {
+  if (isCreatingSeller.value) return
   const isFormCorrect = await v$.value.$validate()
   if (!isFormCorrect) {
     snack.type = 'warning'
@@ -187,7 +191,9 @@ const handleSubmit = async () => {
     permissions: 0,
   }
 
+  isCreatingSeller.value = true
   createSeller(payload, (response: Response<Seller>) => {
+    isCreatingSeller.value = false
     if (!response.success) {
       snack.type = 'error'
       snack.message = response.message

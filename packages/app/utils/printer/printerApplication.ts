@@ -4,6 +4,7 @@ import SaleTicketBuilder from './tickets/SaleTicketBuilder.js'
 import TestTicketBuilder from './tickets/TestTicketBuilder.js'
 import CloseCashRegisterReportTicketBuilder from './tickets/CloseCashRegisterReportTicketBuilder.js'
 import CloseCashRegisterTicketBuilder from './tickets/CloseCashRegisterTicketBuilder.js'
+import ReportsDocumentBuilder from './tickets/ReportsDocumentBuilder.js'
 
 ipcMain.on('get_printers', async (event) => {
   const list = await printer.getPrinters()
@@ -54,4 +55,10 @@ ipcMain.on(
     event.reply('print_close_cash_register_report_ticket', response)
   }
 )
+
+ipcMain.on('print_report_document', async (event, payload) => {
+  const builder = new ReportsDocumentBuilder(payload)
+  const response = await printer.printDocumentToPDF(builder)
+  event.reply('print_report_document', response)
+})
 

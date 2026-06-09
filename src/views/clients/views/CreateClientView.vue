@@ -179,12 +179,14 @@
         <base-button type="button" @click="$router.back()">
           Cancelar
         </base-button>
-        <button
+        <base-button
           type="submit"
-          class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+          button-type="primary"
+          :loading="isCreatingCustomer"
+          loading-text="Guardando..."
         >
           Guardar
-        </button>
+        </base-button>
       </div>
     </form>
   </div>
@@ -193,7 +195,7 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { minLength, required, helpers, email } from '@vuelidate/validators'
-import { reactive, computed } from 'vue'
+import { reactive, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { createCustomer } from '@/api/electron'
 import { CreateCustomer, Response } from '@/api/interfaces'
@@ -273,8 +275,10 @@ const rules = computed(() => {
 })
 
 const v$ = useVuelidate(rules, formData)
+const isCreatingCustomer = ref(false)
 
 const handleSubmit = async () => {
+  if (isCreatingCustomer.value) return
   try {
     const isFormCorrect = await v$.value.$validate()
     if (!isFormCorrect) {
@@ -294,7 +298,9 @@ const handleSubmit = async () => {
         ? String(formData.days_until_due)
         : undefined,
     }
+    isCreatingCustomer.value = true
     createCustomer(newCustomer, (response: Response<any>) => {
+      isCreatingCustomer.value = false
       if (!response.success) {
         toast.error(response.message)
       }

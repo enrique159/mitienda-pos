@@ -110,9 +110,11 @@
           </button>
           <button
             class="btn bg-brand-pink hover:bg-brand-orange text-white"
+            :disabled="isCancellingOrder"
             @click="handleSubmitCancelOrder"
           >
-            Sí, cancelar
+            <span v-if="isCancellingOrder" class="loading loading-spinner loading-sm" />
+            {{ isCancellingOrder ? 'Cancelando...' : 'Sí, cancelar' }}
           </button>
         </div>
       </div>
@@ -172,6 +174,7 @@ getAllPurchaseOrders()
 // CANCEL ORDER
 const dialogCancelOrderRef = ref()
 const selectedPurchaseOrderCancel = ref<PurchaseOrder | null>(null)
+const isCancellingOrder = ref(false)
 
 const openCancelOrderModal = (purchaseOrder: PurchaseOrder) => {
   selectedPurchaseOrderCancel.value = purchaseOrder
@@ -184,13 +187,16 @@ const closeCancelOrderModal = () => {
 }
 
 const handleSubmitCancelOrder = () => {
+  if (isCancellingOrder.value) return
   if (!selectedPurchaseOrderCancel.value) return
+  isCancellingOrder.value = true
   updatePurchaseOrderStatus(
     {
       id: selectedPurchaseOrderCancel.value.id,
       status: PurchaseOrderStatus.CANCELLED,
     },
     (response: Response<PurchaseOrder>) => {
+      isCancellingOrder.value = false
       if (!response.success) {
         toast.error(response.message)
         return

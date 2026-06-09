@@ -52,12 +52,14 @@
           <base-button type="button" @click="closeCreateCategoryModal">
             Cancelar
           </base-button>
-          <button
+          <base-button
             type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+            button-type="primary"
+            :loading="isCreatingCategory"
+            loading-text="Guardando..."
           >
             Guardar
-          </button>
+          </base-button>
         </div>
       </form>
     </div>
@@ -101,6 +103,7 @@ const { branch } = useBranch()
 
 // CREATE CATEGORY
 const dialogCreateCategoryRef = ref()
+const isCreatingCategory = ref(false)
 const formData = reactive({
   categoryName: '',
   description: '',
@@ -131,6 +134,7 @@ const clearFormData = () => {
 }
 
 const handleSubmitCreate = async () => {
+  if (isCreatingCategory.value) return
   const isFormValid = await vCreate$.value.$validate()
   if (!isFormValid) {
     toast.warn('Formulario no válido, revise los errores')
@@ -143,7 +147,9 @@ const handleSubmitCreate = async () => {
     description: formData.description,
     status: 'active',
   }
+  isCreatingCategory.value = true
   createCategory(newCategory, (response: Response<any>) => {
+    isCreatingCategory.value = false
     if (!response.success) {
       toast.error(response.message)
       return

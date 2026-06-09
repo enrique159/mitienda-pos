@@ -47,8 +47,10 @@
           <td>
             <div class="tooltip tooltip-left" data-tip="Imprimir reporte">
               <button class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center"
+                :disabled="printingAuditId === cashRegisterAudit.id"
                 @click="printCashRegisterReport(cashRegisterAudit)">
-                <IconPdf class="w-4 h-4" />
+                <span v-if="printingAuditId === cashRegisterAudit.id" class="loading loading-spinner loading-xs" />
+                <IconPdf v-else class="w-4 h-4" />
               </button>
             </div>
           </td>
@@ -82,6 +84,7 @@ const props = defineProps<{
 }>()
 
 const cashRegisterAudits = ref<CashRegisterAuditDetail[]>([])
+const printingAuditId = ref('')
 
 const filteredCashRegisterAudits = computed(() => {
   return cashRegisterAudits.value.filter(
@@ -120,6 +123,8 @@ const goToCashRegisterDetails = (id: string) => {
 }
 
 const printCashRegisterReport = (cashRegisterAudit: CashRegisterAuditDetail) => {
+  if (printingAuditId.value) return
+  printingAuditId.value = cashRegisterAudit.id
   const payload = {
     branch: {
       logo: branch.value.logo,
@@ -131,6 +136,7 @@ const printCashRegisterReport = (cashRegisterAudit: CashRegisterAuditDetail) => 
     },
   }
   printCloseCashRegisterReportTicket(payload, (response: Response<any>) => {
+    printingAuditId.value = ''
     if (!response.success) {
       toast.error(response.message)
       return

@@ -171,6 +171,26 @@ const getCashAudits = async (filters: ReportFilters) => {
   return query
 }
 
+const getCashRegistersByIds = async (cashRegisterIds: string[], filters: ReportFilters) => {
+  if (!cashRegisterIds.length) return []
+
+  const query = knex('cash_registers')
+    .leftJoin('sellers as opening_sellers', 'cash_registers.id_user_opening', 'opening_sellers.id')
+    .whereIn('cash_registers.id', cashRegisterIds)
+    .select('cash_registers.*', 'opening_sellers.name as seller_name')
+
+  if (filters.id_branch) query.where('cash_registers.id_branch', filters.id_branch)
+  if (filters.id_seller) {
+    query.andWhere((builder) => {
+      builder
+        .where('cash_registers.id_user_opening', filters.id_seller)
+        .orWhere('cash_registers.id_user_closing', filters.id_seller)
+    })
+  }
+
+  return query
+}
+
 const getPurchases = async (filters: ReportFilters) => {
   const query = knex('purchase_orders')
     .leftJoin('providers', 'purchase_orders.id_provider', 'providers.id')
@@ -262,8 +282,15 @@ const aggregateReport = async (filters: ReportFilters) => {
 
   const validSales = sales.filter((sale) => !cancelledStatuses.includes(sale.status))
   const validSaleIds = new Set(validSales.map((sale) => sale.id))
+  const validSalesById = new Map(validSales.map((sale) => [sale.id, sale]))
   const validDetails = details.filter((detail) => validSaleIds.has(detail.id_sale))
   const validPayments = payments.filter((payment) => validSaleIds.has(payment.id_sale))
+  const cashRegisterIds = Array.from(new Set([
+    ...validSales.map((sale) => sale.id_cash_register),
+    ...movements.map((movement) => movement.id_cash_register),
+    ...audits.map((audit) => audit.id_cash_register),
+  ].filter(Boolean)))
+  const cashRegisters = await getCashRegistersByIds(cashRegisterIds, filters)
 
   const summary = {
     ...emptyMoney,
@@ -277,7 +304,8 @@ const aggregateReport = async (filters: ReportFilters) => {
 
   summary.averageTicket = summary.salesCount ? roundMoney(summary.totalSales / summary.salesCount) : 0
   summary.cashInRegister = roundMoney(
-    validPayments.filter((payment) => payment.payment_method === 'cash').reduce((total, payment) => total + (payment.amount || 0) - (payment.change || 0), 0)
+    cashRegisters.reduce((total, cashRegister) => total + (cashRegister.opening_amount || 0), 0)
+    + validPayments.filter((payment) => payment.payment_method === 'cash').reduce((total, payment) => total + (payment.amount || 0), 0)
     + movements.filter((movement) => movement.type === 'income').reduce((total, movement) => total + (movement.amount || 0), 0)
     - movements.filter((movement) => movement.type === 'withdraw').reduce((total, movement) => total + (movement.amount || 0), 0),
   )
@@ -391,6 +419,24 @@ const aggregateReport = async (filters: ReportFilters) => {
       })),
       products: Array.from(productsMap.values()).sort((a, b) => b.total - a.total),
       cash: [
+        ...cashRegisters.map((cashRegister) => ({
+          ...cashRegister,
+          created_at: cashRegister.opening_date,
+          record_type: 'opening',
+          movement_type: 'income',
+          amount: cashRegister.opening_amount || 0,
+          reason: 'Apertura de caja',
+        })),
+        ...validPayments
+          .filter((payment) => payment.payment_method === 'cash')
+          .map((payment) => ({
+            ...payment,
+            record_type: 'payment',
+            movement_type: 'income',
+            seller_name: validSalesById.get(payment.id_sale)?.seller_name || 'Sin vendedor',
+            amount: payment.amount || 0,
+            reason: validSalesById.get(payment.id_sale)?.folio || 'Venta en efectivo',
+          })),
         ...audits.map((audit) => ({ ...audit, record_type: 'audit' })),
         ...movements.map((movement) => ({ ...movement, record_type: 'movement', movement_type: movement.type })),
       ],

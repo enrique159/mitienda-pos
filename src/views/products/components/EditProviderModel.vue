@@ -146,12 +146,14 @@
           <base-button type="button" @click="closeEditProviderModal">
             Cancelar
           </base-button>
-          <button
+          <base-button
             type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+            button-type="primary"
+            :loading="isSavingProvider"
+            loading-text="Guardando..."
           >
             Guardar
-          </button>
+          </base-button>
         </div>
       </form>
     </div>
@@ -171,6 +173,7 @@ import { toast } from '@/composables/useToast'
 
 const { branch } = useBranch()
 const { setProviders } = useProviderStore()
+const isSavingProvider = ref(false)
 
 // Props
 const props = defineProps({
@@ -258,6 +261,7 @@ const rules = {
 const vEdit$ = useVuelidate(rules, formData)
 
 const handleSumbitEdit = async () => {
+  if (isSavingProvider.value) return
   const isFormValid = await vEdit$.value.$validate()
   if (!isFormValid) return
 
@@ -278,7 +282,9 @@ const handleSumbitEdit = async () => {
   }
 
   console.log('editProvider', editProvider)
+  isSavingProvider.value = true
   updateProvider(editProvider, (response: Response<any>) => {
+    isSavingProvider.value = false
     if (!response.success) {
       toast.error(response.message)
       return

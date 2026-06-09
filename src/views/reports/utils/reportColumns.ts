@@ -29,6 +29,8 @@ const inventoryStatus = (value: string) => ({
 }[value] || value)
 
 const cashRecordType = (value: string) => ({
+  opening: 'Apertura',
+  payment: 'Venta efectivo',
   audit: 'Corte',
   movement: 'Movimiento',
 }[value] || value)

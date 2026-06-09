@@ -89,6 +89,8 @@
           <base-button
             class="flex items-center gap-x-2 text-brand-pink font-medium"
             type="button"
+            :loading="isDeletingSeller"
+            loading-text="Eliminando..."
             @click="deleteSeller"
           >
             <IconTrash size="18" />
@@ -98,12 +100,14 @@
             <base-button type="button" @click="closeEditSellerModal">
               Cancelar
             </base-button>
-            <button
+            <base-button
               type="submit"
-              class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+              button-type="primary"
+              :loading="isSavingSeller"
+              loading-text="Guardando..."
             >
               Guardar
-            </button>
+            </base-button>
           </div>
         </div>
       </form>
@@ -154,6 +158,8 @@ watch(show, (value) => {
 const editSellerDialogRef = ref()
 
 const showPin = ref(false)
+const isSavingSeller = ref(false)
+const isDeletingSeller = ref(false)
 const formData = reactive({
   id: '',
   name: '',
@@ -209,6 +215,7 @@ const snack = reactive({
 })
 
 const handleSubmit = async () => {
+  if (isSavingSeller.value) return
   const isFormCorrect = await v$.value.$validate()
   if (!isFormCorrect) {
     snack.type = 'warning'
@@ -222,7 +229,9 @@ const handleSubmit = async () => {
     pin: formData.pin,
     status: formData.status as SellerStatus,
   }
+  isSavingSeller.value = true
   updateSeller(payload, (response: Response<Seller>) => {
+    isSavingSeller.value = false
     if (!response.success) {
       snack.type = 'error'
       snack.message = response.message
@@ -236,10 +245,13 @@ const handleSubmit = async () => {
 }
 
 const deleteSeller = () => {
+  if (isDeletingSeller.value) return
   if (!confirm('¿Estás seguro de eliminar este vendedor?')) {
     return
   }
+  isDeletingSeller.value = true
   deleteSellerById(formData.id, (response: Response<Seller>) => {
+    isDeletingSeller.value = false
     if (!response.success) {
       snack.type = 'error'
       snack.message = response.message

@@ -1,13 +1,16 @@
 <template>
   <button
-    class="px-4 h-10 rounded-md active:scale-95 transition-all text-sm"
+    class="px-4 h-10 rounded-md active:scale-95 transition-all text-sm inline-flex items-center justify-center gap-2"
     :class="[
       buttonClass,
-      disabled && 'disabled:opacity-50 disabled:cursor-default disabled:active:scale-100',
+      (disabled || loading) && 'disabled:opacity-50 disabled:cursor-default disabled:active:scale-100',
     ]"
-    :disabled="disabled"
+    :disabled="disabled || loading"
+    :aria-busy="loading"
   >
-    <slot />
+    <span v-if="loading" class="loading loading-spinner loading-sm" />
+    <span v-if="loadingText">{{ loadingText }}</span>
+    <slot v-else />
   </button>
 </template>
 
@@ -17,6 +20,8 @@ import { computed } from 'vue'
 const props = defineProps<{
   buttonType?: 'primary' | 'secondary' | 'base'
   disabled?: boolean
+  loading?: boolean
+  loadingText?: string
 }>()
 
 const buttonClass = computed(() => {

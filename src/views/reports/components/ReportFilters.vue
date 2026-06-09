@@ -41,9 +41,14 @@
         </select>
       </label>
       <div class="flex items-center gap-2">
-        <button class="btn btn-sm flex-1 bg-brand-orange text-white border-brand-orange hover:bg-brand-pink hover:border-brand-pink" @click="$emit('apply')">
-          <IconFilter size="17" />
-          Filtrar
+        <button
+          class="btn btn-sm flex-1 bg-brand-orange text-white border-brand-orange hover:bg-brand-pink hover:border-brand-pink"
+          :disabled="loading"
+          @click="$emit('apply')"
+        >
+          <span v-if="loading" class="loading loading-spinner loading-sm" />
+          <IconFilter v-else size="17" />
+          {{ loading ? 'Filtrando...' : 'Filtrar' }}
         </button>
       </div>
       <label class="form-control col-span-2">
@@ -64,9 +69,14 @@
         <span class="label-text text-black-2">Buscar</span>
         <input v-model="model.search" type="text" placeholder="Folio, cliente o vendedor" class="input input-sm bg-white-1 border-white-3">
       </label>
-      <button class="btn btn-sm bg-white-1 border-white-3 text-black-1 hover:bg-white-2" @click="$emit('reset')">
-        <IconRefresh size="17" />
-        Limpiar
+      <button
+        class="btn btn-sm bg-white-1 border-white-3 text-black-1 hover:bg-white-2"
+        :disabled="loading"
+        @click="$emit('reset')"
+      >
+        <span v-if="loading" class="loading loading-spinner loading-sm" />
+        <IconRefresh v-else size="17" />
+        {{ loading ? 'Cargando...' : 'Limpiar' }}
       </button>
     </div>
   </section>
@@ -87,6 +97,7 @@ const props = defineProps<{
     categories: ReportCatalogOption[]
     products: ReportCatalogOption[]
   }
+  loading?: boolean
 }>()
 
 defineEmits<{

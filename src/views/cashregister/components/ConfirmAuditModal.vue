@@ -20,7 +20,12 @@
         <base-button type="button" @click="closeConfirmAuditModal">
           Cancelar
         </base-button>
-        <base-button type="button" @click="submitConfirmAudit">
+        <base-button
+          type="button"
+          :loading="loading"
+          loading-text="Procesando..."
+          @click="submitConfirmAudit"
+        >
           Confirmar
         </base-button>
       </div>
@@ -36,6 +41,10 @@ const dialogConfirmAuditRef = ref()
 // Props
 const props = defineProps({
   modelValue: {
+    type: Boolean,
+    default: false,
+  },
+  loading: {
     type: Boolean,
     default: false,
   },
@@ -65,7 +74,7 @@ const closeConfirmAuditModal = () => {
 }
 
 const submitConfirmAudit = () => {
+  if (props.loading) return
   emit('confirm:audit')
-  closeConfirmAuditModal()
 }
 </script>

@@ -20,6 +20,7 @@
         <ReportFilters
           v-model="filters"
           :catalogs="reportData.catalogs"
+          :loading="loading"
           @apply="loadReports"
           @reset="resetFilters"
         />

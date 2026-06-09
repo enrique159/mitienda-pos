@@ -4,6 +4,7 @@
       title="Inventario actual"
       :rows="reportData.tables.inventory"
       :columns="columns.inventory"
+      :export-pdf-loading="isExportingPdf('Inventario actual').value"
       @view-detail="selectedRow = $event"
       @export-csv="exportCsv('Inventario actual', reportData.tables.inventory, columns.inventory)"
       @export-pdf="exportPdf('Inventario actual', reportData.tables.inventory, columns.inventory)"
@@ -12,6 +13,7 @@
       title="Conteos de inventario"
       :rows="reportData.tables.inventoryAudits"
       :columns="columns.inventoryAudits"
+      :export-pdf-loading="isExportingPdf('Conteos de inventario').value"
       @view-detail="selectedRow = $event"
       @export-csv="exportCsv('Conteos de inventario', reportData.tables.inventoryAudits, columns.inventoryAudits)"
       @export-pdf="exportPdf('Conteos de inventario', reportData.tables.inventoryAudits, columns.inventoryAudits)"
@@ -31,6 +33,6 @@ import { useReports } from '@/composables/useReports'
 const selectedRow = ref<Record<string, any> | null>(null)
 const { reportData } = useReports()
 const columns = useReportColumns()
-const { exportCsv, exportPdf } = useReportExport()
+const { exportCsv, exportPdf, isExportingPdf } = useReportExport()
 const detailColumns = computed(() => selectedRow.value?.items_count === undefined ? columns.inventory : columns.inventoryAudits)
 </script>

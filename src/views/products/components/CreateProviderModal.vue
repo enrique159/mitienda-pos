@@ -146,12 +146,14 @@
           <base-button type="button" @click="closeCreateProviderModal">
             Cancelar
           </base-button>
-          <button
+          <base-button
             type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink"
+            button-type="primary"
+            :loading="isCreatingProvider"
+            loading-text="Guardando..."
           >
             Guardar
-          </button>
+          </base-button>
         </div>
       </form>
     </div>
@@ -171,6 +173,7 @@ import { toast } from '@/composables/useToast'
 
 const { branch } = useBranch()
 const { setProviders } = useProviderStore()
+const isCreatingProvider = ref(false)
 
 // Props
 const props = defineProps({
@@ -242,6 +245,7 @@ const rules = {
 const vCreate$ = useVuelidate(rules, formData)
 
 const handleSumbitCreate = async () => {
+  if (isCreatingProvider.value) return
   const isFormValid = await vCreate$.value.$validate()
   if (!isFormValid) return
 
@@ -256,7 +260,9 @@ const handleSumbitCreate = async () => {
     tax_id: formData.tax_id,
     notes: formData.notes,
   }
+  isCreatingProvider.value = true
   createProvider(newProvider, (response: Response<any>) => {
+    isCreatingProvider.value = false
     if (!response.success) {
       toast.error(response.message)
       return

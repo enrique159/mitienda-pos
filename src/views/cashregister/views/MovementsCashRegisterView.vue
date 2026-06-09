@@ -73,11 +73,12 @@
         </div>
 
         <button
-          :disabled="!movementTypeReason || !movementQuantity"
+          :disabled="!movementTypeReason || !movementQuantity || isCreatingMovement"
           class="btn btn-lg w-full bg-brand-blue hover:bg-brand-blue/80 text-white"
           @click="handleCreateCashMovement"
         >
-          Realizar movimiento
+          <span v-if="isCreatingMovement" class="loading loading-spinner loading-sm" />
+          {{ isCreatingMovement ? 'Guardando...' : 'Realizar movimiento' }}
         </button>
       </div>
     </section>
@@ -105,6 +106,7 @@ const movementType = ref<CashMovementType>(CashMovementType.INCOME)
 const movementQuantity = ref('')
 const movementComments = ref('')
 const movementTypeReason = ref('')
+const isCreatingMovement = ref(false)
 
 const currentReasons = computed(() => {
   return movementType.value === CashMovementType.INCOME
@@ -129,6 +131,8 @@ const { cashRegister } = useCashRegister()
 const { user } = useUser()
 
 const handleCreateCashMovement = () => {
+  if (isCreatingMovement.value) return
+  isCreatingMovement.value = true
   const data: CreateCashMovement = {
     id_cash_register: cashRegister.value?.id || '',
     id_seller: user.value?.id || '',
@@ -138,6 +142,7 @@ const handleCreateCashMovement = () => {
     description: movementComments.value,
   }
   createCashMovement(data, (response: Response<CashMovement>) => {
+    isCreatingMovement.value = false
     if (!response.success) {
       toast.error(response.message)
     } else {

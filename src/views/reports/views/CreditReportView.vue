@@ -3,6 +3,7 @@
     title="Creditos y cuentas pendientes"
     :rows="reportData.tables.credits"
     :columns="columns.credits"
+    :export-pdf-loading="isExportingPdf('Creditos y cuentas pendientes').value"
     @view-detail="selectedRow = $event"
     @export-csv="exportCsv('Creditos y cuentas pendientes', reportData.tables.credits, columns.credits)"
     @export-pdf="exportPdf('Creditos y cuentas pendientes', reportData.tables.credits, columns.credits)"
@@ -21,5 +22,5 @@ import { useReports } from '@/composables/useReports'
 const selectedRow = ref<Record<string, any> | null>(null)
 const { reportData } = useReports()
 const columns = useReportColumns()
-const { exportCsv, exportPdf } = useReportExport()
+const { exportCsv, exportPdf, isExportingPdf } = useReportExport()
 </script>

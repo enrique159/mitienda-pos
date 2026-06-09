@@ -10,9 +10,14 @@
         </p>
       </div>
       <div class="flex items-center gap-2">
-        <button class="btn btn-sm bg-white-1 border-white-3 text-black-1 hover:bg-white-2" @click="$emit('export-pdf')">
-          <IconFileTypePdf size="17" />
-          PDF
+        <button
+          class="btn btn-sm bg-white-1 border-white-3 text-black-1 hover:bg-white-2 min-w-[86px]"
+          :disabled="exportPdfLoading"
+          @click="$emit('export-pdf')"
+        >
+          <span v-if="exportPdfLoading" class="loading loading-spinner loading-sm" />
+          <IconFileTypePdf v-else size="17" />
+          {{ exportPdfLoading ? 'Exportando...' : 'PDF' }}
         </button>
         <button class="btn btn-sm bg-brand-orange text-white border-brand-orange hover:bg-brand-pink hover:border-brand-pink" @click="$emit('export-csv')">
           <IconFileSpreadsheet size="17" />
@@ -71,8 +76,10 @@ withDefaults(defineProps<{
   rows: any[]
   columns: ReportTableColumn[]
   showDetail?: boolean
+  exportPdfLoading?: boolean
 }>(), {
   showDetail: true,
+  exportPdfLoading: false,
 })
 
 defineEmits<{
