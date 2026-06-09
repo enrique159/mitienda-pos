@@ -255,6 +255,8 @@ import {
   PurchaseOrderStatus,
 } from '@/api/interfaces/purchase_orders'
 import {
+  getAllProducts,
+  getProducts,
   updatePurchaseOrder,
   updatePurchaseOrderItems,
   updatePurchaseOrderStatus,
@@ -272,7 +274,7 @@ const isAdditionalInfoOpen = ref(false)
 
 const { formatDatetime } = useDate()
 const { purchaseOrders } = usePurchaseOrder()
-const { products } = useProduct()
+const { products, setAllProducts, setProducts } = useProduct()
 
 let originalPurchaseOrderProducts: Array<
   PurchaseOrderItem & { product: Product | null }
@@ -412,8 +414,23 @@ const handleSaveChanges = () => {
       originalPurchaseOrderProducts = JSON.parse(
         JSON.stringify(purchaseOrderProducts.value)
       )
+      reloadProducts()
       toast.success('Pedido actualizado correctamente')
     }
   )
+}
+
+const reloadProducts = () => {
+  getAllProducts((response: Response<Product[]>) => {
+    if (response.success) {
+      setAllProducts(response.response)
+    }
+  })
+
+  getProducts((response: Response<Product[]>) => {
+    if (response.success) {
+      setProducts(response.response)
+    }
+  })
 }
 </script>

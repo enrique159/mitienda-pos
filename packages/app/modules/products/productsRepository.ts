@@ -191,7 +191,11 @@ export async function updateProduct(product) {
 
 export async function updateStockProduct(productId, stock, trx) {
   const queryBuilder = trx ? knex('products').transacting(trx) : knex('products')
-  return await queryBuilder.where('id', productId).update({ stock })
+  return await queryBuilder.where('id', productId).update({
+    stock,
+    updated_at: knex.fn.now(),
+    synced_at: null,
+  })
     .then((product) => {
       logger.info({ type: 'UPDATE STOCK PRODUCT', message: 'Stock actualizado exitosamente', data: product })
       return response(true, 'Stock actualizado exitosamente', product)
@@ -201,6 +205,47 @@ export async function updateStockProduct(productId, stock, trx) {
       logger.error({ type: 'UPDATE STOCK PRODUCT ERROR', message: `${err}`, data: err })
       return response(false, 'Error al actualizar el stock', err)
     })
+}
+
+export async function adjustStockProduct(productId, quantityDelta, trx) {
+  try {
+    const delta = Number(quantityDelta)
+    if (!Number.isFinite(delta)) {
+      return response(false, 'Cantidad de stock inválida', null)
+    }
+
+    const queryBuilder = trx ? knex('products').transacting(trx) : knex('products')
+    const product = await queryBuilder.where('id', productId).first()
+
+    if (!product) {
+      logger.error({ type: 'ADJUST STOCK PRODUCT', message: 'Producto no encontrado', data: { productId } })
+      return response(false, 'Producto no encontrado', null)
+    }
+
+    const normalizedProduct = normalizeProduct(product)
+    if (normalizedProduct.unlimited_stock) {
+      return response(true, 'Producto con stock ilimitado', normalizedProduct)
+    }
+
+    const currentStock = Number(normalizedProduct.stock ?? 0)
+    const newStock = Math.max(0, currentStock + delta)
+    const updateResponse = await updateStockProduct(productId, newStock, trx)
+
+    if (!updateResponse.success) {
+      return updateResponse
+    }
+
+    return response(true, 'Stock ajustado exitosamente', {
+      id: productId,
+      previous_stock: currentStock,
+      stock: newStock,
+      delta,
+    })
+  } catch (err) {
+    console.log(err)
+    logger.error({ type: 'ADJUST STOCK PRODUCT ERROR', message: `${err}`, data: err })
+    return response(false, 'Error al ajustar el stock', err)
+  }
 }
 
 export async function deleteProduct(productId) {
