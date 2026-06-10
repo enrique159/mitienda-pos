@@ -19,6 +19,8 @@ export const getSellers = async (callback: any) =>
   window.electron.getSellers(callback)
 export const getAllSellers = async (callback: any) =>
   window.electron.getAllSellers(callback)
+export const getSellerById = async (id: string, callback: any) =>
+  window.electron.getSellerById(id, callback)
 export const getPosSellers = async (callback: any) =>
   window.electron.getPosSellers(callback)
 export const startSession = async (params: StartSessionParams, callback: any) =>

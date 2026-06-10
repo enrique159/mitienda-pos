@@ -22,7 +22,7 @@
           </label>
           <button
             class="btn btn-sm bg-brand-orange text-white shadow-none hover:bg-brand-pink hover:border-brand-pink"
-            @click="openCreateSellerModal"
+            @click="openCreateSellerView()"
           >
             <icon-plus class="w-4 h-4" />
             Nuevo vendedor
@@ -33,7 +33,7 @@
       <SellersTable
         ref="sellersTableRef"
         :search="search"
-        @edit:seller="openEditSellerModal"
+        @edit:seller="openEditSellerView"
         @edit:seller:permissions="openPermissionsModal"
       />
     </section>
@@ -46,18 +46,6 @@
       @update:table="() => sellersTableRef.fetchSellers()"
     />
 
-    <!-- CREATE SELLER MODAL -->
-    <CreateSellerModal
-      v-model="isOpenCreateSellerModal"
-      @update:table="() => sellersTableRef.fetchSellers()"
-    />
-
-    <!-- EDIT SELLER MODAL -->
-    <EditSellerModal
-      v-model="isOpenEditSellerModal"
-      :seller="currentUser"
-      @update:table="() => sellersTableRef.fetchSellers()"
-    />
   </div>
 </template>
 
@@ -65,27 +53,26 @@
 import { ref } from 'vue'
 import { IconSearch, IconPlus } from '@tabler/icons-vue'
 import SellersTable from '../components/SellersTable.vue'
-import CreateSellerModal from '../components/CreateSellerModal.vue'
 import PermissionsModal from '../components/PermissionsModal.vue'
-import EditSellerModal from '../components/EditSellerModal.vue'
 import { Seller } from '@/api/interfaces'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const search = ref('')
 const currentUser = ref<Seller | null>(null)
 
-const isOpenCreateSellerModal = ref(false)
-const isOpenEditSellerModal = ref(false)
 const isOpenPermissionsModal = ref(false)
 
 const sellersTableRef = ref<any>(null)
 
-const openEditSellerModal = (user: Seller) => {
+const openEditSellerView = (user: Seller) => {
   currentUser.value = user
-  isOpenEditSellerModal.value = true
+  router.push(`/main/settings/sellers/update/${user.id}`)
 }
 
-const openCreateSellerModal = () => {
-  isOpenCreateSellerModal.value = true
+const openCreateSellerView = () => {
+  router.push('/main/settings/sellers/create')
 }
 
 const openPermissionsModal = (user: Seller) => {

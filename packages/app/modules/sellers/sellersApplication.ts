@@ -41,6 +41,11 @@ ipcMain.on('get_all_sellers', async (event) => {
   event.reply('get_all_sellers', response)
 })
 
+ipcMain.on('get_seller_by_id', async (event, sellerId) => {
+  const response = await sellerRepository.getSellerById(sellerId)
+  event.reply('get_seller_by_id', response)
+})
+
 ipcMain.on('get_pos_sellers', async (event) => {
   const response = await sellerRepository.getPosSellers()
   event.reply('get_pos_sellers', response)

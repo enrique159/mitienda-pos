@@ -187,7 +187,7 @@ export async function startSession(data) {
     return response(false, 'PIN incorrecto', data)
   }
   logger.info({ type: 'START SESSION', seller: { name: seller.name } })
-  return response(true, 'Vendedor encontrado', mapDataToSeller(seller))
+  return response(true, 'Vendedor encontrado', seller)
 }
 
 /**

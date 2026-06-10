@@ -53,3 +53,8 @@ export function getAllSellers(callback) {
   ipcRenderer.send('get_all_sellers')
 }
 
+export function getSellerById(sellerId, callback) {
+  ipcRenderer.removeAllListeners('get_seller_by_id')
+  ipcRenderer.on('get_seller_by_id', (_, response) => callback(response))
+  ipcRenderer.send('get_seller_by_id', sellerId)
+}
