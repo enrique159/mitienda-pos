@@ -19,6 +19,7 @@ import * as cashMovementsListeners from './app/modules/cash_movements/cashMoveme
 import * as purchaseOrdersListeners from './app/modules/purchase_orders/purchaseOrdersListeners.js'
 import * as aiModelsListeners from './app/modules/ai_models/aiModelsListeners.js'
 import * as reportsListeners from './app/modules/reports/reportsListeners.js'
+import * as inventoriesListeners from './app/modules/inventories/inventoriesListeners.js'
 import * as printerListeners from './app/utils/printer/printerListeners.js'
 
 const api = {
@@ -40,6 +41,7 @@ const api = {
   ...purchaseOrdersListeners,
   ...aiModelsListeners,
   ...reportsListeners,
+  ...inventoriesListeners,
   ...printerListeners,
   closeApp: () => ipcRenderer.send('close_app'),
   restartApp: () => ipcRenderer.send('restart_app'),

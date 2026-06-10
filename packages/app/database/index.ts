@@ -30,13 +30,13 @@ import * as sales from './schemas/sales.js'
 import * as saleDetails from './schemas/sale_details.js'
 import * as salePayments from './schemas/sale_payments.js'
 import * as aiModels from './schemas/ai_models.js'
-import * as inventories from './schemas/iventories.js'
+import * as inventories from './schemas/inventories.js'
 import * as inventoryItems from './schemas/inventory_items.js'
 
 const dev = env.NODE_ENV === 'development'
 const seed = env.SEED
 
-const initDB = async() => {
+const initDB = async () => {
   const destinationPath = path.join(os.homedir(), '.db')
   const dbPath = path.join(destinationPath, 'mitienda.sqlite')
 
@@ -79,7 +79,6 @@ const initDB = async() => {
       console.error('Error creating tables:', error)
       return
     }
-
 
     console.log('Database created and initialized with tables.')
 
