@@ -9,7 +9,7 @@
     :aria-busy="loading"
   >
     <span v-if="loading" class="loading loading-spinner loading-sm" />
-    <span v-if="loadingText">{{ loadingText }}</span>
+    <span v-if="loading && loadingText">{{ loadingText }}</span>
     <slot v-else />
   </button>
 </template>
