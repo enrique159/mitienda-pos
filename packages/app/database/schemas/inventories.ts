@@ -8,7 +8,7 @@ import { logger } from '../../helpers/index.js'
 export async function createTable(knex: Knex) {
   await knex.schema.createTable('iventories', (table) => {
     table.uuid('id').defaultTo(knex.fn.uuid()).primary() // Llave primaria
-    table.uuid('id_company').notNullable().references('companies.id') // A que compañia pertenece
+    table.uuid('id_company').notNullable().references('company.id') // A que compañia pertenece
     table.uuid('id_branch').notNullable().references('branches.id') // A que sucursal pertenece
     table.uuid('id_supervisor').nullable().references('sellers.id') // A que supervisor pertenece
     table.date('date').nullable() // Fecha del inventario
@@ -28,4 +28,3 @@ export async function createTable(knex: Knex) {
     console.error(err)
   })
 }
-

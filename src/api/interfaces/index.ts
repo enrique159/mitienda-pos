@@ -17,6 +17,7 @@ export * from './users'
 export * from './branches'
 export * from './taxes'
 export * from './reports'
+export * from './inventories'
 
 // Response interface
 export interface Response<T> {
