@@ -15,13 +15,10 @@
 
     <div class="overflow-auto h-table">
       <table class="table table-sm bg-white rounded-none">
-        <!-- head -->
         <thead>
           <tr>
             <th class="w-12" />
-            <th>
-              Nombre
-            </th>
+            <th>Nombre</th>
             <th>Teléfono</th>
             <th>Estado</th>
             <th>Crédito</th>
@@ -51,10 +48,15 @@
               </div>
             </td>
             <td>
-              {{ formatCurrency(customer.credit_limit) }}
+              <span v-if="customer.has_credit">
+                {{ formatCurrency(customer.credit_limit) }}
+              </span>
+              <span v-else class="text-black-3">
+                Sin crédito
+              </span>
             </td>
             <td>
-              <div class="tooltip tooltip-bottom" :data-tip="formatCurrency(customer.used_credit)">
+              <div v-if="customer.has_credit" class="tooltip tooltip-bottom" :data-tip="formatCurrency(customer.used_credit)">
                 <progress
                   class="progress w-24"
                   :class="getProgressColorByCreditUsed(customer.used_credit, customer.credit_limit)"
@@ -62,16 +64,18 @@
                   :max="customer.credit_limit"
                 />
               </div>
+              <span v-else class="text-black-3">-</span>
             </td>
             <td
               :class="[
-                isPaymentDueDateToday(getNextPaymentDueDateCustomer(customer.payment_due_date, 'MM/DD/YYYY')) ? 'text-red-500' : '',
-                isPaymentDueDateInNext7Days(getNextPaymentDueDateCustomer(customer.payment_due_date, 'MM/DD/YYYY')) ? 'text-yellow-500' : '',
+                customer.has_credit && isPaymentDueDateToday(getNextPaymentDueDateCustomer(customer.payment_due_date, 'MM/DD/YYYY')) ? 'text-red-500' : '',
+                customer.has_credit && isPaymentDueDateInNext7Days(getNextPaymentDueDateCustomer(customer.payment_due_date, 'MM/DD/YYYY')) ? 'text-yellow-500' : '',
               ]"
             >
-              <div class="tooltip tooltip-bottom" :data-tip="getRelativeTime(getNextPaymentDueDateCustomer(customer.payment_due_date, 'MM/DD/YYYY'))">
+              <div v-if="customer.has_credit" class="tooltip tooltip-bottom" :data-tip="getRelativeTime(getNextPaymentDueDateCustomer(customer.payment_due_date, 'MM/DD/YYYY'))">
                 <span>{{ getNextPaymentDueDateCustomer(customer.payment_due_date) }}</span>
               </div>
+              <span v-else class="text-black-3">-</span>
             </td>
             <td>{{ formatDatetimeShort(customer.created_at) }}</td>
             <td>
@@ -81,21 +85,27 @@
                   role="button"
                   class="btn w-8 h-8 btn-xs rounded-full aspect-square grid place-items-center cursor-pointer"
                 >
-                  <icon-dots-vertical class="w-4 h-4" />
+                  <IconDotsVertical class="w-4 h-4" />
                 </div>
                 <ul
                   tabindex="0"
                   class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow"
                 >
-                  <li @click.stop="openEditCustomerModal(customer)">
+                  <li @click.stop="openUpdateCustomerView(customer)">
                     <a>
-                      <icon-edit class="w-4 h-4" />
+                      <IconEdit class="w-4 h-4" />
                       Editar cliente
+                    </a>
+                  </li>
+                  <li @click.stop="openCustomerCreditView(customer)">
+                    <a>
+                      <IconCreditCard class="w-4 h-4" />
+                      {{ customer.has_credit ? 'Editar crédito' : 'Asignar crédito' }}
                     </a>
                   </li>
                   <li @click.stop="deleteCustomerHandler(customer.id)">
                     <a class="text-brand-pink">
-                      <icon-trash class="w-4 h-4" />
+                      <IconTrash class="w-4 h-4" />
                       Eliminar cliente
                     </a>
                   </li>
@@ -107,165 +117,30 @@
       </table>
     </div>
   </div>
-
-  <dialog id="dialogEditCustomer" ref="dialogEditCustomerRef" class="modal" @keydown.escape="closeEditCustomerModal">
-    <div class="modal-box min-w-[780px]">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">
-          Editar cliente
-        </h3>
-        <div class="modal-action mt-0">
-          <form method="dialog" @submit="closeEditCustomerModal">
-            <button class="close-btn">
-              Cerrar
-              <CustomKbd>ESC</CustomKbd>
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <div class="flex flex-col items-center gap-4 py-8">
-        <form @submit.prevent="handleSubmit" class="w-full space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="name" class="block mb-2 pl-1 text-sm font-medium text-black-2 required">Nombre completo</label>
-              <input
-                id="name"
-                v-model="customerToEdit.name"
-                type="text"
-                placeholder="Ej. Juan Pérez"
-                class="w-full p-2 border rounded-md"
-              >
-              <div v-for="(error, index) in v$.name.$errors" :key="`error-name-${index}`">
-                <span class="text-brand-pink text-sm">{{ error.$message }}</span>
-              </div>
-            </div>
-
-            <div>
-              <label for="rfc" class="block mb-2 pl-1 text-sm font-medium text-black-2">RFC</label>
-              <input
-                id="rfc"
-                v-model="customerToEdit.rfc"
-                maxlength="13"
-                type="text"
-                placeholder="Ej. XXXX1122334X5"
-                class="w-full p-2 border rounded-md"
-              >
-              <div v-for="(error, index) in v$.rfc.$errors" :key="`error-rfc-${index}`">
-                <span class="text-brand-pink text-sm">{{ error.$message }}</span>
-              </div>
-            </div>
-
-            <div>
-              <label for="email" class="block mb-2 pl-1 text-sm font-medium text-black-2">Email</label>
-              <input
-                id="email"
-                v-model="customerToEdit.email"
-                type="text"
-                placeholder="Ej. juan.perez@email.com"
-                class="w-full p-2 border rounded-md"
-              >
-              <div v-for="(error, index) in v$.email.$errors" :key="`error-email-${index}`">
-                <span class="text-brand-pink text-sm">{{ error.$message }}</span>
-              </div>
-            </div>
-
-            <div>
-              <label for="phone" class="block mb-2 pl-1 text-sm font-medium text-black-2">Teléfono</label>
-              <input
-                id="phone"
-                v-model="customerToEdit.phone"
-                type="tel"
-                maxlength="10"
-                placeholder="Ej. 555555555"
-                @keypress="validateOnlyNumbers"
-                class="w-full p-2 border rounded-md"
-              >
-              <div v-for="(error, index) in v$.phone.$errors" :key="`error-phone-${index}`">
-                <span class="text-brand-pink text-sm">{{ error.$message }}</span>
-              </div>
-            </div>
-
-            <div class="col-span-2">
-              <label for="address" class="block mb-2 pl-1 text-sm font-medium text-black-2">Dirección</label>
-              <textarea
-                id="address"
-                v-model="customerToEdit.address"
-                rows="3"
-                class="w-full p-2 border rounded-md"
-                placeholder="Ej. Calle 123, Colonia 12345, Ciudad, Estado"
-              />
-              <div v-for="(error, index) in v$.address.$errors" :key="`error-address-${index}`">
-                <span class="text-brand-pink text-sm">{{ error.$message }}</span>
-              </div>
-            </div>
-
-            <div class="form-control col-span-2">
-              <label class="label cursor-pointer w-fit">
-                <input
-                  type="checkbox"
-                  class="toggle checked:text-success"
-                  :checked="customerToEdit.status === 'active'"
-                  @change="toggleStatus"
-                >
-                <div class="flex flex-col items-start ml-2">
-                  <span class="font-semibold text-black-1 mr-2">Activo</span>
-                  <span class="text-sm text-black-2">
-                    El producto se vende en la tienda
-                  </span>
-                  <span v-if="customerToEdit.status !== 'active'" class="text-black-3 text-sm">
-                    *Si el cliente está inactivo, no se le podrá asignar ventas a crédito.
-                  </span>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <div class="flex justify-end space-x-4">
-            <base-button
-              type="button"
-              @click="closeEditCustomerModal"
-            >
-              Cancelar
-            </base-button>
-            <base-button
-              type="submit"
-              button-type="primary"
-              :loading="isSavingCustomer"
-              loading-text="Guardando..."
-            >
-              Guardar
-            </base-button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </dialog>
 </template>
 
 <script setup lang="ts">
-import { IconDotsVertical, IconEdit, IconTrash, IconSearch } from '@tabler/icons-vue'
-import { useVuelidate } from '@vuelidate/core'
-import { minLength, required, helpers, email } from '@vuelidate/validators'
-import { useDate } from '@/composables/useDate'
-import { getCustomers, deleteCustomer, updateCustomer } from '@/api/electron'
-import { formatPhone } from '@/utils/Phone'
-import { Customer, Response } from '@/api/interfaces'
-import { validateOnlyNumbers } from '@/utils/InputValidators'
-import { useCurrency } from '@/composables/useCurrency'
-import { useCustomer } from '@/composables/useCustomer'
-import { toast } from '@/composables/useToast'
-import { reactive, ref } from 'vue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { IconCreditCard, IconDotsVertical, IconEdit, IconSearch, IconTrash } from '@tabler/icons-vue'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import { getCustomers, deleteCustomer } from '@/api/electron'
+import { Customer, Response } from '@/api/interfaces'
+import { useCustomer } from '@/composables/useCustomer'
+import { useCurrency } from '@/composables/useCurrency'
+import { useDate } from '@/composables/useDate'
+import { toast } from '@/composables/useToast'
+import { formatPhone } from '@/utils/Phone'
 
 dayjs.extend(isSameOrAfter)
 
+const router = useRouter()
 const { formatDatetimeShort, getNextPaymentDueDateCustomer, getRelativeTime } = useDate()
 const { formatCurrency } = useCurrency()
-
 const { customers, setCustomers } = useCustomer()
+
+const search = ref('')
 
 const getAllCustomers = async () => {
   const response = await getCustomers()
@@ -276,9 +151,6 @@ const getAllCustomers = async () => {
 }
 
 getAllCustomers()
-
-// Search
-const search = ref('')
 
 const filteredCustomers = computed(() => {
   return customers.value.filter((customer) => {
@@ -296,98 +168,16 @@ const deleteCustomerHandler = async (customerId: string) => {
   })
 }
 
-// Edit Customer
-const showEditCustomerModal = ref(false)
-const dialogEditCustomerRef = ref()
-const selectedCustomer = ref<Customer | null>(null)
-const isSavingCustomer = ref(false)
-const customerToEdit = reactive({
-  name: '',
-  rfc: '',
-  email: '',
-  phone: '',
-  address: '',
-  status: '',
-})
-
-const rules = computed(() => {
-  return {
-    name: {
-      required: helpers.withMessage('El campo es requerido', required),
-      minLength: helpers.withMessage(`Este campo requiere al menos 3 caracteres`, minLength(3)),
-    },
-    rfc: { minLength: helpers.withMessage(`Este campo requiere al menos 12 caracteres`, minLength(12)) },
-    email: { email: helpers.withMessage('El correo electrónico no es válido', email) },
-    phone: { minLength: helpers.withMessage(`Este campo requiere al menos 10 caracteres`, minLength(10)) },
-    address: { minLength: helpers.withMessage(`Este campo requiere al menos 10 caracteres`, minLength(10)) },
-  }
-})
-
-const v$ = useVuelidate(rules, customerToEdit)
-
-const openEditCustomerModal = (customer: Customer) => {
-  showEditCustomerModal.value = true
-  dialogEditCustomerRef.value.showModal()
-  setCustomerValues(customer)
+const openUpdateCustomerView = (customer: Customer) => {
+  router.push({ name: 'UpdateClientView', params: { id: customer.id } })
 }
 
-const closeEditCustomerModal = () => {
-  showEditCustomerModal.value = false
-  dialogEditCustomerRef.value.close()
-  selectedCustomer.value = null
-}
-
-const setCustomerValues = (customer: Customer) => {
-  selectedCustomer.value = customer
-  customerToEdit.name = customer.name
-  customerToEdit.rfc = customer?.rfc ?? ''
-  customerToEdit.email = customer.email ?? ''
-  customerToEdit.phone = customer.phone ?? ''
-  customerToEdit.address = customer.address ?? ''
-  customerToEdit.status = customer.status
-}
-
-const toggleStatus = () => {
-  customerToEdit.status = customerToEdit.status === 'active' ? 'inactive' : 'active'
-}
-
-const handleSubmit = async () => {
-  if (isSavingCustomer.value) return
-  try {
-    if (!selectedCustomer.value) {
-      toast.warn('Seleccione un cliente para editar')
-      return
-    }
-    const isFormCorrect = await v$.value.$validate()
-    if (!isFormCorrect) {
-      toast.warn('Formulario no válido, revise los errores')
-      return
-    }
-    const updatedCustomer: Customer = {
-      ...selectedCustomer.value,
-      name: customerToEdit.name,
-      email: customerToEdit.email,
-      phone: customerToEdit.phone,
-      address: customerToEdit.address,
-      status: customerToEdit.status === 'active' ? 'active' : 'inactive',
-    }
-    isSavingCustomer.value = true
-    updateCustomer(updatedCustomer, (response: Response<any>) => {
-      isSavingCustomer.value = false
-      if (!response.success) {
-        toast.error(response.message)
-        return
-      }
-      closeEditCustomerModal()
-      toast.success('Cliente actualizado exitosamente')
-      getAllCustomers()
-    })
-  } catch (error) {
-    console.error('Error updating customer:', error)
-  }
+const openCustomerCreditView = (customer: Customer) => {
+  router.push({ name: 'CustomerCreditView', params: { id: customer.id } })
 }
 
 const getProgressColorByCreditUsed = (creditUsed: number, creditLimit: number) => {
+  if (!creditLimit) return 'progress'
   const percentage = (creditUsed / creditLimit) * 100
   if (percentage < 50) {
     return 'progress-success'
@@ -397,7 +187,6 @@ const getProgressColorByCreditUsed = (creditUsed: number, creditLimit: number) =
     return 'progress-error'
   }
 }
-
 
 const isPaymentDueDateToday = (paymentDueDate: string | null) => {
   if (!paymentDueDate) return false

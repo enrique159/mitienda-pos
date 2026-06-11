@@ -27,3 +27,20 @@ export interface CreateCustomer {
   credit_limit?: number
   payment_due_date?: string | Date
 }
+
+export interface UpdateCustomer {
+  id: string
+  name?: string
+  rfc?: string
+  email?: string
+  phone?: string
+  address?: string
+  status?: Customer['status']
+}
+
+export interface UpdateCustomerCredit {
+  id: string
+  has_credit: boolean
+  credit_limit: number
+  payment_due_date: string | null
+}
