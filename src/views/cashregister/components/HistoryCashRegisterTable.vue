@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import {
   getCashRegisterAudits,
   printCloseCashRegisterReportTicket,
@@ -69,6 +69,7 @@ import {
 import { useDate } from '@/composables/useDate'
 import { toast } from '@/composables/useToast'
 import { Response, CashRegisterAuditDetail } from '@/api/interfaces'
+import type { CashRegisterAuditFilters } from '@/api/electron/cash_register'
 import { useCurrency } from '@/composables/useCurrency'
 import { IconEye, IconPdf } from '@tabler/icons-vue'
 import { useRouter } from 'vue-router'
@@ -80,7 +81,8 @@ const { formatCurrency } = useCurrency()
 const { branch } = useBranch()
 
 const props = defineProps<{
-  search: String
+  search: string
+  filters: CashRegisterAuditFilters
 }>()
 
 const cashRegisterAudits = ref<CashRegisterAuditDetail[]>([])
@@ -89,20 +91,22 @@ const printingAuditId = ref('')
 const filteredCashRegisterAudits = computed(() => {
   return cashRegisterAudits.value.filter(
     (cashRegisterAudit: CashRegisterAuditDetail) => {
-      return (
+      const matchesSearch =
         cashRegisterAudit.opening_user_name
           .toLowerCase()
           .includes(props.search.toLowerCase()) ||
         cashRegisterAudit.closing_user_name
           .toLowerCase()
           .includes(props.search.toLowerCase())
-      )
+
+      if (!matchesSearch) return false
+      return true
     }
   )
 })
 
 const getAllCashRegisterAudits = () => {
-  getCashRegisterAudits()
+  getCashRegisterAudits(props.filters)
     .then((response: Response<CashRegisterAuditDetail[]>) => {
       if (!response.success) {
         toast.error(response.message)
@@ -117,6 +121,12 @@ const getAllCashRegisterAudits = () => {
 }
 
 getAllCashRegisterAudits()
+
+watch(
+  () => props.filters,
+  () => getAllCashRegisterAudits(),
+  { deep: true }
+)
 
 const goToCashRegisterDetails = (id: string) => {
   router.push({ name: 'CashRegisterDetails', params: { id } })

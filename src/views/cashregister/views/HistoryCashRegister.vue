@@ -12,7 +12,7 @@
             class="flex h-8 items-center gap-2"
           >
             <IconCalendar class="w-4 h-4" />
-            Filtrar por fecha
+            {{ dateFilterLabel }}
           </base-button>
           <div
             tabindex="0"
@@ -27,6 +27,14 @@
               :timezone="timezone"
               locale="es-MX"
             />
+            <base-button
+              v-if="filterDate"
+              type="button"
+              class="mt-2 w-full"
+              @click="clearDateFilter"
+            >
+              Limpiar filtro
+            </base-button>
           </div>
         </div>
         <label
@@ -43,7 +51,7 @@
       </div>
     </header>
 
-    <HistoryCashRegisterTable :search="search" />
+    <HistoryCashRegisterTable :search="search" :filters="cashRegisterAuditFilters" />
   </div>
 </template>
 
@@ -51,13 +59,34 @@
 import { IconCalendar, IconSearch } from '@tabler/icons-vue'
 import HistoryCashRegisterTable from '../components/HistoryCashRegisterTable.vue'
 import { useBranch } from '@/composables/useBranch'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useDate } from '@/composables/useDate'
 
 const { timezone } = useBranch()
+const { formatDate, formatDateShort } = useDate()
 
 const search = ref('')
-const filterDate = ref({
-  start: new Date(),
-  end: new Date(),
+const filterDate = ref<[Date, Date] | null>(null)
+
+const dateFilterLabel = computed(() => {
+  if (!filterDate.value) return 'Filtrar por fecha'
+  const [start, end] = filterDate.value
+  if (!start || !end) return 'Filtrar por fecha'
+  return `${formatDateShort(start)} - ${formatDateShort(end)}`
 })
+
+const cashRegisterAuditFilters = computed(() => {
+  if (!filterDate.value) return {}
+  const [start, end] = filterDate.value
+  if (!start || !end) return {}
+
+  return {
+    startDate: formatDate(start),
+    endDate: formatDate(end),
+  }
+})
+
+const clearDateFilter = () => {
+  filterDate.value = null
+}
 </script>

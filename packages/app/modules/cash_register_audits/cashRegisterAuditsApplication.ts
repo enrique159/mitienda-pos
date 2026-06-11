@@ -27,7 +27,7 @@ ipcMain.on("create_cash_register_audit", async(event, data) => {
   event.reply("create_cash_register_audit", response)
 })
 
-ipcMain.on("get_cash_register_audits", async(event) => {
-  const cashRegisterAudits = await cashRegisterAuditsRepository.getCashRegisterAudits()
+ipcMain.on("get_cash_register_audits", async(event, filters) => {
+  const cashRegisterAudits = await cashRegisterAuditsRepository.getCashRegisterAudits(filters)
   event.returnValue = cashRegisterAudits
 })

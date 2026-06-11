@@ -3,6 +3,11 @@ import knexConfig from '../../database/knexfile.js'
 const knex = knexFactory(knexConfig)
 import { response, logger } from '../../helpers/index.js'
 
+interface CashRegisterAuditFilters {
+  startDate?: string
+  endDate?: string
+}
+
 export async function createCashRegisterAudit(data) {
   data.cash_breakdown = data.cash_breakdown.length ? JSON.stringify(data.cash_breakdown) : null
   return await knex('cash_register_audits').insert(data).returning('*')
@@ -16,8 +21,8 @@ export async function createCashRegisterAudit(data) {
     })
 }
 
-export async function getCashRegisterAudits() {
-  return await knex('cash_register_audits')
+export async function getCashRegisterAudits(filters: CashRegisterAuditFilters = {}) {
+  const query = knex('cash_register_audits')
     .select(
       'cash_register_audits.*',
       'cash_registers.opening_amount',
@@ -28,6 +33,15 @@ export async function getCashRegisterAudits() {
     .leftJoin('cash_registers', 'cash_register_audits.id_cash_register', 'cash_registers.id')
     .leftJoin('sellers as seller_opening', 'cash_registers.id_user_opening', 'seller_opening.id')
     .leftJoin('sellers as seller_closing', 'cash_register_audits.id_user', 'seller_closing.id')
+
+  if (filters.startDate && filters.endDate) {
+    query.whereBetween('cash_register_audits.created_at', [
+      `${filters.startDate} 00:00:00`,
+      `${filters.endDate} 23:59:59`,
+    ])
+  }
+
+  return await query
     .orderBy('cash_register_audits.created_at', 'desc')
     .then((cashRegisterAudits) => {
       const cashRegisterAuditsData = Array.isArray(cashRegisterAudits) ? cashRegisterAudits : [cashRegisterAudits]

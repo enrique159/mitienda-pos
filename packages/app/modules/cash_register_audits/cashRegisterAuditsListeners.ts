@@ -6,5 +6,6 @@ export function createCashRegisterAudit(data, callback) {
   ipcRenderer.send('create_cash_register_audit', data)
 }
 
-export const getCashRegisterAudits = () => ipcRenderer.sendSync('get_cash_register_audits')
+export const getCashRegisterAudits = (filters = {}) =>
+  ipcRenderer.sendSync('get_cash_register_audits', filters)
 
