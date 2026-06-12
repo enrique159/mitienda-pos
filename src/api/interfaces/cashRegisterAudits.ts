@@ -13,7 +13,7 @@ export interface CashRegisterAudit {
   total_amount: number
   balance: number
   difference: number
-  cash_breakdown: Denomination[]
+  cash_breakdown: Denomination[] | string | null
   card_breakdown: number
   count_sales: number
   count_movements: number
@@ -48,6 +48,7 @@ export interface CreateCashRegisterAudit {
 }
 
 export interface CashRegisterAuditDetail extends CashRegisterAudit {
+  opening_amount: number
   opening_date: string
   closing_date: string
   opening_user_name: string
