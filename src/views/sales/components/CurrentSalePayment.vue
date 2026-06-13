@@ -594,10 +594,41 @@ const showSnackbarPaymentError = (message: string, type: SnackbarType = 'warning
   snackbarPayment.show = true
 }
 
-// Validate if customer has available credit
+const paidAmount = computed(() => {
+  if (multiplePaymentMethods.value) {
+    return paymentMethods.value.reduce((acc, payment) => acc + payment.amount, 0)
+  }
+  return parseAmount(paymentQuantity.value)
+})
+
+const amountPaidOnSale = computed(() => {
+  return Math.min(paidAmount.value, currentCartTotal.value)
+})
+
+const financedAmount = computed(() => {
+  return Math.max(0, currentCartTotal.value - amountPaidOnSale.value)
+})
+
+const availableCustomerCredit = computed(() => {
+  const creditLimit = customerCurrentSale.value?.credit_limit ?? 0
+  const usedCredit = customerCurrentSale.value?.used_credit ?? 0
+  return Math.max(0, creditLimit - usedCredit)
+})
+
+const hasCashPayment = computed(() => {
+  if (multiplePaymentMethods.value) {
+    return paymentMethods.value.some((payment) => payment.payment_method === PaymentMethods.CASH)
+  }
+  return onePaymentMethod.value.payment_method === PaymentMethods.CASH
+})
+
+const hasInvalidOverpayment = computed(() => {
+  return paidAmount.value > currentCartTotal.value && !hasCashPayment.value
+})
+
+// Valida que el cliente tenga crédito disponible para el saldo financiado.
 const validateCustomerCredit = () => {
-  const availableCredit = (customerCurrentSale.value?.credit_limit ?? 0) - (customerCurrentSale.value?.used_credit ?? 0)
-  if (customerCurrentSale.value && availableCredit < currentCartTotal.value) {
+  if (customerCurrentSale.value && availableCustomerCredit.value < financedAmount.value) {
     showSnackbarPaymentError('El cliente no tiene crédito disponible')
     return false
   }
@@ -616,12 +647,11 @@ const createCurrentSale = () => {
     showSnackbarPaymentError('Debes asignar un cliente para realizar una venta a crédito')
     return
   }
-  if (multiplePaymentMethods.value && paymentMethods.value.every((payment) => payment.payment_method !== PaymentMethods.CASH)) {
+  if (hasInvalidOverpayment.value) {
     showSnackbarPaymentError('La suma de los pagos no puede ser mayor a la cantidad total')
     return
   }
   if (isPaidAmountLowerThanTotal.value && !validateCustomerCredit()) {
-    showSnackbarPaymentError('El cliente no tiene crédito disponible')
     return
   }
   const details: SaleDetailPayload[] = currentCart.value.map((product) => {
@@ -661,8 +691,8 @@ const createCurrentSale = () => {
       folio: saleFolio.value,
       subtotal: fixedAmount(currentCartSubtotal.value),
       total: fixedAmount(currentCartTotal.value),
-      amount_paid: isPaidAmountLowerThanTotal.value ? fixedAmount(parseAmount(paymentQuantity.value)) : fixedAmount(currentCartTotal.value),
-      balance_due: isPaidAmountLowerThanTotal.value ? fixedAmount(currentCartTotal.value - parseAmount(paymentQuantity.value)) : 0,
+      amount_paid: fixedAmount(amountPaidOnSale.value),
+      balance_due: fixedAmount(financedAmount.value),
       discount: currentCartDiscount.value,
       tax: fixedAmount(currentCartTax.value),
       on_trust: isPaidAmountLowerThanTotal.value,
@@ -717,24 +747,13 @@ const printTicket = ref(true)
 const isCreatingSale = ref(false)
 
 const getStatusSale = () => {
-  let paidAmount = 0
-  if (multiplePaymentMethods.value) {
-    paidAmount = paymentMethods.value.reduce((acc, payment) => acc + payment.amount, 0)
-  } else {
-    paidAmount = parseAmount(paymentQuantity.value)
-  }
-
-  if (paidAmount >= currentCartTotal.value) return SaleStatus.PAID
-  if (paidAmount === 0) return SaleStatus.PENDING
+  if (paidAmount.value >= currentCartTotal.value) return SaleStatus.PAID
+  if (paidAmount.value === 0) return SaleStatus.PENDING
   return SaleStatus.PARTIALLY_PAID
 }
 
 const isPaidAmountLowerThanTotal = computed(() => {
-  if (multiplePaymentMethods.value) {
-    const total = paymentMethods.value.reduce((acc, payment) => acc + payment.amount, 0)
-    return total < currentCartTotal.value
-  }
-  return parseAmount(paymentQuantity.value) < currentCartTotal.value
+  return financedAmount.value > 0
 })
 
 
@@ -747,10 +766,8 @@ const handlePrintTicket = () => {
     },
   ]
 
-  const amountGiven = multiplePaymentMethods.value ? paymentMethods.value.reduce((acc, payment) => acc + payment.amount, 0) : parseAmount(paymentQuantity.value)
-
-  // Calcula el total financiado, ejemplo: si el total del carrito es 100 y el cliente paga 50, entonces el total financiado es 50
-  const totalFinanced = currentCartTotal.value - amountGiven
+  const amountGiven = paidAmount.value
+  const totalFinanced = financedAmount.value
 
   const customerInfo = customerCurrentSale.value ? {
     name: customerCurrentSale.value.name,
