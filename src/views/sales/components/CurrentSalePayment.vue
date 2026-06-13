@@ -359,6 +359,7 @@ import { toast } from '@/composables/useToast'
 import { Snackbar } from '@/types/Snackbar'
 import { getCustomers } from '@/api/electron'
 import { parseAmount, fixedAmount } from '@/utils/Payments'
+import { getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
 
 const { formatCurrency, formatWithoutSymbol } = useCurrency()
 
@@ -785,6 +786,7 @@ const handlePrintTicket = () => {
     items: currentCartProductsWithDiscount.value.map((product) => ({
       name: product.name,
       quantity: product.quantity,
+      unit: getAbbreviationUnitMeasurement(product.unit_measurement),
       discounts: product.applied_discounts?.map((discount) => ({
         description: discount.description,
         amount: formatWithoutSymbol(discount.amount),

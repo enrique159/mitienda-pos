@@ -85,6 +85,7 @@ export interface FooterInfo {
 
 export interface SaleTicketItem {
   quantity: number;
+  unit: string;
   name: string;
   price: number;
   subtotal: number;

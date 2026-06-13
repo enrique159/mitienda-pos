@@ -191,7 +191,7 @@ export default class SaleTicketBuilder {
 
       this.ticket += `
         <tr>
-          <td>${formatDisplayQuantity(item.quantity)}</td>
+          <td>${formatDisplayQuantity(item.quantity)}${item.unit ? ` ${item.unit}` : ''}</td>
           <td>${item.name}</td>
           <td class="right">${item.price}</td>
           <td class="right">${item.subtotal}</td>
