@@ -117,6 +117,25 @@
             placeholder="Ej. Notas adicionales"
           />
         </label>
+
+        <div class="form-control md:col-span-2">
+          <label class="label cursor-pointer w-fit">
+            <input
+              type="checkbox"
+              class="toggle checked:text-success"
+              :checked="formData.status === 'active'"
+              @change="toggleStatus"
+            >
+            <div class="flex flex-col items-start ml-2">
+              <span class="font-semibold text-black-1 mr-2">
+                {{ formData.status === 'active' ? 'Activo' : 'Inactivo' }}
+              </span>
+              <span class="text-sm text-black-2">
+                Si el proveedor esta inactivo, no se podra usar al crear o editar productos.
+              </span>
+            </div>
+          </label>
+        </div>
       </div>
 
       <div class="flex justify-end space-x-4">
@@ -166,6 +185,7 @@ const formData = reactive({
   website: '',
   tax_id: '',
   notes: '',
+  status: 'active' as Provider['status'],
 })
 
 const rules = {
@@ -191,6 +211,7 @@ const setFormData = (provider: Provider) => {
   formData.website = provider.website ?? ''
   formData.tax_id = provider.tax_id ?? ''
   formData.notes = provider.notes ?? ''
+  formData.status = provider.status
 }
 
 const refreshProviders = () => {
@@ -229,6 +250,10 @@ const loadProvider = () => {
   })
 }
 
+const toggleStatus = () => {
+  formData.status = formData.status === 'active' ? 'inactive' : 'active'
+}
+
 const handleSubmit = async () => {
   if (isSavingProvider.value) return
   if (!selectedProvider.value) {
@@ -250,6 +275,7 @@ const handleSubmit = async () => {
     website: formData.website,
     tax_id: formData.tax_id,
     notes: formData.notes,
+    status: formData.status,
   }
 
   isSavingProvider.value = true
