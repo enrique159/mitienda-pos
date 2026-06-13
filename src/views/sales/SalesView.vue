@@ -489,6 +489,7 @@ import { useCurrency } from '@/composables/useCurrency'
 import { getProductsByCategory, getProducts } from '@/api/electron'
 import { validateOnlyNumbers, validateNumbersAndDot } from '@/utils/InputValidators'
 import { getNameUnitMeasurement, getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
+import { formatDisplayQuantity } from '@/utils/Quantity'
 import { useBranch } from '@/composables/useBranch'
 
 // SET PRODUCTS
@@ -848,7 +849,7 @@ const getVerifyProductArrayInfo = computed(() => {
       { title: 'Precio de venta', value: formatCurrency(verifyProductSuccess.value.selling_price) },
       { title: 'Categoría', value: categories.value.find((category) => category.id === verifyProductSuccess.value?.id_category)?.name },
       { title: 'Unidad de medida', value: getNameUnitMeasurement(verifyProductSuccess.value.unit_measurement) },
-      { title: 'Stock', value: verifyProductSuccess.value.stock },
+      { title: 'Stock', value: formatDisplayQuantity(verifyProductSuccess.value.stock) },
     ]
   } else {
     return []

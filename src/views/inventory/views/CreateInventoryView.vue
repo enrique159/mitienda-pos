@@ -108,7 +108,7 @@
                   isLowStock(product) ? 'text-brand-pink' : 'text-black-1'
                 "
               >
-                {{ product.stock ?? 0 }}
+                {{ formatDisplayQuantity(product.stock) }}
                 <div
                   v-if="isLowStock(product)"
                   class="badge font-medium border-none bg-brand-pink/10 text-brand-pink"
@@ -140,6 +140,7 @@ import { useUser } from '@/composables/useUser'
 import { toast } from '@/composables/useToast'
 import { useRouter } from 'vue-router'
 import { useInventory } from '@/composables/useInventory'
+import { formatDisplayQuantity } from '@/utils/Quantity'
 
 const router = useRouter()
 const { branch } = useBranch()

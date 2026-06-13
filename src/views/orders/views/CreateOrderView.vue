@@ -101,7 +101,7 @@
               <td>{{ product.barcode || 'N/A' }}</td>
               <td>{{ product.name }}</td>
               <td :class="product.stock < product.stock_minimum ? 'text-brand-pink' : 'text-black-1'">
-                {{ product.stock }}
+                {{ formatDisplayQuantity(product.stock) }}
                 <div
                   v-if="product.stock < product.stock_minimum"
                   class="badge font-medium border-none bg-brand-pink/10 text-brand-pink"
@@ -223,6 +223,7 @@ import { validateOnlyNumbers } from '@/utils/InputValidators'
 import { CreatePurchaseOrderPayload, PurchaseOrder, PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
 import { useRouter } from 'vue-router'
 import { toast } from '@/composables/useToast'
+import { formatDisplayQuantity } from '@/utils/Quantity'
 
 const { branch } = useBranch()
 const { user } = useUser()

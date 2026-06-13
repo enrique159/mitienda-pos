@@ -1,4 +1,13 @@
 import { generateQRCode, logger, ticketDateFormatter } from '../../../helpers/index.js'
+
+function formatDisplayQuantity(quantity: number | string | null | undefined): string {
+  const parsedQuantity = Number(quantity ?? 0)
+
+  if (!Number.isFinite(parsedQuantity)) return '0'
+  if (Number.isInteger(parsedQuantity)) return parsedQuantity.toString()
+
+  return parsedQuantity.toFixed(2).replace(/\.?0+$/, '')
+}
 import { getFontFaceCSS, fontName } from '../extra/loadFonts.js'
 import { getImageDataUrl } from '../extra/loadImage.js'
 import * as branchesRepository from '../../../modules/branches/branchesRepository.js'
@@ -182,7 +191,7 @@ export default class SaleTicketBuilder {
 
       this.ticket += `
         <tr>
-          <td>${item.quantity}</td>
+          <td>${formatDisplayQuantity(item.quantity)}</td>
           <td>${item.name}</td>
           <td class="right">${item.price}</td>
           <td class="right">${item.subtotal}</td>

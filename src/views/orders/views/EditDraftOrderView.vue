@@ -104,7 +104,7 @@
                     : 'text-black-1'
                 "
               >
-                {{ product.stock }}
+                {{ formatDisplayQuantity(product.stock) }}
                 <div
                   v-if="product.stock < product.stock_minimum"
                   class="badge font-medium border-none bg-brand-pink/10 text-brand-pink"
@@ -226,6 +226,7 @@ import { useBranch } from '@/composables/useBranch'
 import { validateOnlyNumbers } from '@/utils/InputValidators'
 import { toast } from '@/composables/useToast'
 import { PurchaseOrderStatus } from '@/api/interfaces/purchase_orders'
+import { formatDisplayQuantity } from '@/utils/Quantity'
 
 const route = useRoute()
 const orderId = route.params.id

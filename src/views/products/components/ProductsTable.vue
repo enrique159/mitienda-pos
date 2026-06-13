@@ -36,7 +36,7 @@
           </td>
           <td>{{ formatCurrency(item.selling_price) }}</td>
           <td v-if="!item.unlimited_stock" :class="item.stock < item.stock_minimum ? 'text-brand-pink' : 'text-black-1'">
-            {{ item.stock }}
+            {{ formatDisplayQuantity(item.stock) }} {{ getAbbreviationUnitMeasurement(item.unit_measurement) }}
           </td>
           <td v-else>
             <span class="text-black-1">Sin límite</span>
@@ -96,6 +96,8 @@ import { Product, Response } from '@/api/interfaces'
 import { useRouter } from 'vue-router'
 import { toast } from '@/composables/useToast'
 import { computed } from 'vue'
+import { formatDisplayQuantity } from '@/utils/Quantity'
+import { getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
 
 const router = useRouter()
 const { formatCurrency } = useCurrency()
