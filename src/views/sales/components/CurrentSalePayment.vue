@@ -430,6 +430,11 @@ const snackbarPayment = reactive<Snackbar>({
 })
 
 const openPaymentModal = () => {
+  if (currentCart.value.length === 0) {
+    toast.warn('Agrega al menos un producto para pagar la cuenta')
+    return
+  }
+
   showPaymentModal.value = true
   dialogPaymentSaleRef.value.showModal()
   currencyInputRef.value.focus()
