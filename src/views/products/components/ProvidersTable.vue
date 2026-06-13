@@ -45,7 +45,7 @@
                 tabindex="0"
                 class="dropdown-content menu bg-base-100 text-brand-black rounded-box z-[1] w-52 p-2 shadow"
               >
-                <li @click.stop="openEditProviderModal(provider)">
+                <li @click.stop="openEditProviderView(provider.id)">
                   <a>
                     <icon-edit class="w-4 h-4" />
                     Editar proveedor
@@ -75,14 +75,14 @@ import { useProvider } from '@/composables/useProvider'
 import { formatPhone } from '@/utils/Phone'
 import { deleteProvider } from '@/api/electron'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { providers, setProviders } = useProvider()
+const router = useRouter()
 
 const props = defineProps<{
   search: String
 }>()
-
-const emit = defineEmits(['edit-provider'])
 
 const filteredProviders = computed(() => {
   return providers.value.filter((provider) => {
@@ -102,8 +102,8 @@ const getAllProviders = () => {
 
 getAllProviders()
 
-const openEditProviderModal = (provider: Provider) => {
-  emit('edit-provider', provider)
+const openEditProviderView = (id: string) => {
+  router.push({ name: 'EditProviderView', params: { id } })
 }
 
 const deleteSelectedProvider = (id: string) => {

@@ -6,6 +6,8 @@ import TaxesView from './views/TaxesView.vue'
 import CategoriesView from './views/CategoriesView.vue'
 import DiscountsView from './views/DiscountsView.vue'
 import ProvidersView from './views/ProvidersView.vue'
+import CreateProviderView from './views/CreateProviderView.vue'
+import EditProviderView from './views/EditProviderView.vue'
 
 export const ProductsRoutes = [
   {
@@ -48,6 +50,16 @@ export const ProductsRoutes = [
         path: 'providers',
         name: 'ProvidersView',
         component: ProvidersView,
+      },
+      {
+        path: 'providers/create',
+        name: 'CreateProviderView',
+        component: CreateProviderView,
+      },
+      {
+        path: 'providers/:id/edit',
+        name: 'EditProviderView',
+        component: EditProviderView,
       },
     ],
   },

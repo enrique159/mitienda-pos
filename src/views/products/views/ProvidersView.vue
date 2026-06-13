@@ -7,7 +7,7 @@
       <div class="flex items-center gap-4">
         <button
           class="btn btn-sm bg-brand-orange text-white shadow-none hover:bg-brand-pink hover:border-brand-pink"
-          @click="show = true"
+          @click="router.push({ name: 'CreateProviderView' })"
         >
           <icon-plus class="w-4 h-4" />
           Nuevo proveedor
@@ -26,30 +26,17 @@
       </div>
     </header>
 
-    <providers-table :search="search" @edit-provider="editProvider" />
-
-    <create-provider-modal v-model="show" />
-
-    <edit-provider-modal v-model="edit" :provider="editProviderData" />
+    <providers-table :search="search" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import ProvidersTable from '../components/ProvidersTable.vue'
-import CreateProviderModal from '../components/CreateProviderModal.vue'
-import EditProviderModal from '../components/EditProviderModel.vue'
 import { IconPlus, IconSearch } from '@tabler/icons-vue'
 import { ref } from 'vue'
-import { Provider } from '@/api/interfaces'
+import { useRouter } from 'vue-router'
 
-const show = ref(false)
-const edit = ref(false)
+const router = useRouter()
 
 const search = ref('')
-
-const editProviderData = ref<Provider | null>(null)
-const editProvider = (editProvider: Provider) => {
-  edit.value = true
-  editProviderData.value = editProvider
-}
 </script>
