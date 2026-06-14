@@ -462,7 +462,7 @@
               v-model="formData.stock"
               type="number"
               min="0"
-              step="1"
+              step="any"
               :disabled="formData.unlimited_stock"
               class="input input-bordered w-full"
             />
@@ -485,7 +485,7 @@
               v-model="formData.stock_minimum"
               type="number"
               min="0"
-              step="1"
+              step="any"
               :disabled="formData.unlimited_stock"
               class="input input-bordered w-full"
             />
@@ -859,7 +859,5 @@ onMounted(() => {
     ? availableCategories.value[0].id
     : ''
   formData.id_provider = providers.value[0] ? providers.value[0].id : ''
-  formData.stock = 1
-  formData.stock_minimum = 1
 })
 </script>
