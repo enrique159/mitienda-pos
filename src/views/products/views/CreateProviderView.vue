@@ -1,12 +1,19 @@
 <template>
   <div class="p-8 pt-4 w-full overflow-y-auto max-w-[1080px] mx-auto">
-    <h6 class="text-2xl font-bold mb-4">Crear proveedor</h6>
+    <div class="flex items-center gap-2 mb-4">
+      <button class="btn btn-sm btn-ghost btn-circle" @click="$router.back()">
+        <IconArrowLeft size="24" />
+      </button>
+      <h6 class="text-2xl font-bold">Crear proveedor</h6>
+    </div>
 
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="form-control w-full">
           <div class="label">
-            <span class="label-text text-black-1 font-medium required">Nombre</span>
+            <span class="label-text text-black-1 font-medium required"
+              >Nombre</span
+            >
           </div>
           <input
             id="name"
@@ -14,7 +21,7 @@
             type="text"
             placeholder="Ej. MiTienda"
             class="input input-bordered w-full"
-          >
+          />
           <input-errors :errors="v$.name.$errors" />
         </label>
 
@@ -28,13 +35,15 @@
             type="text"
             placeholder="Ej. XXXX1122334X5"
             class="input input-bordered w-full"
-          >
+          />
           <input-errors :errors="v$.tax_id.$errors" />
         </label>
 
         <label class="form-control w-full">
           <div class="label">
-            <span class="label-text text-black-1 font-medium">Nombre de contacto</span>
+            <span class="label-text text-black-1 font-medium"
+              >Nombre de contacto</span
+            >
           </div>
           <input
             id="contact_name"
@@ -42,7 +51,7 @@
             type="text"
             placeholder="Ej. Jose Eduardo Perez"
             class="input input-bordered w-full"
-          >
+          />
         </label>
 
         <label class="form-control w-full">
@@ -55,7 +64,7 @@
             type="email"
             placeholder="Ej. juan.perez@email.com"
             class="input input-bordered w-full"
-          >
+          />
           <input-errors :errors="v$.email.$errors" />
         </label>
 
@@ -70,7 +79,7 @@
             placeholder="Ej. 5555555555"
             class="input input-bordered w-full"
             @keypress="validateOnlyNumbers"
-          >
+          />
           <input-errors :errors="v$.phone.$errors" />
         </label>
 
@@ -84,7 +93,7 @@
             type="url"
             placeholder="Ej. https://www.mitienda.com"
             class="input input-bordered w-full"
-          >
+          />
         </label>
 
         <label class="form-control w-full">
@@ -132,6 +141,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowLeft } from '@tabler/icons-vue'
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
@@ -162,9 +172,21 @@ const formData = reactive({
 
 const rules = {
   name: { required: helpers.withMessage('El nombre es requerido', required) },
-  email: { email: helpers.withMessage('El correo electronico no es valido', email) },
-  phone: { minLength: helpers.withMessage('El numero de telefono debe tener al menos 10 caracteres', minLength(10)) },
-  tax_id: { minLength: helpers.withMessage('El RFC debe tener al menos 12 caracteres', minLength(12)) },
+  email: {
+    email: helpers.withMessage('El correo electronico no es valido', email),
+  },
+  phone: {
+    minLength: helpers.withMessage(
+      'El numero de telefono debe tener al menos 10 caracteres',
+      minLength(10)
+    ),
+  },
+  tax_id: {
+    minLength: helpers.withMessage(
+      'El RFC debe tener al menos 12 caracteres',
+      minLength(12)
+    ),
+  },
 }
 
 const v$ = useVuelidate(rules, formData)

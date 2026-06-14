@@ -1,20 +1,23 @@
 <template>
   <div class="p-8 pt-4 w-full overflow-y-auto max-w-[1080px] mx-auto">
-    <h6 class="text-2xl font-bold mb-4">
-      Actualizar producto
-    </h6>
+    <div class="flex items-center gap-2 mb-4">
+      <button class="btn btn-sm btn-ghost btn-circle" @click="$router.back()">
+        <IconArrowLeft size="24" />
+      </button>
+      <h6 class="text-2xl font-bold">Actualizar producto</h6>
+    </div>
     <form @submit.prevent="handleSubmit" class="space-y-12">
       <!-- **************** GENERAL INFO **************** -->
       <div>
-        <h6 class="font-bold text-lg text-black-1">
-          Información general
-        </h6>
+        <h6 class="font-bold text-lg text-black-1">Información general</h6>
         <div class="divider my-0" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Nombre del producto -->
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium required">Nombre del producto</span>
+              <span class="label-text text-black-1 font-medium required"
+                >Nombre del producto</span
+              >
             </div>
             <input
               id="name"
@@ -22,8 +25,11 @@
               v-model="formData.name"
               placeholder="Ej. Coca Cola 600ml"
               class="input input-bordered w-full"
+            />
+            <div
+              v-for="(error, index) in v$.name.$errors"
+              :key="`error-name-${index}`"
             >
-            <div v-for="(error, index) in v$.name.$errors" :key="`error-name-${index}`">
               <span class="text-brand-pink text-sm">{{ error.$message }}</span>
             </div>
           </label>
@@ -31,7 +37,9 @@
           <!-- Sku -->
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium required">SKU</span>
+              <span class="label-text text-black-1 font-medium required"
+                >SKU</span
+              >
             </div>
             <input
               id="sku"
@@ -39,8 +47,11 @@
               type="text"
               placeholder="Ej. CC600"
               class="input input-bordered w-full"
+            />
+            <div
+              v-for="(error, index) in v$.sku.$errors"
+              :key="`error-sku-${index}`"
             >
-            <div v-for="(error, index) in v$.sku.$errors" :key="`error-sku-${index}`">
               <span class="text-brand-pink text-sm">{{ error.$message }}</span>
             </div>
           </label>
@@ -48,7 +59,9 @@
           <!-- Código de barras -->
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium">Código de barras</span>
+              <span class="label-text text-black-1 font-medium"
+                >Código de barras</span
+              >
             </div>
             <input
               id="barcode"
@@ -56,7 +69,7 @@
               type="text"
               placeholder="Ej. 7501055300556"
               class="input input-bordered w-full"
-            >
+            />
           </label>
 
           <!-- Categoría -->
@@ -69,7 +82,11 @@
               v-model="formData.id_category"
               class="select select-bordered w-full"
             >
-              <option v-for="category in availableCategories" :key="`select-option-${category.id}`" :value="category.id">
+              <option
+                v-for="category in availableCategories"
+                :key="`select-option-${category.id}`"
+                :value="category.id"
+              >
                 {{ category.name }}
               </option>
             </select>
@@ -78,7 +95,9 @@
           <!-- Descripción -->
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium">Descripción</span>
+              <span class="label-text text-black-1 font-medium"
+                >Descripción</span
+              >
             </div>
             <textarea
               id="description"
@@ -92,14 +111,20 @@
           <!-- Proveedores -->
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium required">Proveedor</span>
+              <span class="label-text text-black-1 font-medium required"
+                >Proveedor</span
+              >
             </div>
             <select
               id="provider"
               v-model="formData.id_provider"
               class="select select-bordered w-full"
             >
-              <option v-for="provider in providers" :key="`select-option-${provider.id}`" :value="provider.id">
+              <option
+                v-for="provider in providers"
+                :key="`select-option-${provider.id}`"
+                :value="provider.id"
+              >
                 {{ provider.name }}
               </option>
             </select>
@@ -112,10 +137,14 @@
                 type="checkbox"
                 class="checkbox"
                 :checked="formData.has_expiration_date"
-                @change="formData.has_expiration_date = !formData.has_expiration_date"
-              >
+                @change="
+                  formData.has_expiration_date = !formData.has_expiration_date
+                "
+              />
               <div class="flex flex-col items-start ml-2">
-                <span class="font-semibold text-black-1 mr-2">Tiene fecha de caducidad</span>
+                <span class="font-semibold text-black-1 mr-2"
+                  >Tiene fecha de caducidad</span
+                >
                 <span class="text-sm text-black-2">
                   El producto tiene una fecha de caducidad
                 </span>
@@ -130,10 +159,14 @@
                 type="checkbox"
                 class="checkbox"
                 :checked="formData.requires_quantity"
-                @change="formData.requires_quantity = !formData.requires_quantity"
-              >
+                @change="
+                  formData.requires_quantity = !formData.requires_quantity
+                "
+              />
               <div class="flex flex-col items-start ml-2">
-                <span class="font-semibold text-black-1 mr-2">Requiere cantidad</span>
+                <span class="font-semibold text-black-1 mr-2"
+                  >Requiere cantidad</span
+                >
                 <span class="text-sm text-black-2">
                   Al agregar el producto a la venta, se solicita cantidad
                 </span>
@@ -143,10 +176,22 @@
 
           <!-- EXPIRATION DATE -->
           <div v-if="formData.has_expiration_date">
-            <label for="expiration_date" class="block mb-2 pl-1 text-sm font-medium text-black-2">Fecha de caducidad</label>
+            <label
+              for="expiration_date"
+              class="block mb-2 pl-1 text-sm font-medium text-black-2"
+              >Fecha de caducidad</label
+            >
             <div class="flex items-center gap-4">
-              <select id="expiration_date_month" v-model="expirationDate.month" class="select select-bordered w-full">
-                <option v-for="month in Months" :key="`select-option-${month.value}`" :value="month.value">
+              <select
+                id="expiration_date_month"
+                v-model="expirationDate.month"
+                class="select select-bordered w-full"
+              >
+                <option
+                  v-for="month in Months"
+                  :key="`select-option-${month.value}`"
+                  :value="month.value"
+                >
                   {{ month.label }}
                 </option>
               </select>
@@ -157,7 +202,7 @@
                 min="0"
                 step="1"
                 class="input input-bordered w-fit min-w-12"
-              >
+              />
             </div>
           </div>
         </div>
@@ -165,19 +210,23 @@
 
       <!-- **************** SALES INFO **************** -->
       <div>
-        <h6 class="font-bold text-lg text-black-1">
-          Venta
-        </h6>
+        <h6 class="font-bold text-lg text-black-1">Venta</h6>
         <div class="divider my-0" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Precio de compra -->
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium required">Precio de compra</span>
-              <span class="text-xs text-black-2">Costo del producto con proveedor</span>
+              <span class="label-text text-black-1 font-medium required"
+                >Precio de compra</span
+              >
+              <span class="text-xs text-black-2"
+                >Costo del producto con proveedor</span
+              >
             </div>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 transform -translate-y-1/2">$</span>
+              <span class="absolute left-3 top-1/2 transform -translate-y-1/2"
+                >$</span
+              >
               <input
                 id="purchase_price"
                 v-model="formData.purchase_price"
@@ -185,9 +234,12 @@
                 min="0"
                 step="any"
                 class="input input-bordered w-full pl-7"
-              >
+              />
             </div>
-            <div v-for="(error, index) in v$.purchase_price.$errors" :key="`error-purchase_price-${index}`">
+            <div
+              v-for="(error, index) in v$.purchase_price.$errors"
+              :key="`error-purchase_price-${index}`"
+            >
               <span class="text-brand-pink text-sm">{{ error.$message }}</span>
             </div>
           </label>
@@ -195,11 +247,17 @@
           <!-- Precio de venta -->
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium required">Precio de venta</span>
-              <span class="text-xs text-black-2">Precio de venta al cliente</span>
+              <span class="label-text text-black-1 font-medium required"
+                >Precio de venta</span
+              >
+              <span class="text-xs text-black-2"
+                >Precio de venta al cliente</span
+              >
             </div>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 transform -translate-y-1/2">$</span>
+              <span class="absolute left-3 top-1/2 transform -translate-y-1/2"
+                >$</span
+              >
               <input
                 id="selling_price"
                 v-model="formData.selling_price"
@@ -207,9 +265,12 @@
                 min="0"
                 step="any"
                 class="input input-bordered w-full pl-7"
-              >
+              />
             </div>
-            <div v-for="(error, index) in v$.selling_price.$errors" :key="`error-selling_price-${index}`">
+            <div
+              v-for="(error, index) in v$.selling_price.$errors"
+              :key="`error-selling_price-${index}`"
+            >
               <span class="text-brand-pink text-sm">{{ error.$message }}</span>
             </div>
           </label>
@@ -217,7 +278,9 @@
           <!-- TAXES AVAILABLE -->
           <div class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium required">Impuestos</span>
+              <span class="label-text text-black-1 font-medium required"
+                >Impuestos</span
+              >
             </div>
             <div class="flex items-center gap-4">
               <select
@@ -225,8 +288,14 @@
                 class="select select-bordered w-full"
                 v-model="selectedTax"
               >
-                <option v-for="tax in taxesAvailable" :key="`select-option-tax_${tax.id}`" :value="tax.id">
-                  {{ `${tax.code} - ${tax.name} - ${tax.type === 'tasa' ? tax.value + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.value!) : 'EXENTO'}` }}
+                <option
+                  v-for="tax in taxesAvailable"
+                  :key="`select-option-tax_${tax.id}`"
+                  :value="tax.id"
+                >
+                  {{
+                    `${tax.code} - ${tax.name} - ${tax.type === 'tasa' ? tax.value + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.value!) : 'EXENTO'}`
+                  }}
                 </option>
               </select>
               <button
@@ -243,8 +312,14 @@
           <!-- TAXES APPLIED -->
           <div class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium">Impuestos aplicados</span>
-              <span v-if="taxesApplied.length === 0" class="text-xs text-brand-orange">No se han agregado impuestos aún</span>
+              <span class="label-text text-black-1 font-medium"
+                >Impuestos aplicados</span
+              >
+              <span
+                v-if="taxesApplied.length === 0"
+                class="text-xs text-brand-orange"
+                >No se han agregado impuestos aún</span
+              >
             </div>
             <div class="flex flex-col gap-2">
               <div
@@ -252,15 +327,29 @@
                 :key="`tax-applied-${index}`"
                 class="flex items-center gap-2"
               >
-                <div class="w-full flex items-center justify-between border-2 border-dashed border-white-3 rounded-md p-3">
+                <div
+                  class="w-full flex items-center justify-between border-2 border-dashed border-white-3 rounded-md p-3"
+                >
                   <div class="flex items-center gap-2">
                     <span class="text-sm text-black-2">{{ tax.code }}</span>
                     <span class="text-sm text-black-2">{{ tax.name }}</span>
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-sm text-black-2">{{ tax.type }}</span>
-                    <span class="text-sm text-black-2">{{ tax.type === 'tasa' ? tax.value + '%' : tax.type === 'cuota' ? formatCurrencySimple(tax.value!) : 'EXENTO' }}</span>
-                    <span class="text-sm text-black-1">{{ tax.value ? formatCurrencySimple((tax.value * formData.selling_price) / 100) : formatCurrencySimple(0) }}</span>
+                    <span class="text-sm text-black-2">{{
+                      tax.type === 'tasa'
+                        ? tax.value + '%'
+                        : tax.type === 'cuota'
+                          ? formatCurrencySimple(tax.value!)
+                          : 'EXENTO'
+                    }}</span>
+                    <span class="text-sm text-black-1">{{
+                      tax.value
+                        ? formatCurrencySimple(
+                            (tax.value * formData.selling_price) / 100
+                          )
+                        : formatCurrencySimple(0)
+                    }}</span>
                   </div>
                 </div>
                 <button
@@ -279,12 +368,16 @@
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
                   <span class="text-black-1">Impuestos totales:</span>
-                  <span class="text-black-1 font-bold">{{ formatCurrencySimple(taxTotal) }}</span>
+                  <span class="text-black-1 font-bold">{{
+                    formatCurrencySimple(taxTotal)
+                  }}</span>
                 </div>
 
                 <div class="flex items-center gap-2">
                   <span class="text-black-1">Precio venta total:</span>
-                  <span class="text-green-500 font-bold">{{ formatCurrencySimple(formData.selling_price) }}</span>
+                  <span class="text-green-500 font-bold">{{
+                    formatCurrencySimple(formData.selling_price)
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -293,18 +386,27 @@
           <!-- UNIT MEASUREMENT -->
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium required">Unidad de medida</span>
+              <span class="label-text text-black-1 font-medium required"
+                >Unidad de medida</span
+              >
             </div>
             <select
               id="unit_measurement"
               v-model="formData.unit_measurement"
               class="select select-bordered w-full"
             >
-              <option v-for="unit in unitMeasurements" :key="`select-option_${unit.value}`" :value="unit.value">
+              <option
+                v-for="unit in unitMeasurements"
+                :key="`select-option_${unit.value}`"
+                :value="unit.value"
+              >
                 {{ unit.label }}
               </option>
             </select>
-            <div v-for="(error, index) in v$.unit_measurement.$errors" :key="`error-unit-${index}`">
+            <div
+              v-for="(error, index) in v$.unit_measurement.$errors"
+              :key="`error-unit-${index}`"
+            >
               <span class="text-brand-pink text-sm">{{ error.$message }}</span>
             </div>
           </label>
@@ -317,9 +419,11 @@
                 class="checkbox"
                 :checked="formData.is_bulk"
                 @change="formData.is_bulk = !formData.is_bulk"
-              >
+              />
               <div class="flex flex-col items-start ml-2">
-                <span class="font-semibold text-black-1 mr-2">Venta a granel</span>
+                <span class="font-semibold text-black-1 mr-2"
+                  >Venta a granel</span
+                >
                 <span class="text-sm text-black-2">
                   El producto se vende a granel o en fracciones
                 </span>
@@ -332,9 +436,7 @@
       <!-- **************** STOCK INFO **************** -->
       <div>
         <div class="flex justify-between items-center">
-          <h6 class="font-bold text-lg text-black-1">
-            Inventario
-          </h6>
+          <h6 class="font-bold text-lg text-black-1">Inventario</h6>
           <div class="form-control">
             <label class="label cursor-pointer">
               <span class="label-text mr-2">Requiere inventario</span>
@@ -343,7 +445,7 @@
                 class="toggle checked:text-brand-pink"
                 :checked="!formData.unlimited_stock"
                 @change="toggleUnlimitedStock"
-              >
+              />
             </label>
           </div>
         </div>
@@ -351,7 +453,9 @@
         <div class="grid grid-cols-2 gap-4">
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium required">Stock</span>
+              <span class="label-text text-black-1 font-medium required"
+                >Stock</span
+              >
             </div>
             <input
               id="stock"
@@ -361,15 +465,20 @@
               step="1"
               :disabled="formData.unlimited_stock"
               class="input input-bordered w-full"
+            />
+            <div
+              v-for="(error, index) in v$.stock.$errors"
+              :key="`error-stock-${index}`"
             >
-            <div v-for="(error, index) in v$.stock.$errors" :key="`error-stock-${index}`">
               <span class="text-brand-pink text-sm">{{ error.$message }}</span>
             </div>
           </label>
 
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text text-black-1 font-medium required">Stock mínimo</span>
+              <span class="label-text text-black-1 font-medium required"
+                >Stock mínimo</span
+              >
             </div>
             <input
               id="stock_minimum"
@@ -379,8 +488,11 @@
               step="1"
               :disabled="formData.unlimited_stock"
               class="input input-bordered w-full"
+            />
+            <div
+              v-for="(error, index) in v$.stock_minimum.$errors"
+              :key="`error-stock_minimum-${index}`"
             >
-            <div v-for="(error, index) in v$.stock_minimum.$errors" :key="`error-stock_minimum-${index}`">
               <span class="text-brand-pink text-sm">{{ error.$message }}</span>
             </div>
           </label>
@@ -388,10 +500,7 @@
       </div>
 
       <div class="flex justify-end space-x-4">
-        <base-button
-          type="button"
-          @click="$router.back()"
-        >
+        <base-button type="button" @click="$router.back()">
           Cancelar
         </base-button>
         <base-button
@@ -406,17 +515,21 @@
     </form>
   </div>
 
-  <dialog id="dialogProviderAlert" ref="dialogProviderAlertRef" class="modal" @keydown.escape.prevent="() => {}">
+  <dialog
+    id="dialogProviderAlert"
+    ref="dialogProviderAlertRef"
+    class="modal"
+    @keydown.escape.prevent="() => {}"
+  >
     <div class="modal-box min-w-[480px]">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">
-          No hay proveedores disponibles
-        </h3>
+        <h3 class="text-lg font-bold">No hay proveedores disponibles</h3>
       </div>
 
       <div class="flex flex-col justify-center items-center mt-8">
         <p class="text-center text-black-1 mb-4">
-          Para crear un producto, debes agregar al menos un proveedor. <br>¿Deseas agregar uno ahora?
+          Para crear un producto, debes agregar al menos un proveedor.
+          <br />¿Deseas agregar uno ahora?
         </p>
         <base-button
           type="button"
@@ -432,9 +545,21 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowRight, IconX, IconTruckLoading } from '@tabler/icons-vue'
+import {
+  IconArrowRight,
+  IconX,
+  IconTruckLoading,
+  IconArrowLeft,
+} from '@tabler/icons-vue'
 import { required, helpers, minValue } from '@vuelidate/validators'
-import { UpdateProduct, UnitMeasurement, Tax, Response, ProductTax, Product } from '@/api/interfaces'
+import {
+  UpdateProduct,
+  UnitMeasurement,
+  Tax,
+  Response,
+  ProductTax,
+  Product,
+} from '@/api/interfaces'
 import { updateProduct, getAllProducts, getProducts } from '@/api/electron'
 import { ref, reactive, computed, onMounted, watch, onBeforeMount } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
@@ -450,7 +575,8 @@ import { useProvider } from '@/composables/useProvider'
 
 const { taxes } = useTax()
 const { branch } = useBranch()
-const { setAllProducts, setProducts, availableCategories, products } = useProduct()
+const { setAllProducts, setProducts, availableCategories, products } =
+  useProduct()
 const { providers } = useProvider()
 const { formatCurrencySimple, safeDivide } = useCurrency()
 const { formatDate } = useDate()
@@ -482,9 +608,11 @@ onBeforeMount(() => {
     formData.has_expiration_date = product.has_expiration_date
     formData.expiration_date = product.expiration_date
 
-    taxesApplied.value = product.taxes.map((tax) => {
-      return taxes.value.find((t) => t.identifier === tax.identifier)
-    }).filter((tax) => tax !== undefined) as Tax[]
+    taxesApplied.value = product.taxes
+      .map((tax) => {
+        return taxes.value.find((t) => t.identifier === tax.identifier)
+      })
+      .filter((tax) => tax !== undefined) as Tax[]
   }
 })
 
@@ -515,7 +643,9 @@ onMounted(() => {
 // Taxes
 const selectedTax = ref<string>(taxes.value[0].id)
 const taxesApplied = ref<Tax[]>([])
-const taxesAvailable = computed(() => taxes.value.filter((tax) => tax.transferred))
+const taxesAvailable = computed(() =>
+  taxes.value.filter((tax) => tax.transferred)
+)
 const taxesAppliedInfo = computed(() => {
   return taxesApplied.value.map((tax) => ({
     ...tax,
@@ -536,7 +666,9 @@ const removeTax = (index: number) => {
 const taxTotal = computed(() => {
   return taxesApplied.value.reduce((total: number, tax: Tax): number => {
     if (tax.type === 'tasa') {
-      const taxValue = Number((formData.selling_price * tax.value! / 100).toFixed(2))
+      const taxValue = Number(
+        ((formData.selling_price * tax.value!) / 100).toFixed(2)
+      )
       return total + taxValue
     } else if (tax.type === 'cuota') {
       return total + Number(tax.value!.toFixed(2))
@@ -589,22 +721,51 @@ const rules = computed(() => {
   return {
     name: { required: helpers.withMessage('El nombre es requerido', required) },
     sku: { required: helpers.withMessage('El SKU es requerido', required) },
-    unit_measurement: { required: helpers.withMessage('La unidad de medida es requerida', required) },
+    unit_measurement: {
+      required: helpers.withMessage(
+        'La unidad de medida es requerida',
+        required
+      ),
+    },
     stock: {
-      minValue: helpers.withMessage('El stock debe ser mayor o igual a 1', minValue(1)),
+      minValue: helpers.withMessage(
+        'El stock debe ser mayor o igual a 1',
+        minValue(1)
+      ),
     },
     stock_minimum: {
-      minValue: helpers.withMessage('El stock mínimo debe ser mayor o igual a 1', minValue(1)),
+      minValue: helpers.withMessage(
+        'El stock mínimo debe ser mayor o igual a 1',
+        minValue(1)
+      ),
     },
     purchase_price: {
-      required: helpers.withMessage('El precio de compra es requerido', required),
-      minValue: helpers.withMessage('El precio de compra debe ser mayor o igual a 0', minValue(0)),
-      maxTwoDecimals: helpers.withMessage('El precio de compra no debe tener más de 2 decimales', maxTwoDecimals),
+      required: helpers.withMessage(
+        'El precio de compra es requerido',
+        required
+      ),
+      minValue: helpers.withMessage(
+        'El precio de compra debe ser mayor o igual a 0',
+        minValue(0)
+      ),
+      maxTwoDecimals: helpers.withMessage(
+        'El precio de compra no debe tener más de 2 decimales',
+        maxTwoDecimals
+      ),
     },
     selling_price: {
-      required: helpers.withMessage('El precio de venta es requerido', required),
-      minValue: helpers.withMessage('El precio de venta debe ser mayor o igual a 0', minValue(0)),
-      maxTwoDecimals: helpers.withMessage('El precio de venta no debe tener más de 2 decimales', maxTwoDecimals),
+      required: helpers.withMessage(
+        'El precio de venta es requerido',
+        required
+      ),
+      minValue: helpers.withMessage(
+        'El precio de venta debe ser mayor o igual a 0',
+        minValue(0)
+      ),
+      maxTwoDecimals: helpers.withMessage(
+        'El precio de venta no debe tener más de 2 decimales',
+        maxTwoDecimals
+      ),
     },
   }
 })
@@ -624,7 +785,6 @@ const toggleUnlimitedStock = () => {
   formData.stock_minimum = formData.unlimited_stock ? null : 1
 }
 
-
 const taxMaping = (tax: Tax): ProductTax => {
   return {
     identifier: tax.identifier,
@@ -634,7 +794,6 @@ const taxMaping = (tax: Tax): ProductTax => {
     value: tax.value ?? null,
   }
 }
-
 
 const handleSubmit = async () => {
   if (isUpdatingProduct.value) return
@@ -649,7 +808,9 @@ const handleSubmit = async () => {
       ...formData,
       id: currentProduct.value!.id,
       expiration_date: formData.has_expiration_date
-        ? formatDate(new Date(expirationDate.value.year, expirationDate.value.month, 1))
+        ? formatDate(
+            new Date(expirationDate.value.year, expirationDate.value.month, 1)
+          )
         : undefined,
       taxes: taxesApplied.value.map(taxMaping),
       purchase_price: formData.purchase_price * 100,
@@ -694,7 +855,9 @@ const reloadProducts = () => {
 }
 
 onMounted(() => {
-  formData.id_category = availableCategories.value[0] ? availableCategories.value[0].id : ''
+  formData.id_category = availableCategories.value[0]
+    ? availableCategories.value[0].id
+    : ''
   formData.id_provider = providers.value[0] ? providers.value[0].id : ''
   formData.stock = 1
   formData.stock_minimum = 1
