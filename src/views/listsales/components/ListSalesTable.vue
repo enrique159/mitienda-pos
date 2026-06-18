@@ -4,12 +4,8 @@
       <!-- head -->
       <thead>
         <tr>
-          <th class="w-40">
-            Fecha
-          </th>
-          <th class="w-[180px]">
-            Folio
-          </th>
+          <th class="w-40">Fecha</th>
+          <th class="w-[180px]">Folio</th>
           <th>Vendedor</th>
           <th>Métodos de pago</th>
           <th>Estado</th>
@@ -20,17 +16,28 @@
 
       <tbody>
         <!-- row 1 -->
-        <tr v-for="(sale, i) in sales" :key="`sale-row-${sale.id}`" :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'">
+        <tr
+          v-for="(sale, i) in sales"
+          :key="`sale-row-${sale.id}`"
+          :class="i % 2 === 0 ? 'bg-table-row' : 'bg-white'"
+        >
           <td>
             {{ formatDatetimeShort(sale.created_at) }}
           </td>
           <td>{{ sale.folio }}</td>
           <td>{{ sale.seller_name }}</td>
           <td>
-            {{ sale.payments.map((payment) => getPaymentMethodName(payment.payment_method)).join(', ') }}
+            {{
+              sale.payments
+                .map((payment) => getPaymentMethodName(payment.payment_method))
+                .join(', ')
+            }}
           </td>
           <td>
-            <div class="badge font-medium border-none" :class="getBadgeColors(sale.status)">
+            <div
+              class="badge font-medium border-none"
+              :class="getBadgeColors(sale.status)"
+            >
               {{ getSaleStatusName(sale.status).toLowerCase() }}
             </div>
           </td>
@@ -49,26 +56,34 @@
       </tbody>
     </table>
     <div v-if="emptySales" class="h-full grid place-items-center">
-      <div class="bg-white-1 p-4 rounded-lg w-full h-fit flex flex-col justify-center items-center">
-        <img src="@/assets/empty_sales.svg" alt="Verificar producto" class="w-32 mb-4">
-        <h6 class="text-lg font-bold text-black-2">
-          No hay ventas aún
-        </h6>
+      <div
+        class="bg-white-1 p-4 rounded-lg w-full h-fit flex flex-col justify-center items-center"
+      >
+        <img
+          src="@/assets/empty_sales.svg"
+          alt="Verificar producto"
+          class="w-32 mb-4"
+        />
+        <h6 class="text-lg font-bold text-black-2">No hay ventas aún</h6>
         <p class="text-sm text-black-3 text-center w-1/2">
-          Aún no hay ventas registradas. Puedes registrar una nueva venta desde el menú de ventas o ajustar los filtros
-          para encontrar las ventas que deseas.
+          Aún no hay ventas registradas. Puedes registrar una nueva venta desde
+          el menú de ventas o ajustar los filtros para encontrar las ventas que
+          deseas.
         </p>
       </div>
     </div>
   </div>
 
   <!-- DIALOG SALE DETAILS -->
-  <dialog id="dialogSaleDetails" ref="dialogSaleDetailsRef" class="modal" @keydown.escape="closeSaleDetailsModal">
+  <dialog
+    id="dialogSaleDetails"
+    ref="dialogSaleDetailsRef"
+    class="modal"
+    @keydown.escape="closeSaleDetailsModal"
+  >
     <div class="modal-box w-full max-w-[1000px] h-[80%]">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">
-          Detalles de la venta
-        </h3>
+        <h3 class="text-lg font-bold">Detalles de la venta</h3>
         <div class="modal-action mt-0">
           <form method="dialog" @submit="closeSaleDetailsModal">
             <!-- if there is a button in form, it will close the modal -->
@@ -85,30 +100,27 @@
           <section class="w-full grid grid-cols-3 gap-x-2">
             <!-- FOLIO -->
             <div>
-              <p class="text-sm text-black-3">
-                Folio
-              </p>
+              <p class="text-sm text-black-3">Folio</p>
               <div class="flex items-center gap-2">
                 <span>{{ selectedSale?.folio }}</span>
-                <button class="btn btn-sm btn-circle btn-ghost" @click="copyFolio">
+                <button
+                  class="btn btn-sm btn-circle btn-ghost"
+                  @click="copyFolio"
+                >
                   <IconCopy size="16" />
                 </button>
               </div>
             </div>
             <!-- SELLER -->
             <div>
-              <p class="text-sm text-black-3">
-                Vendedor
-              </p>
+              <p class="text-sm text-black-3">Vendedor</p>
               <div class="flex items-center gap-2">
                 <span>{{ selectedSale?.seller_name }}</span>
               </div>
             </div>
             <!-- DATE -->
             <div>
-              <p class="text-sm text-black-3">
-                Fecha
-              </p>
+              <p class="text-sm text-black-3">Fecha</p>
               <div class="flex items-center gap-2">
                 <span>{{ formatDatetime(selectedSale?.created_at) }}</span>
               </div>
@@ -118,29 +130,31 @@
           <section class="w-full grid grid-cols-3 gap-x-2">
             <!-- STATUS -->
             <div>
-              <p class="text-sm text-black-3">
-                Estado
-              </p>
+              <p class="text-sm text-black-3">Estado</p>
               <div class="flex items-center gap-2">
-                <span>{{ getSaleStatusName(selectedSale?.status).toLowerCase() }}</span>
+                <span>{{
+                  getSaleStatusName(selectedSale?.status).toLowerCase()
+                }}</span>
               </div>
             </div>
 
             <!-- PAYMENTS -->
             <div>
-              <p class="text-sm text-black-3">
-                Métodos de pago
-              </p>
+              <p class="text-sm text-black-3">Métodos de pago</p>
               <div class="flex items-center gap-2">
-                <span>{{ selectedSale?.payments.map((payment) => getPaymentMethodName(payment.payment_method)).join(', ') }}</span>
+                <span>{{
+                  selectedSale?.payments
+                    .map((payment) =>
+                      getPaymentMethodName(payment.payment_method)
+                    )
+                    .join(', ')
+                }}</span>
               </div>
             </div>
 
             <!-- TOTAL -->
             <div>
-              <p class="text-sm text-black-3">
-                Total
-              </p>
+              <p class="text-sm text-black-3">Total</p>
               <div class="flex items-center gap-2">
                 <span>{{ formatCurrency(selectedSale?.total!) }}</span>
               </div>
@@ -148,12 +162,13 @@
             <div class="divider my-0 col-span-3" />
           </section>
 
-          <section v-if="isSaleHasClient" class="w-full grid grid-cols-3 gap-x-2">
+          <section
+            v-if="isSaleHasClient"
+            class="w-full grid grid-cols-3 gap-x-2"
+          >
             <!-- CLIENT NAME -->
             <div>
-              <p class="text-sm text-black-3">
-                Cliente
-              </p>
+              <p class="text-sm text-black-3">Cliente</p>
               <div class="flex items-center gap-2">
                 <span>{{ customerSale?.name }}</span>
               </div>
@@ -161,9 +176,7 @@
 
             <!-- RFC -->
             <div>
-              <p class="text-sm text-black-3">
-                RFC
-              </p>
+              <p class="text-sm text-black-3">RFC</p>
               <div class="flex items-center gap-2">
                 <span>{{ customerSale?.rfc }}</span>
               </div>
@@ -171,14 +184,20 @@
 
             <!-- CREDITO DEL CLIENTE -->
             <div>
-              <p class="text-sm text-black-3">
-                Crédito disponible
-              </p>
+              <p class="text-sm text-black-3">Crédito disponible</p>
               <div class="flex items-center gap-2">
-                <div class="tooltip tooltip-bottom" :data-tip="`${formatCurrency(customerSale!.credit_limit - customerSale!.used_credit)} de ${formatCurrency(customerSale!.credit_limit)}`">
+                <div
+                  class="tooltip tooltip-bottom"
+                  :data-tip="`${formatCurrency(customerSale!.credit_limit - customerSale!.used_credit)} de ${formatCurrency(customerSale!.credit_limit)}`"
+                >
                   <progress
                     class="progress w-48"
-                    :class="getProgressColorByCreditUsed(customerSale!.used_credit, customerSale!.credit_limit)"
+                    :class="
+                      getProgressColorByCreditUsed(
+                        customerSale!.used_credit,
+                        customerSale!.credit_limit
+                      )
+                    "
                     :value="customerSale!.used_credit"
                     :max="customerSale!.credit_limit"
                   />
@@ -197,7 +216,11 @@
               :key="`tab-option-${tab.name}`"
               role="tab"
               class="tab transition-all"
-              :class="selectedTab === tab.id ? 'tab-active bg-brand-blue text-white' : ''"
+              :class="
+                selectedTab === tab.id
+                  ? 'tab-active bg-brand-blue text-white'
+                  : ''
+              "
               @click="selectedTab = tab.id"
             >
               {{ tab.name }}
@@ -229,7 +252,12 @@
                     <span class="text-sm text-black-3">{{ i + 1 }}</span>
                   </td>
                   <td>{{ sale.product_name }}</td>
-                  <td>{{ sale.quantity }}</td>
+                  <td>
+                    {{ formatDisplayQuantity(sale.quantity) }}
+                    <span v-if="sale.unit_measurement">
+                      {{ getAbbreviationUnitMeasurement(sale.unit_measurement) }}
+                    </span>
+                  </td>
                   <td>{{ formatCurrency(sale.selling_price) }}</td>
                   <td>{{ formatCurrency(sale.tax_amount) }}</td>
                   <td>{{ formatCurrency(sale.total) }}</td>
@@ -239,9 +267,7 @@
                 <tr>
                   <td colspan="4" />
                   <td>
-                    <span class="text-lg font-bold text-black-2">
-                      Total:
-                    </span>
+                    <span class="text-lg font-bold text-black-2"> Total: </span>
                   </td>
                   <td>
                     <span class="text-lg font-bold text-black-2">
@@ -279,7 +305,9 @@
                   <td>{{ getPaymentMethodName(payment.payment_method) }}</td>
                   <td>{{ formatDatetime(payment.created_at) }}</td>
                   <td>{{ formatCurrency(payment.amount) }}</td>
-                  <td>{{ payment.change ? formatCurrency(payment.change) : '-' }}</td>
+                  <td>
+                    {{ payment.change ? formatCurrency(payment.change) : '-' }}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -306,6 +334,8 @@ import { useDate } from '@/composables/useDate'
 import { toast } from '@/composables/useToast'
 import { getPaymentMethodName, getSaleStatusName } from '@/utils/Payments'
 import { useCashRegister } from '@/composables/useCashRegister'
+import { formatDisplayQuantity } from '@/utils/Quantity'
+import { getAbbreviationUnitMeasurement } from '@/utils/UnitMeasurements'
 
 const { formatDatetimeShort, formatDatetime } = useDate()
 const { formatCurrency } = useCurrency()
@@ -318,7 +348,10 @@ const emptySales = computed(() => {
   return sales.value.length === 0
 })
 
-const getProgressColorByCreditUsed = (creditUsed: number, creditLimit: number) => {
+const getProgressColorByCreditUsed = (
+  creditUsed: number,
+  creditLimit: number
+) => {
   const percentage = (creditUsed / creditLimit) * 100
   if (percentage < 50) {
     return 'progress-success'
@@ -328,7 +361,6 @@ const getProgressColorByCreditUsed = (creditUsed: number, creditLimit: number) =
     return 'progress-error'
   }
 }
-
 
 onMounted(async () => {
   if (!cashRegister.value) return
@@ -348,20 +380,20 @@ onMounted(async () => {
 
 const getBadgeColors = (status: string) => {
   switch (status) {
-  case 'pending':
-    return 'text-orange-500 bg-orange-100'
-  case 'partially_paid':
-    return 'text-yellow-500 bg-warning/20'
-  case 'paid':
-    return 'text-green-500 bg-success/20'
-  case 'rejected':
-    return 'text-red-500 bg-error/20'
-  case 'deleted':
-    return 'text-red-500 bg-error/20'
-  case 'refunded':
-    return 'text-green-500 bg-success/20'
-  default:
-    return 'text-green-500 bg-success/20'
+    case 'pending':
+      return 'text-orange-500 bg-orange-100'
+    case 'partially_paid':
+      return 'text-yellow-500 bg-warning/20'
+    case 'paid':
+      return 'text-green-500 bg-success/20'
+    case 'rejected':
+      return 'text-red-500 bg-error/20'
+    case 'deleted':
+      return 'text-red-500 bg-error/20'
+    case 'refunded':
+      return 'text-green-500 bg-success/20'
+    default:
+      return 'text-green-500 bg-success/20'
   }
 }
 
@@ -377,7 +409,9 @@ const customerSale = ref<Customer | null>(null)
 
 const openSaleDetailsModal = (sale: Sale) => {
   selectedSale.value = sale
-  const foundCustomer = customers.value.find((customer) => customer.id === sale.id_customer)
+  const foundCustomer = customers.value.find(
+    (customer) => customer.id === sale.id_customer
+  )
   foundCustomer && (customerSale.value = foundCustomer)
   dialogSaleDetailsRef.value.showModal()
 }
@@ -401,10 +435,11 @@ const selectedTab = ref(1)
 </script>
 
 <style scoped>
-.tabs-boxed :is(.tab-active, [aria-selected="true"]):not(.tab-disabled):not([disabled]),
+.tabs-boxed
+  :is(.tab-active, [aria-selected='true']):not(.tab-disabled):not([disabled]),
 .tabs-boxed :is(input:checked) {
   background-color: var(--soft-blue);
-  color: #FFF;
+  color: #fff;
 }
 
 .tabs-boxed {
@@ -414,7 +449,9 @@ const selectedTab = ref(1)
 .grid-content {
   height: calc(100% - 48px);
   display: grid;
-  grid-template-rows: v-bind('isSaleHasClient ? "200px" : "138px"') 40px 1fr 40px;
+  grid-template-rows: v-bind(
+      'isSaleHasClient ? "200px" : "138px"'
+    ) 40px 1fr 40px;
   row-gap: 8px;
   overflow: hidden;
 }

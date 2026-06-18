@@ -1,4 +1,4 @@
-import { Seller } from "./users"
+import { UnitMeasurement } from './products'
 
 export interface GeneratedFolio {
   folio: string
@@ -37,6 +37,7 @@ export interface SaleDetail {
   id_product: string
   product_name: string
   quantity: number
+  unit_measurement?: UnitMeasurement
   selling_price: number
   tax_amount: number
   discount: number
@@ -62,24 +63,23 @@ export enum SaleStatus {
   PAID = 'paid',
   REJECTED = 'rejected',
   DELETED = 'deleted',
-  REFUNDED = 'refunded'
+  REFUNDED = 'refunded',
 }
 
 export enum PaymentMethods {
   CASH = 'cash',
   CARD = 'card',
   TRANSFER = 'transfer',
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
-export type PaymentMethod = typeof PaymentMethods[keyof typeof PaymentMethods]
-
+export type PaymentMethod = (typeof PaymentMethods)[keyof typeof PaymentMethods]
 
 // PAYLOADS
 
 export interface CreateSalePayload {
-  sale: SalePayload,
-  details: Array<SaleDetailPayload>,
+  sale: SalePayload
+  details: Array<SaleDetailPayload>
   payments: Array<PaymentPayload>
 }
 
