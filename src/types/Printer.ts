@@ -68,6 +68,7 @@ export interface CustomerInfo {
   previousBalance: string;
   currentPurchase: string;
   finalBalance: string;
+  availableCredit: string;
   paymentDueDate: string;
   amountToPay: string;
 }

@@ -774,15 +774,22 @@ const handlePrintTicket = () => {
 
   const amountGiven = paidAmount.value
   const totalFinanced = financedAmount.value
+  const finalCustomerBalance = customerCurrentSale.value
+    ? customerCurrentSale.value.used_credit + totalFinanced
+    : 0
+  const remainingCustomerCredit = customerCurrentSale.value
+    ? Math.max(0, customerCurrentSale.value.credit_limit - finalCustomerBalance)
+    : 0
 
   const customerInfo = customerCurrentSale.value ? {
     name: customerCurrentSale.value.name,
     creditLimit: formatWithoutSymbol(customerCurrentSale.value.credit_limit),
     previousBalance: formatWithoutSymbol(customerCurrentSale.value.used_credit),
     currentPurchase: formatWithoutSymbol(totalFinanced),
-    finalBalance: formatWithoutSymbol(customerCurrentSale.value.used_credit + totalFinanced),
+    finalBalance: formatWithoutSymbol(finalCustomerBalance),
+    availableCredit: formatWithoutSymbol(remainingCustomerCredit),
     paymentDueDate: getNextPaymentDueDateCustomer(customerCurrentSale.value.payment_due_date),
-    amountToPay: formatWithoutSymbol(totalFinanced + customerCurrentSale.value.used_credit),
+    amountToPay: formatWithoutSymbol(finalCustomerBalance),
   } : null
 
   const saleTicketPayload = {

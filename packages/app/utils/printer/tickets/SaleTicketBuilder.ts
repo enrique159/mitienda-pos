@@ -276,6 +276,10 @@ export default class SaleTicketBuilder {
             <td style="padding: 1px 0;">Saldo final:</td>
             <td style="text-align: right; padding: 1px 0;">$ ${this.customerInfo.finalBalance}</td>
           </tr>
+          <tr>
+            <td style="padding: 1px 0;">Credito disponible:</td>
+            <td style="text-align: right; padding: 1px 0;">$ ${this.customerInfo.availableCredit}</td>
+          </tr>
         </table>
         <p style="margin: 2px 0; font-size: 12px; text-align: center;">FECHA LÍMITE PAGO: ${this.customerInfo.paymentDueDate || 'N/A'}</p>
         <p style="margin: 2px 0; font-size: 12px; text-align: center; font-weight: bold;">Monto a pagar: $ ${this.customerInfo.amountToPay}</p>
