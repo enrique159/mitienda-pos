@@ -7,9 +7,29 @@
 
 <script setup lang="ts">
 import SideMenu from '@/components/menus/SideMenu.vue'
-import { IconBox, IconCategory, IconCirclePlus, IconCoins, IconDiscount, IconTruckLoading } from '@tabler/icons-vue'
-import { getTaxes, getProducts, getAllProducts, getCategories, getDiscounts, getProviders } from '@/api/electron'
-import { Response, Product, Category, Discount, Provider } from '@/api/interfaces'
+import {
+  IconBox,
+  IconCategory,
+  IconCirclePlus,
+  IconCoins,
+  IconDiscount,
+  IconTruckLoading,
+} from '@tabler/icons-vue'
+import {
+  getTaxes,
+  getProducts,
+  getAllProducts,
+  getCategories,
+  getDiscounts,
+  getProvidesActive,
+} from '@/api/electron'
+import {
+  Response,
+  Product,
+  Category,
+  Discount,
+  Provider,
+} from '@/api/interfaces'
 import { useTax } from '@/composables/useTax'
 import { useProduct } from '@/composables/useProduct'
 import { onMounted } from 'vue'
@@ -17,7 +37,8 @@ import { toast } from '@/composables/useToast'
 import { useProvider } from '@/composables/useProvider'
 
 const { setTaxes } = useTax()
-const { setProducts, setCategories, setDiscounts, setAllProducts } = useProduct()
+const { setProducts, setCategories, setDiscounts, setAllProducts } =
+  useProduct()
 const { setProviders } = useProvider()
 
 const loadData = async () => {
@@ -60,7 +81,7 @@ const loadData = async () => {
     setDiscounts(response.response)
   })
   // Load Providers
-  await getProviders((response: Response<Provider[]>) => {
+  await getProvidesActive((response: Response<Provider[]>) => {
     if (!response.success) {
       toast.error(response.message)
       return
@@ -78,9 +99,7 @@ const productsMenu = [
     title: 'Productos',
     path: '/main/products',
     icon: IconBox,
-    subPaths: [
-      '/main/products/update'
-    ],
+    subPaths: ['/main/products/update'],
   },
   {
     title: 'Nuevo producto',

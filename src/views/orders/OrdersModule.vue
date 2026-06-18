@@ -8,7 +8,11 @@
 <script setup lang="ts">
 import SideMenu, { ItemMenu } from '@/components/menus/SideMenu.vue'
 import { IconTruckDelivery, IconCirclePlus } from '@tabler/icons-vue'
-import { getPurchaseOrders, getProviders, getAllProducts } from '@/api/electron'
+import {
+  getPurchaseOrders,
+  getProvidesActive,
+  getAllProducts,
+} from '@/api/electron'
 import { onMounted } from 'vue'
 import { usePurchaseOrder } from '@/composables/usePurchaseOrder'
 import { Provider, Response, Product } from '@/api/interfaces'
@@ -30,7 +34,7 @@ onMounted(async () => {
     setPurchaseOrders(response.response)
   })
 
-  getProviders((response: Response<Provider[]>) => {
+  getProvidesActive((response: Response<Provider[]>) => {
     if (!response.success) {
       toast.error(response.message)
       return
@@ -52,10 +56,7 @@ const ordersMenu: ItemMenu[] = [
     title: 'Pedidos',
     path: '/main/orders',
     icon: IconTruckDelivery,
-    subPaths: [
-      '/main/orders/edit',
-      '/main/orders/details',
-    ]
+    subPaths: ['/main/orders/edit', '/main/orders/details'],
   },
   {
     title: 'Nuevo pedido',
