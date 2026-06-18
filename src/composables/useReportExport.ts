@@ -27,6 +27,7 @@ export const useReportExport = () => {
     cash: 'Efectivo',
     card: 'Tarjeta',
     transfer: 'Transferencia',
+    credit: 'Crédito',
     other: 'Otro',
   }[method || ''] || method || '')
 

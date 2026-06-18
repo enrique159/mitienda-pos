@@ -126,6 +126,14 @@
                 formatCurrency(cashRegisterState.payments.other)
               }}</span>
             </div>
+            <!-- CREDIT SALES -->
+            <div class="flex items-center justify-between">
+              <span class="text-black-2 text-sm text-nowrap">Crédito otorgado</span>
+              <div class="mx-2 border-b border-dotted border-black-2 w-full" />
+              <span class="text-black-2 text-sm">{{
+                formatCurrency(cashRegisterState.payments.credit)
+              }}</span>
+            </div>
             <!-- INCOME -->
             <div class="flex items-center justify-between">
               <span class="text-black-2 text-sm text-nowrap">Ingresos</span>
@@ -237,6 +245,7 @@ const cashRegisterState = ref<CashRegisterState>({
     cash: 0,
     card: 0,
     transfer: 0,
+    credit: 0,
     other: 0,
   },
   movements: {
@@ -447,6 +456,7 @@ const handlePrintTicket = () => {
       { name: 'Monto en tarjeta', value: formatCurrency(cashRegisterState.value.payments.card), symbol: '+' },
       { name: 'Monto en transferencia', value: formatCurrency(cashRegisterState.value.payments.transfer), symbol: '+' },
       { name: 'Monto en otros', value: formatCurrency(cashRegisterState.value.payments.other), symbol: '+' },
+      { name: 'Crédito otorgado', value: formatCurrency(cashRegisterState.value.payments.credit) },
       { name: 'Ingresos', value: formatCurrency(cashRegisterState.value.movements.income), symbol: '+' },
       { name: 'Retiros', value: formatCurrency(cashRegisterState.value.movements.withdraw), symbol: '-' },
       { name: 'Cant. de ventas', value: cashRegisterState.value.total_sales },

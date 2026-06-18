@@ -70,7 +70,8 @@ export enum PaymentMethods {
   CASH = 'cash',
   CARD = 'card',
   TRANSFER = 'transfer',
-  OTHER = 'other',
+  CREDIT = 'credit',
+  OTHER = 'other'
 }
 
 export type PaymentMethod = (typeof PaymentMethods)[keyof typeof PaymentMethods]

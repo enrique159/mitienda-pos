@@ -8,6 +8,8 @@ export const getPaymentMethodName = (paymentMethod: PaymentMethod | undefined) =
     return 'Tarjeta'
   case PaymentMethods.TRANSFER:
     return 'Transferencia'
+  case PaymentMethods.CREDIT:
+    return 'Crédito'
   case PaymentMethods.OTHER:
     return 'Otro'
   default:

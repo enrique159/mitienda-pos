@@ -105,6 +105,19 @@
         </p>
       </div>
 
+      <!-- TOTAL CREDIT -->
+      <div class="state-card">
+        <h6 class="text-lg font-bold mb-4">
+          Crédito otorgado
+        </h6>
+        <p class="text-sm text-gray-500">
+          Total vendido como deuda del cliente
+        </p>
+        <p class="text-xl font-bold">
+          {{ formatCurrency(cashRegisterState.payments.credit) }}
+        </p>
+      </div>
+
       <!-- OPENING AMOUNT -->
       <div class="state-card">
         <h6 class="text-lg font-bold mb-4">
@@ -149,6 +162,7 @@ const cashRegisterState = ref<CashRegisterState>({
     cash: 0,
     card: 0,
     transfer: 0,
+    credit: 0,
     other: 0,
   },
   movements: {

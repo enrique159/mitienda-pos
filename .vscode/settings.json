@@ -1,5 +1,5 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.formatOnSave": true,
-  "typescript.suggestionActions.enabled": false
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "editor.formatOnSave": false,
+  "js/ts.suggestionActions.enabled": false
 }
