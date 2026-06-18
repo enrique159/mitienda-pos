@@ -124,6 +124,7 @@ const paymentMethodLabel = (method: string) => ({
   cash: 'Efectivo',
   card: 'Tarjeta',
   transfer: 'Transferencia',
+  credit: 'Crédito',
   other: 'Otro',
 }[method] || method)
 </script>

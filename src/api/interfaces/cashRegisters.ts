@@ -15,6 +15,7 @@ export interface CashRegisterState {
     cash: number
     card: number
     transfer: number
+    credit: number
     other: number
   }
   movements: {

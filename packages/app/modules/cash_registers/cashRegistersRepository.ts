@@ -52,7 +52,6 @@ export async function getCurrentCashRegisterState() {
     const salesSummary = await knex('sales')
       .select(
         knex.raw('COUNT(*) as total_sales'),
-        knex.raw('SUM(amount_paid) as total_amount_paid'),
         knex.raw('SUM(total) as total_sales_amount')
       )
       .where('id_cash_register', cashRegister.response.id)
@@ -73,15 +72,19 @@ export async function getCurrentCashRegisterState() {
       .select(knex.raw('COUNT(*) as total_movements'))
       .where('id_cash_register', cashRegister.response.id)
 
+    const payments = paymentsSummary.reduce((acc, payment) => {
+      acc[payment.payment_method] = Number(payment.total) || 0
+      return acc
+    }, { cash: 0, card: 0, transfer: 0, credit: 0, other: 0 })
+
+    const totalAmountPaid = payments.cash + payments.card + payments.transfer + payments.other
+
     const summary = {
       opening_amount: cashRegister.response.opening_amount,
       total_sales: salesSummary[0].total_sales || 0,
-      total_amount_paid: salesSummary[0].total_amount_paid || 0,
+      total_amount_paid: totalAmountPaid,
       total_sales_amount: salesSummary[0].total_sales_amount || 0,
-      payments: paymentsSummary.reduce((acc, payment) => {
-        acc[payment.payment_method] = payment.total
-        return acc
-      }, { cash: 0, card: 0, transfer: 0, other: 0 }),
+      payments,
       movements: movementsSummary.reduce((acc, movement) => {
         acc[movement.type] = movement.total
         return acc

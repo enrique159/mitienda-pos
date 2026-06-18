@@ -1,4 +1,4 @@
-export type ReportPaymentMethod = '' | 'cash' | 'card' | 'transfer' | 'other'
+export type ReportPaymentMethod = '' | 'cash' | 'card' | 'transfer' | 'credit' | 'other'
 
 export interface ReportFilters {
   startDate?: string

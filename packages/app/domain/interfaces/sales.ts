@@ -1,7 +1,7 @@
 import type { CreateEntity, JsonColumn, Timestamp, UUID, UpdateEntity } from './common.js'
 
 export type SaleStatus = 'pending' | 'partially_paid' | 'paid' | 'rejected' | 'deleted' | 'refunded'
-export type PaymentMethod = 'cash' | 'card' | 'transfer' | 'other'
+export type PaymentMethod = 'cash' | 'card' | 'transfer' | 'credit' | 'other'
 
 export interface Sale {
   id: UUID

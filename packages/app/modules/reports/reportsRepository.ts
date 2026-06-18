@@ -319,7 +319,7 @@ const aggregateReport = async (filters: ReportFilters) => {
     salesByDayMap.set(date, current)
   })
 
-  const paymentMethods = ['cash', 'card', 'transfer', 'other'].map((method) => ({
+  const paymentMethods = ['cash', 'card', 'transfer', 'credit', 'other'].map((method) => ({
     method,
     total: roundMoney(validPayments
       .filter((payment) => payment.payment_method === method)

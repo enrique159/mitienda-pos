@@ -217,7 +217,7 @@
               Cliente: <span class="font-bold">{{ customerCurrentSale.name }}</span>
             </span>
             <span class="text-black-1 font-normal">
-              Disponible: {{ formatCurrency(customerCurrentSale.credit_limit - customerCurrentSale.used_credit) }}
+              Crédito disponible: {{ formatCurrency(availableCustomerCredit) }}
             </span>
           </div>
 
@@ -464,12 +464,30 @@ const removePaymentQuantity = () => {
 }
 
 const multiplePaymentMethods = ref(false)
-const paymentMethodsOptions = [
+
+const availableCustomerCredit = computed(() => {
+  const creditLimit = customerCurrentSale.value?.credit_limit ?? 0
+  const usedCredit = customerCurrentSale.value?.used_credit ?? 0
+  return Math.max(0, creditLimit - usedCredit)
+})
+
+const hasAvailableCustomerCredit = computed(() => {
+  return Boolean(customerCurrentSale.value?.has_credit) && availableCustomerCredit.value > 0
+})
+
+const basePaymentMethodsOptions = [
   { id: PaymentMethods.CASH, name: 'Efectivo', icon: IconCash },
   { id: PaymentMethods.CARD, name: 'Tarjeta', icon: IconCreditCard },
   { id: PaymentMethods.TRANSFER, name: 'Transferencia', icon: IconTransferVertical },
+  { id: PaymentMethods.CREDIT, name: 'Crédito' },
   { id: PaymentMethods.OTHER, name: 'Otro' },
 ]
+
+const paymentMethodsOptions = computed(() => {
+  return basePaymentMethodsOptions.filter((method) => {
+    return method.id !== PaymentMethods.CREDIT || hasAvailableCustomerCredit.value
+  })
+})
 
 const onePaymentMethod = ref<PaymentPayload>({
   payment_method: PaymentMethods.CASH,
@@ -501,9 +519,25 @@ watch(multiplePaymentMethods, () => {
 })
 
 const availablePaymentMethods = computed(() => {
-  return paymentMethodsOptions.filter((method) => {
+  return paymentMethodsOptions.value.filter((method) => {
     return method.id !== PaymentMethods.CASH || !paymentMethods.value.some((payment) => payment.payment_method === PaymentMethods.CASH)
   })
+})
+
+watch(hasAvailableCustomerCredit, () => {
+  if (hasAvailableCustomerCredit.value) return
+
+  if (onePaymentMethod.value.payment_method === PaymentMethods.CREDIT) {
+    selectPaymentMethod(PaymentMethods.CASH)
+  }
+
+  paymentMethods.value = paymentMethods.value.filter((payment) => payment.payment_method !== PaymentMethods.CREDIT)
+  if (selectedPaymentMethodEdit.value?.payment_method === PaymentMethods.CREDIT) {
+    selectedPaymentMethodEdit.value = null
+  }
+  if (paymentMethods.value.length === 0) {
+    resetPaymentMethods()
+  }
 })
 
 const selectedPaymentMethodEdit = ref<PaymentPayload & { id: string } | null>(null)
@@ -571,14 +605,25 @@ const selectPaymentMethod = async (method: PaymentMethods) => {
     onePaymentMethod.value.payment_method = PaymentMethods.TRANSFER
     paymentQuantity.value = currentCartTotal.value.toString()
     break
+  case PaymentMethods.CREDIT:
+    onePaymentMethod.value.payment_method = PaymentMethods.CREDIT
+    paymentQuantity.value = currentCartTotal.value.toString()
+    break
   case PaymentMethods.OTHER:
     onePaymentMethod.value.payment_method = PaymentMethods.OTHER
+    paymentQuantity.value = currentCartTotal.value.toString()
     break
   }
 }
 
 const isCurrencyInputDisabled = computed(() => {
   return onePaymentMethod.value.payment_method !== PaymentMethods.CASH
+})
+
+watch(currentCartTotal, () => {
+  if (!multiplePaymentMethods.value && isCurrencyInputDisabled.value) {
+    paymentQuantity.value = currentCartTotal.value.toString()
+  }
 })
 
 const cashPaymentChange = computed(() => {
@@ -607,34 +652,69 @@ const paidAmount = computed(() => {
   return parseAmount(paymentQuantity.value)
 })
 
+const creditAmount = computed(() => {
+  if (multiplePaymentMethods.value) {
+    return paymentMethods.value
+      .filter((payment) => payment.payment_method === PaymentMethods.CREDIT)
+      .reduce((acc, payment) => acc + payment.amount, 0)
+  }
+
+  return onePaymentMethod.value.payment_method === PaymentMethods.CREDIT
+    ? parseAmount(paymentQuantity.value)
+    : 0
+})
+
 const amountPaidOnSale = computed(() => {
-  return Math.min(paidAmount.value, currentCartTotal.value)
+  const nonCreditAmount = Math.max(0, paidAmount.value - creditAmount.value - cashPaymentChange.value)
+  return Math.min(nonCreditAmount, currentCartTotal.value)
 })
 
 const financedAmount = computed(() => {
-  return Math.max(0, currentCartTotal.value - amountPaidOnSale.value)
+  return creditAmount.value
 })
 
-const availableCustomerCredit = computed(() => {
-  const creditLimit = customerCurrentSale.value?.credit_limit ?? 0
-  const usedCredit = customerCurrentSale.value?.used_credit ?? 0
-  return Math.max(0, creditLimit - usedCredit)
+const cashPaymentAmount = computed(() => {
+  if (multiplePaymentMethods.value) {
+    return paymentMethods.value
+      .filter((payment) => payment.payment_method === PaymentMethods.CASH)
+      .reduce((acc, payment) => acc + payment.amount, 0)
+  }
+
+  return onePaymentMethod.value.payment_method === PaymentMethods.CASH
+    ? parseAmount(paymentQuantity.value)
+    : 0
 })
 
 const hasCashPayment = computed(() => {
-  if (multiplePaymentMethods.value) {
-    return paymentMethods.value.some((payment) => payment.payment_method === PaymentMethods.CASH)
-  }
-  return onePaymentMethod.value.payment_method === PaymentMethods.CASH
+  return cashPaymentAmount.value > 0
 })
 
 const hasInvalidOverpayment = computed(() => {
   return paidAmount.value > currentCartTotal.value && !hasCashPayment.value
 })
 
-// Valida que el cliente tenga crédito disponible para el saldo financiado.
+const hasInvalidCashChange = computed(() => {
+  return cashPaymentChange.value > cashPaymentAmount.value
+})
+
+const hasCreditPayment = computed(() => {
+  return creditAmount.value > 0
+})
+
+const isCoveredAmountLowerThanTotal = computed(() => {
+  return paidAmount.value < currentCartTotal.value
+})
+
+// Valida que el cliente tenga crédito disponible para el monto explícito en crédito.
 const validateCustomerCredit = () => {
-  if (customerCurrentSale.value && availableCustomerCredit.value < financedAmount.value) {
+  if (!hasCreditPayment.value) return true
+
+  if (!customerCurrentSale.value?.has_credit) {
+    showSnackbarPaymentError('Debes asignar un cliente con crédito habilitado')
+    return false
+  }
+
+  if (availableCustomerCredit.value < financedAmount.value) {
     showSnackbarPaymentError('El cliente no tiene crédito disponible')
     return false
   }
@@ -649,15 +729,19 @@ const createCurrentSale = () => {
   if (isCreatingSale.value) return
   if (currentCart.value.length === 0) return
   if (!cashRegister.value) return
-  if (isPaidAmountLowerThanTotal.value && !customerCurrentSale.value) {
-    showSnackbarPaymentError('Debes asignar un cliente para realizar una venta a crédito')
+  if (isCoveredAmountLowerThanTotal.value) {
+    showSnackbarPaymentError('La suma de los pagos debe cubrir el total de la venta')
     return
   }
   if (hasInvalidOverpayment.value) {
     showSnackbarPaymentError('La suma de los pagos no puede ser mayor a la cantidad total')
     return
   }
-  if (isPaidAmountLowerThanTotal.value && !validateCustomerCredit()) {
+  if (hasInvalidCashChange.value) {
+    showSnackbarPaymentError('El cambio no puede ser mayor al efectivo recibido')
+    return
+  }
+  if (!validateCustomerCredit()) {
     return
   }
   const details: SaleDetailPayload[] = currentCart.value.map((product) => {
@@ -701,8 +785,8 @@ const createCurrentSale = () => {
       balance_due: fixedAmount(financedAmount.value),
       discount: currentCartDiscount.value,
       tax: fixedAmount(currentCartTax.value),
-      on_trust: isPaidAmountLowerThanTotal.value,
-      due_date: isPaidAmountLowerThanTotal.value ? new Date(new Date().setMonth(new Date().getMonth() + 1)) : undefined,
+      on_trust: hasCreditPayment.value,
+      due_date: hasCreditPayment.value ? new Date(new Date().setMonth(new Date().getMonth() + 1)) : undefined,
       status: getStatusSale(),
       customer_notes: saleComments.value.trim(),
       is_ticket_printed: printTicket.value,
@@ -753,14 +837,10 @@ const printTicket = ref(true)
 const isCreatingSale = ref(false)
 
 const getStatusSale = () => {
-  if (paidAmount.value >= currentCartTotal.value) return SaleStatus.PAID
-  if (paidAmount.value === 0) return SaleStatus.PENDING
+  if (!hasCreditPayment.value) return SaleStatus.PAID
+  if (amountPaidOnSale.value === 0) return SaleStatus.PENDING
   return SaleStatus.PARTIALLY_PAID
 }
-
-const isPaidAmountLowerThanTotal = computed(() => {
-  return financedAmount.value > 0
-})
 
 
 // PRINT TICKET
@@ -772,7 +852,7 @@ const handlePrintTicket = () => {
     },
   ]
 
-  const amountGiven = paidAmount.value
+  const amountGiven = Math.max(0, paidAmount.value - creditAmount.value)
   const totalFinanced = financedAmount.value
 
   const customerInfo = customerCurrentSale.value ? {
@@ -815,7 +895,7 @@ const handlePrintTicket = () => {
       total: formatWithoutSymbol(currentCartTotal.value),
       tax: formatWithoutSymbol(currentCartTax.value),
       paymentMethods: paymentMethodsInSale.map((payment) => ({
-        name: paymentMethodsOptions.find((method) => method.id === payment.payment_method)?.name,
+        name: paymentMethodsOptions.value.find((method) => method.id === payment.payment_method)?.name,
         amount: formatWithoutSymbol(payment.amount),
       })),
       amountGiven: formatWithoutSymbol(amountGiven),

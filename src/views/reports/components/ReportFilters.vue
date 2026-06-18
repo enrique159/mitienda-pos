@@ -37,6 +37,7 @@
           <option value="cash">Efectivo</option>
           <option value="card">Tarjeta</option>
           <option value="transfer">Transferencia</option>
+          <option value="credit">Crédito</option>
           <option value="other">Otro</option>
         </select>
       </label>
