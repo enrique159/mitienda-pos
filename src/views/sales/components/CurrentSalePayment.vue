@@ -17,7 +17,7 @@
           <IconUserPlus class="text-brand-black" size="18" />
         </base-button>
 
-        <base-button @click="selectImage()">
+        <base-button @click="() => {}">
           Cuenta pendiente
         </base-button>
       </div>
@@ -151,12 +151,35 @@
             <button
               v-for="method in paymentMethodsOptions"
               :key="method.id"
-              class="px-4 h-12 rounded-md active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
-              :class="[ onePaymentMethod.payment_method === method.id ? 'bg-brand-black text-white' : 'text-black-1 bg-white-2 hover:bg-white-3' ]"
+              class="px-4 rounded-md active:scale-95 transition-all text-sm flex items-center justify-center gap-x-2"
+              :class="[
+                onePaymentMethod.payment_method === method.id ? 'bg-brand-black text-white' : 'text-black-1 bg-white-2 hover:bg-white-3',
+                method.id === PaymentMethods.CREDIT ? 'col-span-2 h-16 flex-col items-stretch gap-1' : 'h-12'
+              ]"
               @click="selectPaymentMethod(method.id)"
             >
-              <component v-if="method.icon" :is="method.icon" :size="21" />
-              {{ method.name }}
+              <template v-if="method.id === PaymentMethods.CREDIT">
+                <div class="flex justify-between items-center">
+                  <span class="flex justify-center gap-2 items-center ml-16">
+                    <IconCreditCardPay :size="21" />
+                    {{ method.name }}
+                  </span>
+                  <div class="text-sm opacity-80 text-right truncate flex flex-col items-end">
+                    <span class="">
+                      {{ customerCurrentSale?.name }}
+                    </span>
+                    <span class="flex items-center gap-x-1">
+                      <IconCircleFilled :size="10" :class="customerCreditStatusFlagColor"/>
+                      {{ formatCurrency(availableCustomerCredit) }}
+                    </span>
+                  </div>
+                </div>
+                
+              </template>
+              <template v-else>
+                <component v-if="method.icon" :is="method.icon" :size="21" />
+                {{ method.name }}
+              </template>
             </button>
           </div>
 
@@ -212,12 +235,13 @@
           <!-- DIVIDER -->
           <div class="border-b border-gray-200 mb-4" />
 
-          <div v-if="customerCurrentSale" class="flex justify-between items-center w-full border border-white-3 rounded-lg p-4 mb-4">
+          <div v-if="multiplePaymentMethods && customerCurrentSale" class="flex justify-between items-center w-full border border-white-3 rounded-lg p-4 mb-4">
             <span class="text-black-1 font-normal">
               Cliente: <span class="font-bold">{{ customerCurrentSale.name }}</span>
             </span>
-            <span class="text-black-1 font-normal">
-              Crédito disponible: {{ formatCurrency(availableCustomerCredit) }}
+            <span class="text-black-1 font-normal flex items-center gap-1">
+              <IconCircleFilled :size="10" :class="customerCreditStatusFlagColor"/>
+              {{ formatCurrency(availableCustomerCredit) }}
             </span>
           </div>
 
@@ -343,7 +367,7 @@ import CurrencyInput from '@/components/inputs/CurrencyInput.vue'
 import SnackBar from '@/components/SnackBar.vue'
 import { useProduct } from '@/composables/useProduct'
 import { useCurrency } from '@/composables/useCurrency'
-import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical, IconSearch, IconUser, IconX, IconPlus } from '@tabler/icons-vue'
+import { IconUserPlus, IconReceipt2, IconCash, IconCreditCard, IconTransferVertical, IconSearch, IconUser, IconX, IconPlus, IconCreditCardPay, IconCircleFilled } from '@tabler/icons-vue'
 import { PaymentPayload, PaymentMethods, CreateSalePayload, SaleStatus, SaleDetailPayload, Response, TaxDetail, Product } from '@/api/interfaces'
 import { getPaymentMethodName } from '@/utils/Payments'
 import { createSale, getAllProducts, getProducts, printSaleTicket, setBranchLogo } from '@/api/electron'
@@ -471,6 +495,13 @@ const availableCustomerCredit = computed(() => {
   return Math.max(0, creditLimit - usedCredit)
 })
 
+const customerCreditStatusFlagColor = computed(() => {
+  const credit = availableCustomerCredit.value
+  return credit > 50000 ? 'text-green-500'
+    : credit > 20000 ? 'text-yellow-500'
+    : 'text-red-500'
+})
+
 const hasAvailableCustomerCredit = computed(() => {
   return Boolean(customerCurrentSale.value?.has_credit) && availableCustomerCredit.value > 0
 })
@@ -479,8 +510,8 @@ const basePaymentMethodsOptions = [
   { id: PaymentMethods.CASH, name: 'Efectivo', icon: IconCash },
   { id: PaymentMethods.CARD, name: 'Tarjeta', icon: IconCreditCard },
   { id: PaymentMethods.TRANSFER, name: 'Transferencia', icon: IconTransferVertical },
-  { id: PaymentMethods.CREDIT, name: 'Crédito' },
   { id: PaymentMethods.OTHER, name: 'Otro' },
+  { id: PaymentMethods.CREDIT, name: 'Crédito' },
 ]
 
 const paymentMethodsOptions = computed(() => {
