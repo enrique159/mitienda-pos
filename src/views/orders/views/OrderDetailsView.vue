@@ -15,6 +15,7 @@
       </div>
 
       <button
+        v-if="availableStatusOptions.length > 0"
         class="px-4 py-2 text-sm font-medium text-white bg-brand-orange rounded-md hover:bg-brand-pink flex items-center gap-2"
         @click="openChangeStatusModal(purchaseOrder)"
       >
@@ -135,7 +136,7 @@
             <td>
               <input
                 type="number"
-                :disabled="isDraft"
+                :disabled="!canEditItems"
                 v-model.number="item.quantity_received"
                 @keydown="validateOnlyNumbers"
                 class="input input-sm input-bordered no-arrows w-20"
@@ -144,7 +145,7 @@
             <td>
               <select
                 v-model="item.incidence"
-                :disabled="isDraft"
+                :disabled="!canEditItems"
                 class="select select-sm select-bordered w-full"
                 :class="{ 'text-black-3': !item.incidence }"
               >
@@ -161,7 +162,7 @@
             <td>
               <input
                 type="text"
-                :disabled="isDraft"
+                :disabled="!canEditItems"
                 class="input input-sm input-bordered"
                 v-model="item.note"
               />
@@ -177,7 +178,7 @@
         <base-button
           button-type="secondary"
           class="flex items-center gap-2"
-          :disabled="isDraft"
+          :disabled="!canEditItems"
           @click="handleSaveChanges"
         >
           <IconDeviceDesktopDown size="18" />
@@ -202,19 +203,32 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-center mb-8">
-        <select
-          class="select select-bordered w-full max-w-xs"
-          v-model="newStatus"
-        >
-          <option
-            v-for="option in PURCHASE_ORDER_OPTIONS"
-            :key="option.value"
-            :value="option.value"
+      <div class="space-y-4 mb-8">
+        <div>
+          <p class="text-sm text-black-3 mb-1">Estado actual:</p>
+          <span
+            class="badge badge-lg"
+            :class="getPurchaseOrderStatusBadge(purchaseOrder?.status).class"
           >
-            {{ option.label }}
-          </option>
-        </select>
+            {{ getPurchaseOrderStatusBadge(purchaseOrder?.status).text }}
+          </span>
+        </div>
+
+        <div>
+          <p class="text-sm text-black-3 mb-1">Nuevo estado:</p>
+          <select
+            class="select select-bordered w-full max-w-xs"
+            v-model="newStatus"
+          >
+            <option
+              v-for="option in availableStatusOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
       </div>
 
       <!-- BUTTONS -->
@@ -284,8 +298,16 @@ const purchaseOrderProducts = ref<
 >([])
 const purchaseOrder = ref<PurchaseOrder | null>(null)
 
-const isDraft = computed(() => {
-  return purchaseOrder.value?.status === PurchaseOrderStatus.DRAFT
+const canEditItems = computed(() => {
+  return purchaseOrder.value?.status === PurchaseOrderStatus.RECEIVED
+})
+
+const isOrderFullyReceived = computed(() => {
+  return purchaseOrderProducts.value.every(
+    (item) =>
+      Number(item.quantity_received || 0) ===
+      Number(item.quantity_ordered || 0)
+  )
 })
 
 onMounted(() => {
@@ -318,7 +340,7 @@ const resetPurchaseOrderProducts = () => {
 // CHANGE STATUS
 const dialogChangeStatusRef = ref()
 const newStatus = ref<PurchaseOrderStatus | null>(null)
-const PURCHASE_ORDER_OPTIONS = [
+const PURCHASE_ORDER_STATUS_OPTIONS = [
   { value: PurchaseOrderStatus.DRAFT, label: 'Borrador' },
   { value: PurchaseOrderStatus.SENT, label: 'Enviado' },
   { value: PurchaseOrderStatus.RECEIVED, label: 'Recibido' },
@@ -327,9 +349,43 @@ const PURCHASE_ORDER_OPTIONS = [
   { value: PurchaseOrderStatus.CANCELLED, label: 'Cancelado' },
 ]
 
+const ALLOWED_STATUS_TRANSITIONS: Record<
+  PurchaseOrderStatus,
+  PurchaseOrderStatus[]
+> = {
+  [PurchaseOrderStatus.DRAFT]: [PurchaseOrderStatus.SENT],
+  [PurchaseOrderStatus.SENT]: [
+    PurchaseOrderStatus.RECEIVED,
+    PurchaseOrderStatus.CANCELLED,
+  ],
+  [PurchaseOrderStatus.RECEIVED]: [
+    PurchaseOrderStatus.COMPLETED,
+    PurchaseOrderStatus.HAS_ISSUES,
+    PurchaseOrderStatus.CANCELLED,
+  ],
+  [PurchaseOrderStatus.COMPLETED]: [],
+  [PurchaseOrderStatus.HAS_ISSUES]: [],
+  [PurchaseOrderStatus.CANCELLED]: [],
+}
+
+const availableStatusOptions = computed(() => {
+  if (!purchaseOrder.value) return []
+  const allowedStatuses = ALLOWED_STATUS_TRANSITIONS[purchaseOrder.value.status]
+  return PURCHASE_ORDER_STATUS_OPTIONS.filter((option) => {
+    if (!allowedStatuses.includes(option.value)) return false
+    if (
+      option.value === PurchaseOrderStatus.COMPLETED &&
+      !isOrderFullyReceived.value
+    ) {
+      return false
+    }
+    return true
+  })
+})
+
 const openChangeStatusModal = (purchaseOrder: PurchaseOrder | null) => {
   if (!purchaseOrder) return
-  newStatus.value = purchaseOrder.status
+  newStatus.value = availableStatusOptions.value[0]?.value || null
   dialogChangeStatusRef.value?.showModal()
 }
 
@@ -339,6 +395,20 @@ const closeChangeStatusModal = () => {
 
 const handleSubmitChangeStatus = () => {
   if (!purchaseOrder.value || !newStatus.value) return
+  const allowedStatuses = ALLOWED_STATUS_TRANSITIONS[purchaseOrder.value.status]
+  if (!allowedStatuses.includes(newStatus.value)) {
+    toast.error('No está permitido cambiar a ese estado')
+    return
+  }
+  if (
+    newStatus.value === PurchaseOrderStatus.COMPLETED &&
+    !isOrderFullyReceived.value
+  ) {
+    toast.error(
+      'No se puede completar el pedido porque no todos los productos han sido recibidos correctamente'
+    )
+    return
+  }
   updatePurchaseOrderStatus(
     { id: purchaseOrder.value.id, status: newStatus.value },
     (response: Response<PurchaseOrder>) => {
@@ -347,6 +417,7 @@ const handleSubmitChangeStatus = () => {
         return
       }
       purchaseOrder.value!.status = newStatus.value!
+      reloadProducts()
       toast.success('Estado actualizado exitosamente')
       closeChangeStatusModal()
     }
@@ -393,6 +464,24 @@ const closeEditingNotes = () => {
 
 const handleSaveChanges = () => {
   if (!purchaseOrder.value) return
+  if (!canEditItems.value) {
+    toast.error('No se pueden guardar cambios en este estado del pedido')
+    return
+  }
+  const itemsWithDifference = purchaseOrderProducts.value.filter(
+    (item) =>
+      Number(item.quantity_received || 0) !==
+      Number(item.quantity_ordered || 0)
+  )
+  const hasInvalidItems = itemsWithDifference.some(
+    (item) => !item.incidence || !item.note
+  )
+  if (hasInvalidItems) {
+    toast.error(
+      'Los productos con cantidades diferentes a las esperadas deben tener una incidencia y una nota'
+    )
+    return
+  }
   const purchaseOrderItemsData = purchaseOrderProducts.value.map(
     (item: PurchaseOrderItem) => {
       return {
@@ -414,7 +503,6 @@ const handleSaveChanges = () => {
       originalPurchaseOrderProducts = JSON.parse(
         JSON.stringify(purchaseOrderProducts.value)
       )
-      reloadProducts()
       toast.success('Pedido actualizado correctamente')
     }
   )

@@ -116,18 +116,57 @@ export async function updatePurchaseOrderStatus(id, status) {
     ...(status === 'received' && { received_at: knex.fn.now() }),
   }
   try {
-    const updated = await knex('purchase_orders').where('id', id).update(dataToUpdate)
-    if (updated) {
-      logger.info({ type: 'UPDATE PURCHASE ORDER STATUS', message: 'Estado de orden de compra actualizado', data: { id, status } })
-      return response(true, 'Estado de orden de compra actualizado', { id, status })
-    } else {
-      logger.error({ type: 'UPDATE PURCHASE ORDER STATUS', message: 'Orden de compra no encontrada' })
-      return response(false, 'Orden de compra no encontrada', null)
-    }
+    await knex.transaction(async (trx) => {
+      const order = await trx('purchase_orders').where('id', id).first()
+      if (!order) {
+        throw new Error('Orden de compra no encontrada')
+      }
+
+      const items = await trx('purchase_order_items')
+        .where('id_purchase_order', id)
+        .select()
+
+      if (status === 'completed') {
+        const isFullyReceived = items.every(
+          (item) =>
+            getReceivedQuantity(item.quantity_received) ===
+            Number(item.quantity_ordered || 0)
+        )
+        if (!isFullyReceived) {
+          throw new Error(
+            'No se puede completar el pedido porque no todos los productos han sido recibidos correctamente'
+          )
+        }
+      }
+
+      if (status === 'completed' || status === 'has_issues') {
+        for (const item of items) {
+          const receivedQuantity = getReceivedQuantity(item.quantity_received)
+          if (receivedQuantity !== 0) {
+            const stockResponse = await productsRepository.adjustStockProduct(
+              item.id_product,
+              receivedQuantity,
+              trx
+            )
+            if (!stockResponse.success) {
+              throw new Error(stockResponse.message)
+            }
+          }
+        }
+      }
+
+      const updated = await trx('purchase_orders').where('id', id).update(dataToUpdate)
+      if (!updated) {
+        throw new Error('Orden de compra no encontrada')
+      }
+    })
+
+    logger.info({ type: 'UPDATE PURCHASE ORDER STATUS', message: 'Estado de orden de compra actualizado', data: { id, status } })
+    return response(true, 'Estado de orden de compra actualizado', { id, status })
   } catch (err) {
     console.log(err)
     logger.error({ type: 'UPDATE PURCHASE ORDER STATUS ERROR', message: `${err}`, data: err })
-    return response(false, 'Error al actualizar el estado de la orden de compra', err)
+    return response(false, `Error al actualizar el estado de la orden de compra: ${err.message}`, err)
   }
 }
 
@@ -156,10 +195,9 @@ export async function updatePurchaseOrderItem(id, purchaseOrderItem) {
         purchaseOrderItem,
         'quantity_received'
       )
-      const currentReceivedQuantity = getReceivedQuantity(currentItem.quantity_received)
       const newReceivedQuantity = shouldUpdateReceivedQuantity
         ? getReceivedQuantity(purchaseOrderItem.quantity_received)
-        : currentReceivedQuantity
+        : getReceivedQuantity(currentItem.quantity_received)
 
       if (shouldUpdateReceivedQuantity) {
         dataToUpdate.quantity_received = newReceivedQuantity
@@ -172,19 +210,6 @@ export async function updatePurchaseOrderItem(id, purchaseOrderItem) {
 
       if (!updated) {
         throw new Error('Item de orden de compra no encontrado')
-      }
-
-      const receivedQuantityDelta = newReceivedQuantity - currentReceivedQuantity
-      if (receivedQuantityDelta !== 0) {
-        const stockResponse = await productsRepository.adjustStockProduct(
-          currentItem.id_product,
-          receivedQuantityDelta,
-          trx
-        )
-
-        if (!stockResponse.success) {
-          throw new Error(stockResponse.message)
-        }
       }
     })
 
@@ -211,11 +236,8 @@ export async function updatePurchaseOrderItems(items) {
           throw new Error('Item de orden de compra no encontrado')
         }
 
-        const currentReceivedQuantity = getReceivedQuantity(currentItem.quantity_received)
-        const newReceivedQuantity = getReceivedQuantity(item.quantity_received)
-        const receivedQuantityDelta = newReceivedQuantity - currentReceivedQuantity
         const dataToUpdate = {
-          quantity_received: newReceivedQuantity,
+          quantity_received: getReceivedQuantity(item.quantity_received),
           incidence: item.incidence,
           note: item.note,
           updated_at: trx.fn.now(),
@@ -225,18 +247,6 @@ export async function updatePurchaseOrderItems(items) {
         await trx('purchase_order_items')
           .where('id', item.id)
           .update(dataToUpdate)
-
-        if (receivedQuantityDelta !== 0) {
-          const stockResponse = await productsRepository.adjustStockProduct(
-            currentItem.id_product,
-            receivedQuantityDelta,
-            trx
-          )
-
-          if (!stockResponse.success) {
-            throw new Error(stockResponse.message)
-          }
-        }
       }
     })
 
